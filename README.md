@@ -14,7 +14,7 @@
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/yourusername/monity.git
+git clone https://github.com/leo-stuart/Monity.git
 
 cd monity
 ```
@@ -29,13 +29,13 @@ gcc -o monity main.c
 ### Project Structure
 ```bash
 monity/
-├── develop/               # Código-fonte do projeto
-│   ├── main.c             # Função principal (ponto de execução)
-│   ├── expenses.c         # Funções para manipular e registrar despesas
-│   └── expenses.h         # Header com as declarações das funções
+├── develop/               # Project's source code
+│   ├── main.c             # Main function (Entry point)
+│   ├── expenses.c         # Functions to manipulate and register spents
+│   └── expenses.h         # Header with functions prototypes
 │
-├── expenses.txt           # Armazena os dados das despesas (gerado automaticamente)
-├── README.md              # Documentação do projeto
+├── expenses.txt           # Data storage (auto-generated)
+├── README.md              # Project documentation
 ```
 ### Roadmap
 * Monthly reports
