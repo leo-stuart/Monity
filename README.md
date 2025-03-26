@@ -29,9 +29,13 @@ gcc -o monity main.c
 ### Project Structure
 ```bash
 monity/
-├── main.c         # Entry point
-├── expenses.txt   # Data storage (auto-generated)
-└── README.md
+├── develop/               # Código-fonte do projeto
+│   ├── main.c             # Função principal (ponto de execução)
+│   ├── expenses.c         # Funções para manipular e registrar despesas
+│   └── expenses.h         # Header com as declarações das funções
+│
+├── expenses.txt           # Armazena os dados das despesas (gerado automaticamente)
+├── README.md              # Documentação do projeto
 ```
 ### Roadmap
 * Monthly reports
