@@ -4,6 +4,8 @@
 
 int main()
 {
+    //Struct variable
+    Expense expense;
     int choice;
     do
     {
@@ -17,7 +19,8 @@ int main()
         switch (choice)
         {
         case 1:
-            add_expense();
+            add_expense(&expense);
+            write(expense);
             break;
         case 2:
             list_expenses();

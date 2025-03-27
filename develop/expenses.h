@@ -14,24 +14,9 @@ typedef struct Expenses
     char date[MAX_DATE];
 } Expense;
 
-//Struct variable
-Expense expense;
-
-void add_expense();
-void list_expenses();
-
-
-
-
-
-
-
-
-
-
-
-
-
+int write(Expense expense);
+void add_expense(Expense *expense);
+int list_expenses();
 
 
 #endif
