@@ -9,11 +9,11 @@ int main()
     int choice;
     do
     {
-        printf("1. Add Expense\n");
+        printf("\n\n1. Add Expense\n");
         printf("2. List All Expenses\n");
         printf("3. Exit\n");
 
-        printf("\nWhat do you want to do? [1 to 3]:");
+        printf("\nWhat do you want to do? [1 to 3]: ");
         scanf("%i", &choice);
 
         switch (choice)

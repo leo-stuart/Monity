@@ -24,22 +24,22 @@ void add_expense(Expense *expense){
     int clear;
     while((clear = getchar()) != '\n' && clear != EOF);
 
-    printf("Expense short description: ");
+    printf("\nExpense short description: ");
     if (fgets(expense->description, sizeof(expense->description), stdin) != NULL) {
         expense->description[strcspn(expense->description, "\n")] = '\0';
     }
     
-    printf("How much did you spend: ");
+    printf("\nHow much did you spend: ");
     if (fgets(temp, sizeof(temp), stdin) != NULL) {
         expense->amount = atof(temp);
     }
     
-    printf("Expense category: ");
+    printf("\nExpense category: ");
     if (fgets(expense->category, sizeof(expense->category), stdin) != NULL) {
         expense->category[strcspn(expense->category, "\n")] = '\0';
     }
     
-    printf("When did you bought it [MM/DD/YY]: ");
+    printf("\nWhen did you bought it [MM/DD/YY]: ");
     if (fgets(expense->date, sizeof(expense->date), stdin) != NULL) {
         expense->date[strcspn(expense->date, "\n")] = '\0';
     }

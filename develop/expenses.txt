@@ -1,4 +1,2 @@
-,150.00,Car,03/26/25
-Gasoline,150.00,Car,03/26/25
-Gasoline,150.00,Car,03/26/25
-Clothes,39.90,Shopping,03/26/25
+
+Roupas de frio,300.00,Roupa,03/27/25
