@@ -17,6 +17,8 @@ typedef struct Expenses
 int write(Expense expense);
 void add_expense(Expense *expense);
 int list_expenses();
+int filter_by_date(char []);
+int filter_by_cat(char []);
 
 
 #endif

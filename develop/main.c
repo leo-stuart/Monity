@@ -1,12 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
+#include <string.h>
 #include "expenses.h"
 
 int main()
 {
     // Struct variable
     Expense expense;
+    char filter_category[MAX_CHAR];
+    char filter_date[MAX_CHAR];
     int choice;
+    int filter_opt;
     do
     {
         printf("\n\n1. Add Expense\n");
@@ -34,17 +39,29 @@ int main()
             printf("2. Filter by Date\n");
 
             printf("\n[1|2]: ");
-            int filter_opt;
             scanf("%i", &filter_opt);
+            while(getchar() != '\n' && getchar() != EOF);
 
             switch (filter_opt)
             {
             case 1:
-                filter_by_cat();
+
+                printf("\nCategory you want to filter: ");
+                if(fgets(filter_category, sizeof(filter_category), stdin) != NULL){
+                    filter_category[strcspn(filter_category, "\n")] = '\0';
+                }
+
+                filter_by_cat(filter_category);
                 break;
 
             case 2:
-                filter_by_date();
+
+                printf("\nDate you want to filter: ");
+                if (fgets(filter_date, sizeof(filter_date), stdin) != NULL){
+                    filter_date[strcspn(filter_date, "\n")] = '\0';
+                }
+
+                filter_by_date(filter_date);
                 break;
 
             default:
