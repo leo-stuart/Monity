@@ -74,5 +74,5 @@ int main()
         default:
             break;
         }
-    } while (choice != 3);
+    } while (choice != 4);
 }

@@ -17,6 +17,8 @@ int write(Expense expense)
 
     fclose(outfile);
 
+    printf("\n✅ Expense added succesfully!\n");
+
     return 0;
 }
 
@@ -83,7 +85,7 @@ int list_expenses()
         if (data == NULL)
             continue;
 
-        printf("📌 %s | 💸 $%s | 🍽️  Category: %s | 🗓️  Date: %s\n", desc, amount, cat, data);
+        printf("\n📌 %s | 💸 $%s | 🍽️  Category: %s | 🗓️  Date: %s", desc, amount, cat, data);
     }
 
     fclose(outfile);
@@ -123,7 +125,7 @@ int filter_by_cat(char filter_category[])
 
         if (strcmp(cat, filter_category) == 0)
         {
-            printf("📌 %s | 💸 $%s | 🍽️  Category: %s | 🗓️  Date: %s\n", desc, amount, cat, data);
+            printf("\n📌 %s | 💸 $%s | 🍽️  Category: %s | 🗓️  Date: %s", desc, amount, cat, data);
         }
     }
 
@@ -164,7 +166,7 @@ int filter_by_date(char filter_date[])
 
         if (strcmp(data, filter_date) == 0)
         {
-            printf("📌 %s | 💸 $%s | 🍽️  Category: %s | 🗓️  Date: %s\n", desc, amount, cat, data);
+            printf("\n📌 %s | 💸 $%s | 🍽️  Category: %s | 🗓️  Date: %s", desc, amount, cat, data);
         }
     }
 

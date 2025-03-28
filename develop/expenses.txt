@@ -2,3 +2,4 @@
 Roupas de frio,300.00,Roupa,03/27/25
 Gasoline,150.00,Car,03/27/25
 New jeans,39.00,Clothes,03/28/25
+Nutella,200.00,Sobremesas,03/27/25
