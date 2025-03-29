@@ -48,7 +48,7 @@ void add_expense(Expense *expense)
         expense->category[strcspn(expense->category, "\n")] = '\0';
     }
 
-    printf("\nWhen did you bought it [MM/DD/YY]: ");
+    printf("\nWhen did you bought it [DD/MM/YY]: ");
     if (fgets(expense->date, sizeof(expense->date), stdin) != NULL)
     {
         expense->date[strcspn(expense->date, "\n")] = '\0';
@@ -169,6 +169,52 @@ int filter_by_date(char filter_date[])
             printf("\n📌 %s | 💸 $%s | 🍽️  Category: %s | 🗓️  Date: %s", desc, amount, cat, data);
         }
     }
+
+    fclose(outfile);
+
+    return 0;
+}
+
+int expenses_sum(char month_to_sum[]){
+    char *outgoings = "expenses.txt";
+    FILE *outfile = fopen(outgoings, "r");
+    if (outfile == NULL)
+    {
+        printf("Could not open %s.\n", outgoings);
+        return 1;
+    }
+
+    // buffer
+    char line[256];
+    float total = 0;
+    while (fgets(line, sizeof(line), outfile))
+    {
+        char *desc = strtok(line, ",");
+        if (desc == NULL)
+            continue;
+
+        char *amount = strtok(NULL, ",");
+        if (amount == NULL)
+            continue;
+
+        char *cat = strtok(NULL, ",");
+        if (cat == NULL)
+            continue;
+
+        char *data = strtok(NULL, ",");
+        if (data == NULL)
+            continue;
+
+        char *appears = strstr(data, month_to_sum);
+        
+        if(appears != NULL){
+            float amount_int = atof(amount);
+            total += amount_int;
+        }
+
+    }
+
+    printf("\n💸 Total spent in %s: %.2f\n", month_to_sum, total);
 
     fclose(outfile);
 

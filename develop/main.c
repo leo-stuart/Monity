@@ -10,6 +10,7 @@ int main()
     Expense expense;
     char filter_category[MAX_CHAR];
     char filter_date[MAX_CHAR];
+    char month_to_sum[MAX_DATE];
     int choice;
     int filter_opt;
     do
@@ -17,10 +18,12 @@ int main()
         printf("\n\n1. Add Expense\n");
         printf("2. List All Expenses\n");
         printf("3. Filter Expenses\n");
-        printf("4. Exit\n");
+        printf("4. See Month Totals\n");
+        printf("0. Exit\n");
 
-        printf("\nWhat do you want to do? [1 to 4]: ");
+        printf("\nWhat do you want to do? [0 to 4]: ");
         scanf("%i", &choice);
+        while(getchar() != '\n' && getchar() != EOF);
 
         switch (choice)
         {
@@ -66,13 +69,25 @@ int main()
 
             default:
                 break;
+            }//inner switch case end
+            break;
+        
+        case 4:
+            printf("\nWhat month/year do you want totals for? [MM/YY]: ");
+            if (fgets(month_to_sum, sizeof(month_to_sum), stdin) != NULL){
+                month_to_sum[strcspn(month_to_sum, "\n")] = '\0';
             }
+
+            expenses_sum(month_to_sum);
             break;
 
-        case 4:
+        case 0:
             return 0;
+
         default:
             break;
-        }
-    } while (choice != 4);
+
+        }//switch case end
+
+    } while (choice != 0);
 }
