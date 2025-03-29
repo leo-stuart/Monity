@@ -3,11 +3,13 @@
 #include <ctype.h>
 #include <string.h>
 #include "expenses.h"
+#include "incomes.h"
 
 int main()
 {
-    // Struct variable
+    // Structs variables
     Expense expense;
+    Income income;
     char filter_category[MAX_CHAR];
     char filter_date[MAX_CHAR];
     char month_to_sum[MAX_DATE];
@@ -19,9 +21,11 @@ int main()
         printf("2. List All Expenses\n");
         printf("3. Filter Expenses\n");
         printf("4. See Month Totals\n");
+        printf("5. Add Income\n");
+        printf("6. See Total Income\n");
         printf("0. Exit\n");
 
-        printf("\nWhat do you want to do? [0 to 4]: ");
+        printf("\nWhat do you want to do? [0 to 6]: ");
         scanf("%i", &choice);
         while(getchar() != '\n' && getchar() != EOF);
 
@@ -81,6 +85,14 @@ int main()
             expenses_sum(month_to_sum);
             break;
 
+        case 5:
+            add_income(&income);
+            break;
+        
+        case 6:
+            total_income();
+            break;
+            
         case 0:
             return 0;
 
