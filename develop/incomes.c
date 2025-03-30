@@ -8,7 +8,7 @@ int write_income(Income *income){
     char *outgoings = "incomes.txt";
     FILE *outfile = fopen(outgoings, "a");
     if(outfile == NULL){
-        printf("Could not open %s.\n", outgoings);
+        printf("❌ Error: Unable to access %s. Please check permissions or file integrity.\n", outgoings);
         return 1;
     }
     fprintf(outfile, "%s,%.2f,%s", income->category, income->amount, income->date);
@@ -25,17 +25,17 @@ void add_income(Income *income){
     int clear;
     while((clear = getchar()) != '\n' && clear != EOF);
 
-    printf("\nIncome category: ");
+    printf("\n📌 Income category: ");
     if(fgets(income->category, sizeof(income->category), stdin) != NULL){
         income->category[strcspn(income->category, "\n")] = '\0';
     }
 
-    printf("\nIncome amount: ");
+    printf("\n💰 Income amount: ");
     if(fgets(temp, sizeof(temp), stdin) != NULL){
         income->amount = atof(temp);
     }
 
-    printf("\nWhen did you receive this money [DD/MM/YY]: ");
+    printf("\n🗓️ When did you receive this money [DD/MM/YY]: ");
     if(fgets(income->date, sizeof(income->date), stdin) != NULL){
         income->date[strcspn(income->date, "\n")] = '\0';
     }
@@ -46,7 +46,7 @@ float total_income(char month_to_sum[]){
     char *outgoings = "incomes.txt";
     FILE *outfile = fopen(outgoings, "r");
     if(outfile == NULL){
-        printf("Could not open %s.\n", outgoings);
+        printf("❌ Error: Unable to access %s. Please check permissions or file integrity.\n", outgoings);
         return 1;
     }
 
@@ -75,7 +75,7 @@ float total_income(char month_to_sum[]){
         }
     }
 
-    printf("\n💸 Total income in %s: %.2f\n", month_to_sum, total);
+    printf("\n💰 Total income for %s: %.2f\n", month_to_sum, total);
     
     fclose(outfile);
     

@@ -17,14 +17,18 @@ int main()
     int filter_opt;
     do
     {
-        printf("\n\n1. Add Expense\n");
-        printf("2. List All Expenses\n");
-        printf("3. Filter Expenses\n");
-        printf("4. See Month Totals\n");
-        printf("5. Add Income\n");
-        printf("6. See Total Income\n");
-        printf("7. Show Month Balance\n");
-        printf("0. Exit\n");
+        printf("=============================\n");
+        printf("      🧾 Monity Tracker\n");
+        printf("=============================\n");
+        printf("\n\n1. ➕ Add Expense\n");
+        printf("2. 📋 List All Expenses\n");
+        printf("3. 🔍 Filter Expenses\n");
+        printf("4. 📆 See Month Totals\n");
+        printf("5. 💰 Add Income\n");
+        printf("6. 💵 See Total Income\n");
+        printf("7. 💼 Show Month Balance\n");
+        printf("0. ❌ Exit\n");
+        printf("-----------------------------\n");
 
         printf("\nWhat do you want to do? [0 to 7]: ");
         scanf("%i", &choice);
@@ -37,16 +41,24 @@ int main()
         case 1:
             add_expense(&expense);
             write_expense(expense);
+            printf("\nPress Enter to return to the menu...");
+            getchar();
             break;
 
         case 2:
+            printf("\n📋 Here are all your expenses:\n");
             list_expenses();
+            printf("\nPress Enter to return to the menu...");
+            getchar();
             break;
 
         case 3:
-            printf("\nHow do you want to filter?\n");
-            printf("\n1. Filter by Category\n");
-            printf("2. Filter by Date\n");
+            printf("=============================\n");
+            printf("\n How do you want to filter?\n");
+            printf("=============================\n");
+            printf("1. 📌 Filter by Category\n");
+            printf("2. 🗓️ Filter by Date\n");
+            printf("-----------------------------\n");
 
             printf("\n[1|2]: ");
             scanf("%i", &filter_opt);
@@ -56,29 +68,33 @@ int main()
             {
             case 1:
 
-                printf("\nCategory you want to filter: ");
+                printf("\n📌 Category you want to filter: ");
                 if (fgets(filter_category, sizeof(filter_category), stdin) != NULL)
                 {
                     filter_category[strcspn(filter_category, "\n")] = '\0';
                 }
 
+                printf("\n🔍 Showing expenses for category: %s\n", filter_category);
                 filter_by_cat(filter_category);
                 break;
-
-            case 2:
-
-                printf("\nDate you want to filter: ");
+                
+                case 2:
+                
+                printf("\n🗓️ Date you want to filter: ");
                 if (fgets(filter_date, sizeof(filter_date), stdin) != NULL)
                 {
                     filter_date[strcspn(filter_date, "\n")] = '\0';
                 }
-
+                
+                printf("\n🔍 Showing expenses for date: %s\n", filter_date);
                 filter_by_date(filter_date);
                 break;
 
-            default:
+                default:
                 break;
             } // inner switch case end
+            printf("\nPress Enter to return to the menu...");
+            getchar();
             break;
 
         case 4:
@@ -89,20 +105,26 @@ int main()
             }
 
             expenses_sum(month_to_sum);
+            printf("\nPress Enter to return to the menu...");
+            getchar();
             break;
 
         case 5:
             add_income(&income);
             write_income(&income);
+            printf("\nPress Enter to return to the menu...");
+            getchar();
             break;
 
         case 6:
-            printf("\nWhat month do you want totals incomes for? [MM/YY]: ");
-            if (fgets(month_to_sum, sizeof(month_to_sum), stdin) != NULL)
-            {
-                month_to_sum[strcspn(month_to_sum, "\n")] = '\0';
-            }
-            total_income(month_to_sum);
+        printf("\nWhat month do you want totals incomes for? [MM/YY]: ");
+        if (fgets(month_to_sum, sizeof(month_to_sum), stdin) != NULL)
+        {
+            month_to_sum[strcspn(month_to_sum, "\n")] = '\0';
+        }
+        total_income(month_to_sum);
+        printf("\nPress Enter to return to the menu...");
+        getchar();
             break;
 
         case 7:
@@ -113,13 +135,15 @@ int main()
 
             float balance = total_income(month_to_sum) - expenses_sum(month_to_sum);
             printf("\n🤑 Your balance in %s: $%.2f\n", month_to_sum, balance);
+            printf("\nPress Enter to return to the menu...");
+            getchar();
 
             break;
 
         default:
+            printf("\n❌ Invalid option. Please choose between 0 and 7.\n");
             break;
 
         } // switch case end
-
     } while (choice != 0);
 }
