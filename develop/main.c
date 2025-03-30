@@ -33,7 +33,7 @@ int main()
         {
         case 1:
             add_expense(&expense);
-            write(expense);
+            write_expense(expense);
             break;
 
         case 2:
@@ -87,12 +87,13 @@ int main()
 
         case 5:
             add_income(&income);
+            write_income(&income);
             break;
         
         case 6:
-            total_income();
+            // total_income();
             break;
-            
+
         case 0:
             return 0;
 

@@ -4,7 +4,7 @@
 #include <string.h>
 #include <stdio.h>
 
-int write(Expense expense)
+int write_expense(Expense expense)
 {
     char *outgoings = "expenses.txt";
     FILE *outfile = fopen(outgoings, "a");
@@ -27,8 +27,7 @@ void add_expense(Expense *expense)
     char temp[MAX_CHAR];
 
     int clear;
-    while ((clear = getchar()) != '\n' && clear != EOF)
-        ;
+    while ((clear = getchar()) != '\n' && clear != EOF);
 
     printf("\nExpense short description: ");
     if (fgets(expense->description, sizeof(expense->description), stdin) != NULL)

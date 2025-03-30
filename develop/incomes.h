@@ -10,5 +10,8 @@ typedef struct{
     char date[MAX_DATE];
 } Income;
 
+int write_income(Income *income);
 void add_income(Income *income);
+int total_income();
+
 #endif
