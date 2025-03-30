@@ -174,7 +174,7 @@ int filter_by_date(char filter_date[])
     return 0;
 }
 
-int expenses_sum(char month_to_sum[]){
+float expenses_sum(char month_to_sum[]){
     char *outgoings = "expenses.txt";
     FILE *outfile = fopen(outgoings, "r");
     if (outfile == NULL)
@@ -217,5 +217,5 @@ int expenses_sum(char month_to_sum[]){
 
     fclose(outfile);
 
-    return 0;
+    return total;
 }

@@ -8,7 +8,7 @@ int write_income(Income *income){
     char *outgoings = "incomes.txt";
     FILE *outfile = fopen(outgoings, "a");
     if(outfile == NULL){
-        printf("Could not open %s.\n");
+        printf("Could not open %s.\n", outgoings);
         return 1;
     }
     fprintf(outfile, "%s,%.2f,%s", income->category, income->amount, income->date);
@@ -41,6 +41,44 @@ void add_income(Income *income){
     }
 }
 
-int total_income(){
+float total_income(char month_to_sum[]){
+    float total = 0;
+    char *outgoings = "incomes.txt";
+    FILE *outfile = fopen(outgoings, "r");
+    if(outfile == NULL){
+        printf("Could not open %s.\n", outgoings);
+        return 1;
+    }
+
+    char line[256];
+    while (fgets(line, sizeof(line), outfile)){
+        char *cat = strtok(line, ",");
+        if(cat == NULL){
+            continue;
+        }
+
+        char *amount = strtok(NULL, ",");
+        if(amount == NULL){
+            continue;
+        }
+
+        char *date = strtok(NULL, ",");
+        if(date == NULL){
+            continue;
+        }
+
+        char *appears = strstr(date, month_to_sum);
+
+        if(appears != NULL){
+            float amount_int = atof(amount);
+            total += amount_int;
+        }
+    }
+
+    printf("\n💸 Total income in %s: %.2f\n", month_to_sum, total);
+    
+    fclose(outfile);
+    
+    return total;
 
 }

@@ -19,7 +19,7 @@ void add_expense(Expense *expense);
 int list_expenses();
 int filter_by_date(char []);
 int filter_by_cat(char []);
-int expenses_sum(char []);
+float expenses_sum(char []);
 
 
 #endif
