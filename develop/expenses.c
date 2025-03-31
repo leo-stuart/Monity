@@ -66,6 +66,8 @@ int list_expenses()
 
     // buffer
     char line[256];
+    printf("\n📌 Description   💸 Amount     🍽️  Category     🗓️  Date\n");
+    printf("--------------------------------------------------------\n");
     while (fgets(line, sizeof(line), outfile))
     {
         char *desc = strtok(line, ",");
@@ -84,7 +86,7 @@ int list_expenses()
         if (data == NULL)
             continue;
 
-        printf("\n📌 %s | 💸 $%s | 🍽️  Category: %s | 🗓️  Date: %s", desc, amount, cat, data);
+        printf("%-15s $%-10s %-18s %-10s\n", desc, amount, cat, data);
     }
 
     fclose(outfile);
@@ -104,6 +106,8 @@ int filter_by_cat(char filter_category[])
 
     // buffer
     char line[256];
+    printf("\n📌 Description   💸 Amount     🍽️  Category     🗓️  Date\n");
+    printf("--------------------------------------------------------\n");
     while (fgets(line, sizeof(line), outfile))
     {
         char *desc = strtok(line, ",");
@@ -124,7 +128,7 @@ int filter_by_cat(char filter_category[])
 
         if (strcmp(cat, filter_category) == 0)
         {
-            printf("\n📌 %s | 💸 $%s | 🍽️  Category: %s | 🗓️  Date: %s", desc, amount, cat, data);
+            printf("%-15s $%-10s %-18s %-10s\n", desc, amount, cat, data);
         }
     }
 
@@ -145,7 +149,7 @@ int filter_by_date(char filter_date[])
 
     // buffer
     char line[256];
-    printf("📌 Description   💸 Amount     🍽️  Category     🗓️  Date\n");
+    printf("\n📌 Description   💸 Amount     🍽️  Category     🗓️  Date\n");
     printf("--------------------------------------------------------\n");
     while (fgets(line, sizeof(line), outfile))
     {

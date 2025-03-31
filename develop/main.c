@@ -117,7 +117,6 @@ int main()
             add_income(&income);
             write_income(&income);
             while(getchar() != '\n' && getchar() != EOF);
-            
             printf("\nPress Enter to return to the menu...");
             getchar();
             break;
