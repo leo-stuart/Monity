@@ -11,7 +11,7 @@ int write_income(Income *income){
         printf("❌ Error: Unable to access %s. Please check permissions or file integrity.\n", outgoings);
         return 1;
     }
-    fprintf(outfile, "%s,%.2f,%s", income->category, income->amount, income->date);
+    fprintf(outfile, "%s,%.2f,%s\n", income->category, income->amount, income->date);
 
     fclose(outfile);
 

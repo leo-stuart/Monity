@@ -15,12 +15,14 @@ int main()
     char month_to_sum[MAX_DATE];
     int choice;
     int filter_opt;
+
     do
     {
+        system("clear");
         printf("=============================\n");
         printf("      🧾 Monity Tracker\n");
         printf("=============================\n");
-        printf("\n\n1. ➕ Add Expense\n");
+        printf("1. ➕ Add Expense\n");
         printf("2. 📋 List All Expenses\n");
         printf("3. 🔍 Filter Expenses\n");
         printf("4. 📆 See Month Totals\n");
@@ -41,6 +43,8 @@ int main()
         case 1:
             add_expense(&expense);
             write_expense(expense);
+            while(getchar() != '\n' && getchar() != EOF);
+
             printf("\nPress Enter to return to the menu...");
             getchar();
             break;
@@ -91,7 +95,7 @@ int main()
                 break;
 
                 default:
-                break;
+                    break;
             } // inner switch case end
             printf("\nPress Enter to return to the menu...");
             getchar();
@@ -112,19 +116,21 @@ int main()
         case 5:
             add_income(&income);
             write_income(&income);
+            while(getchar() != '\n' && getchar() != EOF);
+            
             printf("\nPress Enter to return to the menu...");
             getchar();
             break;
 
         case 6:
-        printf("\nWhat month do you want totals incomes for? [MM/YY]: ");
-        if (fgets(month_to_sum, sizeof(month_to_sum), stdin) != NULL)
-        {
-            month_to_sum[strcspn(month_to_sum, "\n")] = '\0';
-        }
-        total_income(month_to_sum);
-        printf("\nPress Enter to return to the menu...");
-        getchar();
+            printf("\nWhat month do you want totals incomes for? [MM/YY]: ");
+            if (fgets(month_to_sum, sizeof(month_to_sum), stdin) != NULL)
+            {
+                month_to_sum[strcspn(month_to_sum, "\n")] = '\0';
+            }
+            total_income(month_to_sum);
+            printf("\nPress Enter to return to the menu...");
+            getchar();
             break;
 
         case 7:
@@ -137,11 +143,13 @@ int main()
             printf("\n🤑 Your balance in %s: $%.2f\n", month_to_sum, balance);
             printf("\nPress Enter to return to the menu...");
             getchar();
-
+            
             break;
-
+            
         default:
             printf("\n❌ Invalid option. Please choose between 0 and 7.\n");
+            printf("\nPress Enter to return to the menu...");
+            getchar();
             break;
 
         } // switch case end
