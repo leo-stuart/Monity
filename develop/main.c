@@ -153,6 +153,8 @@ int main()
             printf("     📆 Monthly Summary\n");
             printf("=============================\n");
             monthly_history();
+            printf("\nPress Enter to return to the menu...");
+            getchar();
             break;
 
         default:
