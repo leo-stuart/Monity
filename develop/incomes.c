@@ -83,7 +83,7 @@ float total_income(char month_to_sum[]){
 
 }
 
-void monthly_history(){
+int monthly_history(){
     char month[MAX_MONTHS][MAX_MONTH_CHAR];
     char temp_month[MAX_MONTH_CHAR];
 
@@ -191,4 +191,5 @@ void monthly_history(){
         float total_expense_variable = expenses_sum(month[i]);
         printf("📅 %s - 💵 $%.2f | 💸 $%.2f | 🧮 Balance: $%.2f\n", month[i], total_income_variable, total_expense_variable, total_income_variable-total_expense_variable);
     }
+    return 0;
 }

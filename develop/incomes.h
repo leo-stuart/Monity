@@ -15,6 +15,6 @@ typedef struct{
 int write_income(Income *income);
 void add_income(Income *income);
 float total_income(char []);
-void monthly_history();
+int monthly_history();
 
 #endif
