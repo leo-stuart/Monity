@@ -106,6 +106,7 @@ int filter_by_cat(char filter_category[])
 
     // buffer
     char line[256];
+    float total = 0;
     printf("\n📌 Description   💸 Amount     🍽️  Category     🗓️  Date\n");
     printf("--------------------------------------------------------\n");
     while (fgets(line, sizeof(line), outfile))
@@ -129,8 +130,14 @@ int filter_by_cat(char filter_category[])
         if (strcmp(cat, filter_category) == 0)
         {
             printf("%-15s $%-10s %-18s %-10s\n", desc, amount, cat, data);
+            float amount_int = atof(amount);
+            total += amount_int;
         }
     }
+    printf("--------------------------------------------------------\n");
+    printf("Total spent in category %s: $%.2f\n", filter_category, total);
+    printf("--------------------------------------------------------\n");
+
 
     fclose(outfile);
 
@@ -149,6 +156,7 @@ int filter_by_date(char filter_date[])
 
     // buffer
     char line[256];
+    float total = 0;
     printf("\n📌 Description   💸 Amount     🍽️  Category     🗓️  Date\n");
     printf("--------------------------------------------------------\n");
     while (fgets(line, sizeof(line), outfile))
@@ -172,8 +180,13 @@ int filter_by_date(char filter_date[])
         if (strcmp(data, filter_date) == 0)
         {
             printf("%-15s $%-10s %-18s %-10s\n", desc, amount, cat, data);
+            float amount_int = atof(amount);
+            total += amount_int;
         }
     }
+    printf("--------------------------------------------------------\n");
+    printf("Total spent in date %s: $%.2f\n", filter_date, total);
+    printf("--------------------------------------------------------\n");
 
     fclose(outfile);
 
@@ -218,9 +231,7 @@ float expenses_sum(char month_to_sum[]){
         }
 
     }
-
-    printf("\n💸 Total spent in %s: %.2f\n", month_to_sum, total);
-
+    
     fclose(outfile);
 
     return total;

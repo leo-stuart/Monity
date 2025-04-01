@@ -25,14 +25,15 @@ int main()
         printf("1. ➕ Add Expense\n");
         printf("2. 📋 List All Expenses\n");
         printf("3. 🔍 Filter Expenses\n");
-        printf("4. 📆 See Month Totals\n");
+        printf("4. 📆 Show Month Totals\n");
         printf("5. 💰 Add Income\n");
-        printf("6. 💵 See Total Income\n");
+        printf("6. 💵 Show Total Income\n");
         printf("7. 💼 Show Month Balance\n");
+        printf("8. 📊 Show Monthly History\n");
         printf("0. ❌ Exit\n");
         printf("-----------------------------\n");
 
-        printf("\nWhat do you want to do? [0 to 7]: ");
+        printf("\nWhat do you want to do? [0 to 8]: ");
         scanf("%i", &choice);
         while (getchar() != '\n' && getchar() != EOF);
 
@@ -108,7 +109,8 @@ int main()
                 month_to_sum[strcspn(month_to_sum, "\n")] = '\0';
             }
 
-            expenses_sum(month_to_sum);
+            float total = expenses_sum(month_to_sum);
+            printf("\n💸 Total spent in %s: %.2f\n", month_to_sum, total);
             printf("\nPress Enter to return to the menu...");
             getchar();
             break;
@@ -127,7 +129,8 @@ int main()
             {
                 month_to_sum[strcspn(month_to_sum, "\n")] = '\0';
             }
-            total_income(month_to_sum);
+            float total_income_variable = total_income(month_to_sum);
+            printf("\n💰 Total income for %s: %.2f\n", month_to_sum, total_income_variable);
             printf("\nPress Enter to return to the menu...");
             getchar();
             break;
@@ -145,6 +148,10 @@ int main()
             
             break;
             
+        case 8:
+
+            break;
+
         default:
             printf("\n❌ Invalid option. Please choose between 0 and 7.\n");
             printf("\nPress Enter to return to the menu...");

@@ -74,8 +74,6 @@ float total_income(char month_to_sum[]){
             total += amount_int;
         }
     }
-
-    printf("\n💰 Total income for %s: %.2f\n", month_to_sum, total);
     
     fclose(outfile);
     
