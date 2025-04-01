@@ -1,8 +1,10 @@
 #include "incomes.h"
+#include "expenses.h"
 #include <ctype.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 int write_income(Income *income){
     char *outgoings = "incomes.txt";
@@ -79,4 +81,114 @@ float total_income(char month_to_sum[]){
     
     return total;
 
+}
+
+void monthly_history(){
+    char month[MAX_MONTHS][MAX_MONTH_CHAR];
+    char temp_month[MAX_MONTH_CHAR];
+
+    bool already_exists;
+    int month_count = 0;
+
+    //read income file
+    char *incomes = "incomes.txt";
+    FILE *income_file = fopen(incomes, "r");
+    if(income_file == NULL){
+        printf("❌ Error: Unable to access %s. Please check permissions or file integrity.\n", incomes);
+        return 1;
+    }
+
+    char line[256];
+    while(fgets(line, sizeof(line), income_file)){
+        char *cat = strtok(line, ",");
+        if(cat == NULL){
+            continue;
+        }
+        char *amount = strtok(NULL, ",");
+        if(amount == NULL){
+            continue;
+        }
+        char *date = strtok(NULL, ",");
+        if(date == NULL){
+            continue;
+        }
+        for(int i = 0; i < MAX_MONTH_CHAR; i++){
+            if(i < MAX_MONTH_CHAR-1){
+                temp_month[i] = date[i+3];
+            } else {
+                temp_month[i] = '\0';
+            }
+        }
+
+        already_exists = false;
+        for(int i = 0; i < month_count; i++){
+            if(strcmp(temp_month, month[i]) == 0){
+                already_exists = true;
+                break;
+            }
+        }
+
+        if(already_exists == false){
+            strcpy(month[month_count], temp_month);
+            month_count++;
+        }
+    }
+
+    fclose(income_file);
+
+    char *expenses_filename = "expenses.txt";
+    FILE *expenses_file = fopen(expenses_filename, "r");
+    if(expenses_file == NULL){
+        printf("❌ Error: Unable to access %s. Please check permissions or file integrity.\n", incomes);
+        return 1;
+    }
+
+    while(fgets(line, sizeof(line), expenses_file)){
+        char *desc = strtok(line, ",");
+        if(desc == NULL){
+            continue;
+        }
+
+        char *amount = strtok(NULL, ",");
+        if(amount == NULL){
+            continue;
+        }
+        char *cat = strtok(NULL, ",");
+        if(cat == NULL){
+            continue;
+        }
+        char *data = strtok(NULL, ",");
+        if(data == NULL){
+            continue;
+        }
+
+        for(int i = 0; i < MAX_MONTH_CHAR; i++){
+            if(i < MAX_MONTH_CHAR-1){
+                temp_month[i] = data[i+3];
+            } else {
+                temp_month[i] = '\0';
+            }
+        }
+
+        already_exists = false;
+        for(int i = 0; i < month_count; i++){
+            if(strcmp(temp_month, month[i]) == 0){
+                already_exists = true;
+                break;
+            }
+        }
+        
+        if(already_exists == false){
+            strcpy(month[month_count], temp_month);
+            month_count++;
+        }
+    }
+
+    fclose(expenses_file);
+
+    for(int i = 0; i < month_count; i++){
+        float total_income_variable = total_income(month[i]);
+        float total_expense_variable = expenses_sum(month[i]);
+        printf("📅 %s - 💵 $%.2f | 💸 $%.2f | 🧮 Balance: $%.2f\n", month[i], total_income_variable, total_expense_variable, total_income_variable-total_expense_variable);
+    }
 }

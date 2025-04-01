@@ -149,7 +149,10 @@ int main()
             break;
             
         case 8:
-
+            printf("=============================\n");
+            printf("     📆 Monthly Summary\n");
+            printf("=============================\n");
+            monthly_history();
             break;
 
         default:
