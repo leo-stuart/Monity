@@ -189,7 +189,7 @@ int monthly_history(){
     for(int i = 0; i < month_count; i++){
         float total_income_variable = total_income(month[i]);
         float total_expense_variable = expenses_sum(month[i]);
-        printf("📅 %s - 💵 $%.2f | 💸 $%.2f | 🧮 Balance: $%.2f\n", month[i], total_income_variable, total_expense_variable, total_income_variable-total_expense_variable);
+        printf("📅 %s | 💵 $%-10.2f | 💸 $%-10.2f | 🧮 Balance: $%-10.2f\n", month[i], total_income_variable, total_expense_variable, total_income_variable-total_expense_variable);
     }
     return 0;
 }

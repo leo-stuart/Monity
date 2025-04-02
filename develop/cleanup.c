@@ -86,11 +86,12 @@ int delete_expense(char keyword[])
         }
     }
 
-    fclose(expense_temp_file);
+    fclose(expenses_temp);
     fclose(expense_file);
     remove("expenses.txt");
     rename("expenses_temp.txt", "expenses.txt");
     printf("\n✅ Entry deleted successfully!\n");
+    return 0;
 }
 
 int delete_income(char keyword[])
@@ -164,14 +165,16 @@ int delete_income(char keyword[])
         }
     }
 
-    fclose(incomes_temp_file);
+    fclose(incomes_temp);
     fclose(incomes_file);
     remove("incomes.txt");
     rename("incomes_temp.txt", "incomes.txt");
     printf("\n✅ Entry deleted successfully!\n");
+    return 0;
 }
 
-int edit_expense(char keyword[]){
+int edit_expense(char keyword[])
+{
     char *expense_filename = "expenses.txt";
     FILE *expense_file = fopen(expense_filename, "r");
     if (expense_file == NULL)
@@ -218,7 +221,8 @@ int edit_expense(char keyword[]){
     {
         printf("Which entry do you want to edit? [0 to %i]: ", appears_count);
         scanf("%i", &delete_choice);
-        while (getchar() != '\n' && getchar() != EOF);
+        while (getchar() != '\n' && getchar() != EOF)
+            ;
     }
     fclose(expense_file);
 
@@ -238,8 +242,8 @@ int edit_expense(char keyword[]){
         if (strcmp(line, matches[delete_choice]) == 0)
         {
             add_expense(&expense);
-            //write
-            fprintf(expenses_temp, "%s,%.2f,%s,%s\n", expense.description, expense.amount, expense.category, expense.date);                
+            // write
+            fprintf(expenses_temp, "%s,%.2f,%s,%s\n", expense.description, expense.amount, expense.category, expense.date);
         }
         else
         {
@@ -247,14 +251,15 @@ int edit_expense(char keyword[]){
         }
     }
 
-    fclose(expense_temp_file);
+    fclose(expenses_temp);
     fclose(expense_file);
     remove("expenses.txt");
     rename("expenses_temp.txt", "expenses.txt");
     printf("\n✅ Entry edited successfully!\n");
-
+    return 0;
 }
-int edit_income(char keyword[]){
+int edit_income(char keyword[])
+{
     char *incomes_filename = "incomes.txt";
     FILE *incomes_file = fopen(incomes_filename, "r");
     if (incomes_file == NULL)
@@ -325,11 +330,12 @@ int edit_income(char keyword[]){
         }
     }
 
-    fclose(incomes_temp_file);
+    fclose(incomes_temp);
     fclose(incomes_file);
     remove("incomes.txt");
     rename("incomes_temp.txt", "incomes.txt");
     printf("\n✅ Entry edited successfully!\n");
+    return 0;
 }
 
 void cleanup_menu()
@@ -343,9 +349,8 @@ void cleanup_menu()
     printf("=============================\n");
     printf("1. 🗑️ Delete an Entry\n");
     printf("2. 🔁 Edit an entry\n");
-    printf("2. 🧯 Remove all data for a month\n");
     printf("-----------------------------\n");
-    printf("[1 to 3]:\n");
+    printf("[1 to 2]:\n");
     scanf("%i", &choice);
 
     switch (choice)
@@ -358,7 +363,7 @@ void cleanup_menu()
         printf("2. 💵 Income\n");
         printf("-----------------------------\n");
         printf("[1|2]: ");
-        scanf("%i", file_choice);
+        scanf("%i", &file_choice);
         while (getchar() != '\n' && getchar() != EOF)
             ;
 
@@ -396,7 +401,7 @@ void cleanup_menu()
         printf("2. 💵 Income\n");
         printf("-----------------------------\n");
         printf("[1|2]: ");
-        scanf("%i", file_choice);
+        scanf("%i", &file_choice);
         while (getchar() != '\n' && getchar() != EOF)
             ;
 
@@ -423,10 +428,6 @@ void cleanup_menu()
         default:
             break;
         }
-        break;
-
-    case 3:
-
         break;
 
     default:

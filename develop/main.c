@@ -161,6 +161,8 @@ int main()
 
         case 9:
             cleanup_menu();
+            printf("\nPress Enter to return to the menu...");
+            getchar();
             break;
 
         default:
