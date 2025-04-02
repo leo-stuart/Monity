@@ -60,6 +60,9 @@ int delete_expense(char keyword[])
         scanf("%i", &delete_choice);
         while (getchar() != '\n' && getchar() != EOF)
             ;
+    } else {
+        printf("⚠️  No entries found matching \"%s\"\n", keyword);
+        return 1;
     }
     fclose(expense_file);
 
@@ -139,7 +142,11 @@ int delete_income(char keyword[])
         scanf("%i", &delete_choice);
         while (getchar() != '\n' && getchar() != EOF)
             ;
+    } else {
+        printf("⚠️  No entries found matching \"%s\"\n", keyword);
+        return 1;
     }
+
     fclose(incomes_file);
 
     char *incomes_temp_file = "incomes_temp.txt";

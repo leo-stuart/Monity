@@ -31,11 +31,11 @@ int main()
         printf("6. 💵 Show Total Income\n");
         printf("7. 💼 Show Month Balance\n");
         printf("8. 📊 Show Monthly History\n");
-        printf("9. 🧹 CleanUp Options");
+        printf("9. 🧹 CleanUp Options\n");
         printf("0. ❌ Exit\n");
         printf("-----------------------------\n");
 
-        printf("\nWhat do you want to do? [0 to 8]: ");
+        printf("\nWhat do you want to do? [0 to 9]: ");
         scanf("%i", &choice);
         while (getchar() != '\n' && getchar() != EOF);
 

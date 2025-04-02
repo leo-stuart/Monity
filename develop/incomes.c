@@ -89,6 +89,7 @@ int monthly_history(){
 
     bool already_exists;
     int month_count = 0;
+    float balance;
 
     //read income file
     char *incomes = "incomes.txt";
@@ -186,10 +187,17 @@ int monthly_history(){
 
     fclose(expenses_file);
 
+    
     for(int i = 0; i < month_count; i++){
         float total_income_variable = total_income(month[i]);
         float total_expense_variable = expenses_sum(month[i]);
-        printf("📅 %s | 💵 $%-10.2f | 💸 $%-10.2f | 🧮 Balance: $%-10.2f\n", month[i], total_income_variable, total_expense_variable, total_income_variable-total_expense_variable);
+        balance = total_income_variable - total_expense_variable;
+        int num_bars = (int)balance/50;
+        printf("📅 %-10s  💵 $%-10.2f  💸 $%-10.2f  🧮 Balance: $%-10.2f | ", month[i], total_income_variable, total_expense_variable, balance);
+        for(int i = 0; i < num_bars; i++){
+            printf("█");
+        }
+        printf("\n");
     }
     return 0;
 }
