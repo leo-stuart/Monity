@@ -4,6 +4,7 @@
 #include <string.h>
 #include "expenses.h"
 #include "incomes.h"
+#include "cleanup.h"
 
 int main()
 {
@@ -30,6 +31,7 @@ int main()
         printf("6. 💵 Show Total Income\n");
         printf("7. 💼 Show Month Balance\n");
         printf("8. 📊 Show Monthly History\n");
+        printf("9. 🧹 CleanUp Options");
         printf("0. ❌ Exit\n");
         printf("-----------------------------\n");
 
@@ -155,6 +157,10 @@ int main()
             monthly_history();
             printf("\nPress Enter to return to the menu...");
             getchar();
+            break;
+
+        case 9:
+            cleanup_menu();
             break;
 
         default:
