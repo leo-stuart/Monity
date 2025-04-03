@@ -1,0 +1,7 @@
+Roupas de frio,300.00,Roupa,27/03/25
+Gasoline,150.00,Car,28/03/25
+New jeans,39.00,Clothes,28/03/25
+Nutella,200.00,Sobremesas,27/03/25
+Tenis yeezy,200.00,Roupas,31/03/25
+Mochila faculdade,150.00,Acessorio,31/03/25
+Pizza,22.50,Food,04/03/25
