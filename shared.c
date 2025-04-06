@@ -1,7 +1,4 @@
-#ifndef SHARED_H
-#define SHARED_H
+#include "shared.h"
 #include <stdbool.h>
 
 extern bool is_api_mode;
-
-#endif

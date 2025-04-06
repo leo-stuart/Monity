@@ -21,6 +21,7 @@ int main(int argc, char *argv[])
     int filter_opt;
 
     if(argc > 1){
+        is_api_mode = true;
         //api mode
         if(strcmp(argv[1], "add-expense") == 0){
             if(argc != 6){
@@ -44,7 +45,12 @@ int main(int argc, char *argv[])
                 write_income(&income);
             }
         } else if(strcmp(argv[1], "list-expenses") == 0){
-            
+            if(argc != 2){
+                printf("Error: Not enough args\n");
+                return 2;
+            } else {
+                list_expenses();
+            }
         } else if(strcmp(argv[1], "list-incomes") == 0){
 
         } else if(strcmp(argv[1], "total-expenses") == 0){
