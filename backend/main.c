@@ -34,9 +34,16 @@ int main(int argc, char *argv[])
                 write_expense(expense);
             }
         } else if(strcmp(argv[1], "add-income") == 0){
-            
+            if(argc != 5){
+                printf("Error: Not enough args\n");
+                return 2;
+            } else {
+                strcpy(income.category, argv[2]);
+                income.amount = atof(argv[3]);
+                strcpy(income.date, argv[4]);
+                write_income(&income);
+            }
         } else if(strcmp(argv[1], "list-expenses") == 0){
-
             
         } else if(strcmp(argv[1], "list-incomes") == 0){
 
