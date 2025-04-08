@@ -67,27 +67,35 @@ int list_expenses()
 
     // buffer
     char line[256];
-    printf("\n📌 Description   💸 Amount     🍽️  Category     🗓️  Date\n");
-    printf("--------------------------------------------------------\n");
-    while (fgets(line, sizeof(line), outfile))
-    {
-        char *desc = strtok(line, ",");
-        if (desc == NULL)
-            continue;
-
-        char *amount = strtok(NULL, ",");
-        if (amount == NULL)
-            continue;
-
-        char *cat = strtok(NULL, ",");
-        if (cat == NULL)
-            continue;
-
-        char *data = strtok(NULL, ",");
-        if (data == NULL)
-            continue;
-
-        printf("%-15s $%-10s %-18s %-10s\n", desc, amount, cat, data);
+    if(!is_api_mode){
+        printf("\n📌 Description   💸 Amount     🍽️  Category     🗓️  Date\n");
+        printf("--------------------------------------------------------\n");
+        while (fgets(line, sizeof(line), outfile))
+        {
+            char *desc = strtok(line, ",");
+            if (desc == NULL)
+                continue;
+    
+            char *amount = strtok(NULL, ",");
+            if (amount == NULL)
+                continue;
+    
+            char *cat = strtok(NULL, ",");
+            if (cat == NULL)
+                continue;
+    
+            char *data = strtok(NULL, ",");
+            if (data == NULL)
+                continue;
+    
+            printf("%-15s $%-10s %-18s %-10s\n", desc, amount, cat, data);
+        }
+    } else {
+        while (fgets(line, sizeof(line), outfile))
+        {
+            line[strcspn(line, "\n")] = '\0';
+            printf("%s\n", line);
+        }
     }
 
     fclose(outfile);

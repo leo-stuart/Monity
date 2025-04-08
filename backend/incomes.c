@@ -23,6 +23,22 @@ int write_income(Income *income){
     return 0;
 }
 
+int list_incomes(){
+    char *incomes_file_name = "incomes.txt";
+    FILE *incomes_file = fopen(incomes_file_name, "r");
+    if(incomes_file == NULL){
+        printf("❌ Error: Unable to access %s. Please check permissions or file integrity.\n", incomes_file_name);
+        return 1;
+    }
+    char line[256];
+    while (fgets(line, sizeof(line), incomes_file))
+    {
+        line[strcspn(line, "\n")] = '\0';
+        printf("%s\n", line);
+    }
+    return 0;
+}
+
 void add_income(Income *income){
     char temp[MAX_DATE];
     int clear;
