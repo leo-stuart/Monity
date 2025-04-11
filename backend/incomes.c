@@ -218,3 +218,7 @@ int monthly_history(){
     }
     return 0;
 }
+
+void balance(char month[]){
+    printf("%.2f\n", total_income(month)-total_expenses(month));
+}

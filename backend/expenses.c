@@ -103,6 +103,44 @@ int list_expenses()
     return 0;
 }
 
+float total_expenses(char month[]){
+    char *file_name = "expenses.txt";
+    FILE *expenses_file = fopen(file_name, "r");
+    if(expenses_file == NULL){
+        printf("❌ Error: Unable to access %s. Please check permissions or file integrity.\n", file_name);
+        return 1;  
+    }
+
+    char line[256];
+    float total = 0;
+    while(fgets(line, sizeof(line), expenses_file)){
+        char *desc = strtok(line, ",");
+        if(desc == NULL){
+            continue;
+        }
+        char *amount = strtok(NULL, ",");
+        if(amount == NULL){
+            continue;
+        }
+        char *cat = strtok(NULL, ",");
+        if(cat == NULL){
+            continue;
+        }
+        char *data = strtok(NULL, ",");
+        if(data == NULL){
+            continue;
+        }
+
+        char *appears = strstr(data, month);
+        if(appears != NULL){
+            float amount_num = atof(amount);
+            total += amount_num;
+        }
+    }
+    fclose(expenses_file);
+    return total;
+}
+
 int filter_by_cat(char filter_category[])
 {
     char *outgoings = "expenses.txt";

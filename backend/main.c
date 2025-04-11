@@ -58,9 +58,19 @@ int main(int argc, char *argv[])
                 list_incomes();
             }
         } else if(strcmp(argv[1], "total-expenses") == 0){
-
+            if(argc != 3){
+                printf("Error: Not enough args\n");
+                return 2;
+            } else {
+                printf("%.2f\n", total_expenses(argv[2]));
+            }
         }else if(strcmp(argv[1], "balance") == 0){
-            
+            if(argc != 3){
+                printf("Error: Not enough args\n");
+                return 2;
+            } else {
+                balance(argv[2]);
+            }
         }
     } else {
         //terminal mode

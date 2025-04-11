@@ -20,6 +20,6 @@ int list_expenses();
 int filter_by_date(char []);
 int filter_by_cat(char []);
 float expenses_sum(char []);
-
+float total_expenses(char []);
 
 #endif
