@@ -5,3 +5,5 @@ Nutella,200.00,Sobremesas,27/03/25
 Tenis yeezy,200.00,Roupas,31/03/25
 Mochila faculdade,150.00,Acessorio,31/03/25
 Pizza,22.50,Food,04/03/25
+Groceries,150.75,Food,04/10/25
+Groceries,150.75,Food,04/10/25
