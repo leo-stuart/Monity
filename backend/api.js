@@ -1,6 +1,9 @@
 const express = require('express')
 const app = express()
 const { spawn } = require('child_process')
+const cors = require('cors');
+
+app.use(cors())
 app.use(express.json())
 
 //SERVER
@@ -9,7 +12,7 @@ app.listen(3000, () => {
 })
 
 // ADD EXPENSE route
-app.post('/add-expenses', (req, res) => {
+app.post('/add-expense', (req, res) => {
     var desc = req.body.description
     var amou = req.body.amount
     var cat = req.body.category
@@ -33,7 +36,7 @@ app.post('/add-expenses', (req, res) => {
 })
 
 // ADD INCOME ROUTE
-app.post('/add-incomes', (req, res) => {
+app.post('/add-income', (req, res) => {
     var cat = req.body.category
     var amou = req.body.amount
     var data = req.body.date
@@ -71,10 +74,10 @@ app.post('/total-expenses', (req, res) => {
     })
 
     child.on('close', (code) => {
-        if(code === 0){
+        if (code === 0) {
             res.json({ success: true, message: output.trim() })
         } else {
-            res.status(500).json({ success: false, message: "Failed to show total expenses."})
+            res.status(500).json({ success: false, message: "Failed to show total expenses." })
         }
     })
 })
@@ -94,10 +97,10 @@ app.post('/balance', (req, res) => {
     })
 
     child.on('close', (code) => {
-        if(code === 0){
+        if (code === 0) {
             res.json({ success: true, balance: output.trim() })
         } else {
-            res.status(500).json({ success: false, message: "Failed to show balance."})
+            res.status(500).json({ success: false, message: "Failed to show balance." })
         }
     })
 })
@@ -110,7 +113,7 @@ app.get('/list-expenses', (req, res) => {
         output += data
     })
 
-    
+
     child.on('close', (code) => {
         if (code === 0) {
             const lines = output.split('\n')
@@ -140,11 +143,11 @@ app.get('/list-incomes', (req, res) => {
         if (code === 0) {
             const lines = output.split('\n')
             const incomes = lines
-            .filter(line => line.trim() !== "")
-            .map(line => {
-                const[category, amount, date] = line.split(',')
-                return { category, amount, date }
-            })
+                .filter(line => line.trim() !== "")
+                .map(line => {
+                    const [category, amount, date] = line.split(',')
+                    return { category, amount, date }
+                })
 
             res.json({ success: true, data: incomes })
         } else {
