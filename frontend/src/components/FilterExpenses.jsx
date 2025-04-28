@@ -1,7 +1,7 @@
 import Spinner from "./Spinner"
 import { useState, useEffect } from 'react';
 
-function ExpensivePurchase() {
+function FilterExpenses() {
     const [expenses, setExpenses] = useState([]);
     const [category, setCategory] = useState('');
     const [date, setDate] = useState('');
@@ -65,3 +65,5 @@ function ExpensivePurchase() {
 
 
 }
+
+export default FilterExpenses

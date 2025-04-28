@@ -181,12 +181,9 @@ app.get('/monthly-history', (req, res) => {
 })
 
 app.delete('/delete-expense', (req, res) => {
-    const { index } = req.body
-    if (isNaN(index)) {
-        return res.status(400).json({ success: false, message: "Invalid index" });
-    }
+    const index = req.body.index
 
-    const child = spawn('./monity', ['delete-expense', index.toString()])
+    const child = spawn('./monity', ['delete-expense', index])
 
     child.stderr.on('data', (data) => {
         console.error(`delete-expense stderr: ${data}`)
@@ -196,18 +193,15 @@ app.delete('/delete-expense', (req, res) => {
         if (code === 0) {
             res.json({ success: true })
         } else {
-            res.sendStatus(500).json({ success: false })
+            res.status(500).json({ success: false })
         }
     })
 })
 
 app.delete('/delete-income', (req, res) => {
-    const { index } = req.body
-    if (isNaN(index)) {
-        return res.status(400).json({ success: false, message: "Invalid index" });
-    }
+    const index = req.body.index
 
-    const child = spawn('./monity', ['delete-income', index.toString()])
+    const child = spawn('./monity', ['delete-income', index])
 
     child.stderr.on('data', (data) => {
         console.error(`delete-income stderr: ${data}`)

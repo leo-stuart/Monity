@@ -5,6 +5,27 @@ function ListIncomes(){
     const [incomes, setIncomes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const handleDelete = index => {
+        if (!window.confirm("Are you sure you want to delete this income?")) return
+
+        fetch(`http://localhost:3000/delete-income`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ index })
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`)
+                }
+                setIncomes(prev => prev.filter((_, i) => i !== index))
+            })
+            .catch(error => {
+                console.error(error)
+                alert("Could not delete - please try again.")
+            })
+    }
 
     useEffect(() => {
         fetch('http://localhost:3000/list-incomes')
@@ -46,7 +67,7 @@ function ListIncomes(){
         <ul>
             {incomes.map((income, index) => (
                 <li key={index}>
-                    ({income.category}) - ${income.amount} on {income.date}
+                    ({income.category}) - ${income.amount} on {income.date} <button onClick={() => handleDelete(index)}>🗑️</button>
                 </li>
             ))}
         </ul>
