@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import Spinner from './Spinner';
 
 function ListIncomes(){
     const [incomes, setIncomes] = useState([]);
@@ -24,8 +25,13 @@ function ListIncomes(){
         })
     }, []);
 
+    let sum = 0
+    incomes.forEach(income => {
+        sum += parseFloat(income.amount)
+    })
+
     if(loading){
-        return <p>Loading incomes...</p>
+        return <Spinner message="Loading incomes..."/>
     }
     if(error){
         return <p>Error: {error}</p>
@@ -36,6 +42,7 @@ function ListIncomes(){
     return (
         <>
         <h2>Incomes</h2>
+        <h3>Total Incomes: ${sum.toFixed(2)}</h3>
         <ul>
             {incomes.map((income, index) => (
                 <li key={index}>

@@ -209,10 +209,14 @@ int monthly_history(){
         float total_income_variable = total_income(month[i]);
         float total_expense_variable = expenses_sum(month[i]);
         balance = total_income_variable - total_expense_variable;
-        int num_bars = (int)balance/50;
-        printf("📅 %-10s  💵 $%-10.2f  💸 $%-10.2f  🧮 Balance: $%-10.2f | ", month[i], total_income_variable, total_expense_variable, balance);
-        for(int i = 0; i < num_bars; i++){
-            printf("█");
+        if(!is_api_mode){
+            int num_bars = (int)balance/50;
+            printf("📅 %-10s  💵 $%-10.2f  💸 $%-10.2f  🧮 Balance: $%-10.2f | ", month[i], total_income_variable, total_expense_variable, balance);
+            for(int i = 0; i < num_bars; i++){
+                printf("█");
+            }
+        } else {
+            printf("%s,%.2f,%.2f,%.2f", month[i], total_income_variable, total_expense_variable, balance);
         }
         printf("\n");
     }

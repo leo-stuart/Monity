@@ -7,9 +7,85 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#define MAX_LINES 1000
+#define MAX_LEN 256
 
 Expense expense;
 Income income;
+
+int delete_income_api(int index){
+    char *income_filename = "incomes.txt";
+    FILE *income_file = fopen(income_filename, "r");
+    if (income_file == NULL)
+    {
+        return 1;
+    }
+
+    char lines[MAX_LINES][MAX_LEN];
+    int count = 0;
+    while(count < MAX_LINES && fgets(lines[count], MAX_LEN, income_file)){
+        lines[count][strcspn(lines[count], "\n")] = '\0';
+        count++;
+    }
+
+    fclose(income_file);
+
+    if(index < 0 || index >= count) return 1;
+
+    char *temp_filename = "temp.txt";
+    FILE *temp_file = fopen(temp_filename, "w");
+    if(temp_file == NULL){
+        return 1;
+    } 
+
+    for(int i = 0; i < count; i++){
+        if(index == i) continue;
+        fprintf(temp_file, "%s\n", lines[i]);
+    }
+
+    fclose(temp_file);
+    remove("incomes.txt");
+    rename("temp.txt", "incomes.txt");
+
+    return 0;
+}
+
+int delete_expense_api(int index){
+    char *expense_filename = "expenses.txt";
+    FILE *expense_file = fopen(expense_filename, "r");
+    if (expense_file == NULL)
+    {
+        return 1;
+    }
+
+    char lines[MAX_LINES][MAX_LEN];
+    int count = 0;
+    while(count < MAX_LINES && fgets(lines[count], MAX_LEN, expense_file)){
+        lines[count][strcspn(lines[count], "\n")] = '\0';
+        count++;
+    }
+
+    fclose(expense_file);
+
+    if(index < 0 || index >= count) return 1;
+
+    char *temp_filename = "temp.txt";
+    FILE *temp_file = fopen(temp_filename, "w");
+    if(temp_file == NULL){
+        return 1;
+    } 
+
+    for(int i = 0; i < count; i++){
+        if(index == i) continue;
+        fprintf(temp_file, "%s\n", lines[i]);
+    }
+
+    fclose(temp_file);
+    remove("expenses.txt");
+    rename("temp.txt", "expenses.txt");
+
+    return 0;
+}
 
 int delete_expense(char keyword[])
 {
@@ -169,7 +245,7 @@ int delete_income(char keyword[])
         }
         else
         {
-            fprintf(incomes_file, "%s\n", line);
+            fprintf(incomes_temp, "%s\n", line);
         }
     }
 
@@ -334,7 +410,7 @@ int edit_income(char keyword[])
         }
         else
         {
-            fprintf(incomes_file, "%s\n", line);
+            fprintf(incomes_temp, "%s\n", line);
         }
     }
 

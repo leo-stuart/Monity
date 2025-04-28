@@ -156,3 +156,68 @@ app.get('/list-incomes', (req, res) => {
     })
 })
 
+app.get('/monthly-history', (req, res) => {
+    const child = spawn('./monity', ['monthly-history'])
+    let output = ""
+
+    child.stdout.on('data', (data) => {
+        output += data
+    })
+
+    child.on('close', (code) => {
+        if (code === 0) {
+            const lines = output.split('\n')
+            const history = lines
+                .filter(line => line.trim() !== "")
+                .map(line => {
+                    const [month, totalIncome, totalExpense, balance] = line.split(',')
+                    return { month, totalIncome, totalExpense, balance }
+                })
+            res.json({ success: true, data: history })
+        } else {
+            res.sendStatus(500).json({ message: "Failed to list monthly history." })
+        }
+    })
+})
+
+app.delete('/delete-expense', (req, res) => {
+    const { index } = req.body
+    if (isNaN(index)) {
+        return res.status(400).json({ success: false, message: "Invalid index" });
+    }
+
+    const child = spawn('./monity', ['delete-expense', index.toString()])
+
+    child.stderr.on('data', (data) => {
+        console.error(`delete-expense stderr: ${data}`)
+    })
+
+    child.on('close', (code) => {
+        if (code === 0) {
+            res.json({ success: true })
+        } else {
+            res.sendStatus(500).json({ success: false })
+        }
+    })
+})
+
+app.delete('/delete-income', (req, res) => {
+    const { index } = req.body
+    if (isNaN(index)) {
+        return res.status(400).json({ success: false, message: "Invalid index" });
+    }
+
+    const child = spawn('./monity', ['delete-income', index.toString()])
+
+    child.stderr.on('data', (data) => {
+        console.error(`delete-income stderr: ${data}`)
+    })
+
+    child.on('close', (code) => {
+        if (code === 0) {
+            res.json({ success: true })
+        } else {
+            res.sendStatus(500).json({ success: false })
+        }
+    })
+})

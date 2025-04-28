@@ -41,14 +41,14 @@ function TotalExpenses() {
     }
 
     useEffect(() => {
-        if (message || error) {
+        if (total || error) {
             const timer = setTimeout(() => {
                 setTotal(null)
                 setError(null)
-            }, 3000)
+            }, 10000)
             return () => clearTimeout(timer)
         }
-    }, [message, error])
+    }, [total, error])
 
     return (
         <>
@@ -58,7 +58,7 @@ function TotalExpenses() {
                     {loading ? 'Requesting...' : 'Request Total Expenses'}
                 </button>
             </form>
-            {total && <p style={{ color: 'green' }}>{total}</p>}
+            {total && <h2>Total expenses: ${total}</h2>}
             {error && <p style={{ color: 'red'}}>{error}</p>}
         </>
     )

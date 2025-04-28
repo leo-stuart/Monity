@@ -1,7 +1,7 @@
+import Spinner from "./Spinner"
 import { useState, useEffect } from 'react';
-import Spinner from './Spinner';
 
-function ListExpenses(){
+function ExpensivePurchase(){
     const [expenses, setExpenses] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -25,31 +25,33 @@ function ListExpenses(){
         })
     }, []);
 
-    let sum = 0
-    expenses.forEach(expense => {
-        sum += parseFloat(expense.amount)
-    })
-
+    
     if(loading){
-        return <Spinner message="Loading expenses..." />
+        return <Spinner message="Loading the most expensive purchases ..." />
     }
     if(error){
         return <p>Error: {error}</p>
     }
+    
+    const topExpenses = expenses
+    .sort((a, b) => parseFloat(b.amount) - parseFloat(a.amount))
+    .slice(0,5)
+    
+    if(topExpenses.length === 0){
+        return <p>No expenses found.</p>;
+    }
 
     return (
         <>
-        <h2>Expenses</h2>
-        <h3>Total Expenses: ${sum.toFixed(2)}</h3>
-        <ul>
-            {expenses.map((expense, index) => (
-                <li key={index}>
-                    {expense.category} - ${expense.amount} ({expense.description}) on {expense.date}
-                </li>
-            ))}
-        </ul>
+            <ul>
+                {topExpenses.map((expense, index) => (
+                    <li key={index}>
+                        {index+1}. {expense.category} - ${expense.amount} ({expense.description}) on {expense.date}
+                    </li>
+                ))}
+            </ul>
         </>
     )
-};
+}
 
-export default ListExpenses;
+export default ExpensivePurchase

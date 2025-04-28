@@ -29,7 +29,7 @@ function Balance() {
                 return response.json()
             })
             .then(data => {
-                setMessage(data.message)
+                setMessage(data.balance)
                 setMonthReq('')
                 setLoading(false)
             })
@@ -58,7 +58,7 @@ function Balance() {
                     {loading ? 'Requesting...' : 'Request Balance'}
                 </button>
             </form>
-            {message && <p style={{ color: 'green' }}>{message}</p>}
+            {message && <h2>Balance in requested month: ${message}</h2>}
             {error && <p style={{ color: 'red'}}>{error}</p>}
         </>
     )
