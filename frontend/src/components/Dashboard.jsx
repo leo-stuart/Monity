@@ -5,29 +5,27 @@ import ExpensivePurchase from "./ExpensivePurchase";
 
 function Dashboard() {
     return (
-        <div className="Dashboard">
-            <h1>Dashboard</h1>
-            <div className="dashboard-grid">
-                <div className="balance-card">
+        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6 mt-6 ">
+                <div className="bg-white p-6 rounded shadow">
                     <h2>Your Balance</h2>
                     <BalanceCard />
                 </div>
 
-                <div className="expenses-category-chart">
+                <div className="bg-white p-6 rounded shadow">
+                    <h2>Most Expensive Purchases Made</h2>
+                    <ExpenseChart />
+                </div>
+
+                <div className="bg-white p-6 rounded shadow">
                     <h2>Total Expenses by Category</h2>
                     <ExpensivePurchase />
                 </div>
 
-                <div className="balance-evolution-graph">
+                <div className="bg-white p-6 rounded shadow">
                     <h2>Balance Evolution</h2>
                     <BalanceChart />
                 </div>
 
-                <div className="most-expensive">
-                    <h2>Most Expensive Purchases Made</h2>
-                    <ExpenseChart />
-                </div>
-            </div>
         </div>
     )
 }

@@ -65,5 +65,3 @@ function FilterExpenses() {
 
 
 }
-
-export default FilterExpenses

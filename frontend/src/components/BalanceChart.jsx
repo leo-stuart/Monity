@@ -47,7 +47,9 @@ function BalanceChart(){
                 data: balances,
                 backgroundColor: 'rgba(75, 192, 192, 0.5)',
                 borderColor: 'rgba(75, 192, 192, 1)',
-                borderWidth: 1,
+                borderWidth: 2,
+                borderRadius: 4,
+
             },
         ],
     };
@@ -67,7 +69,7 @@ function BalanceChart(){
         return <p>Error: {error}</p>
     }
     return (
-        <div style={{ width: '80%', margin: '0 auto' }}>
+        <div className="w-full max-w-4xl mx-auto">
             <Bar options={options} data={data}/>
         </div>
     )        
