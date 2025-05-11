@@ -86,14 +86,30 @@ function ListExpenses() {
                     Add Expense
                 </Link>
             </div>
-            <ul>
-                {filtered.map((expense, index) => (
-                    <li key={index} className="odd:bg-[#191E25] p-4 rounded shadow flex justify-between items-center border-b border-[#31344d] last:border-b-0">
-                        <span className="text-white">{expense.category} - <span className="text-[#FF6384]">${expense.amount}</span> ({expense.description}) on {expense.date}</span>
-                        <button className="text-red-400 hover:text-red-300 font-semibold transition-colors" onClick={() => handleDelete(index)}>🗑️</button>
-                    </li>
-                ))}
-            </ul>
+            <table className="w-full text-left bg-[#23263a] text-white rounded-lg overflow-hidden">
+                <thead>
+                    <tr className="bg-[#191E29] text-[#FF6384]">
+                        <th className="py-3 px-4">Date</th>
+                        <th className="py-3 px-4">Category</th>
+                        <th className="py-3 px-4">Amount</th>
+                        <th className="py-3 px-4">Description</th>
+                        <th className="py-3 px-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {filtered.map((expense, index) => (
+                        <tr key={index} className="border-t border-[#31344d] hover:bg-[#2a2d44] transition-colors">
+                            <td className="py-2 px-4">{expense.date}</td>
+                            <td className="py-2 px-4">{expense.category}</td>
+                            <td className="text-red-400 py-2 px-4">${expense.amount}</td>
+                            <td className="py-2 px-4">{expense.description}</td>
+                            <td className="py-2 px-4">
+                                <button className="text-red-400 hover:text-red-300 font-semibold transition-colors" onClick={() => handleDelete(index)}>🗑️</button>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
         </div>
     )
 };

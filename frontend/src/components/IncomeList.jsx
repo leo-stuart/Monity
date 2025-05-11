@@ -73,14 +73,28 @@ function ListIncomes() {
                     </Link>
                 </div>
             </div>
-            <ul>
-                {incomes.map((income, index) => (
-                    <li key={index} className="odd:bg-[#191E25] p-4 rounded shadow flex justify-between items-center border-b border-[#31344d] last:border-b-0">
-                        <span className="text-white">{income.category} - <span className="text-[#01C38D]">${income.amount}</span> on {income.date} </span>
-                        <button className="text-red-400 hover:text-red-300 font-semibold transition-colors" onClick={() => handleDelete(index)}>🗑️</button>
-                    </li>
-                ))}
-            </ul>
+            <table className="w-full text-left bg-[#23263a] text-white rounded-lg overflow-hidden">
+                <thead>
+                    <tr className="bg-[#191E29] text-[#01C38D]">
+                        <th className="py-3 px-4">Date</th>
+                        <th className="py-3 px-4">Category</th>
+                        <th className="py-3 px-4">Amount</th>
+                        <th className="py-3 px-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {incomes.map((income, index) => (
+                        <tr key={index} className="border-t border-[#31344d] hover:bg-[#2a2d44] transition-colors">
+                            <td className="py-2 px-4">{income.date}</td>
+                            <td className="py-2 px-4">{income.category}</td>
+                            <td className="text-green-400 py-2 px-4">${income.amount}</td>
+                            <td className="py-2 px-4">
+                                <button className="text-red-400 hover:text-red-300 font-semibold transition-colors" onClick={() => handleDelete(index)}>🗑️</button>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
         </div>
     )
 };
