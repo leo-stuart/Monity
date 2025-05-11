@@ -2,9 +2,129 @@ const express = require('express')
 const app = express()
 const { spawn } = require('child_process')
 const cors = require('cors');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 app.use(cors())
 app.use(express.json())
+
+// JWT Secret Key
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+
+// Middleware to verify JWT token
+const authenticateToken = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (!token) {
+        return res.status(401).json({ message: 'Authentication required' });
+    }
+
+    jwt.verify(token, JWT_SECRET, (err, user) => {
+        if (err) {
+            return res.status(403).json({ message: 'Invalid token' });
+        }
+        req.user = user;
+        next();
+    });
+};
+
+// Login route
+app.post('/login', async (req, res) => {
+    const { email, password } = req.body;
+    
+    try {
+        const child = spawn('./monity', ['login', email, password]);
+        let output = '';
+
+        child.stdout.on('data', (data) => {
+            output += data;
+        });
+
+        child.on('close', (code) => {
+            if (code === 0) {
+                const token = jwt.sign({ email }, JWT_SECRET, { expiresIn: '24h' });
+                res.json({ success: true, token });
+            } else {
+                res.status(401).json({ success: false, message: 'Invalid credentials' });
+            }
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Login failed' });
+    }
+});
+
+// Signup route
+app.post('/signup', async (req, res) => {
+    const { name, email, password } = req.body;
+    
+    try {
+        const child = spawn('./monity', ['signup', name, email, password]);
+        let output = '';
+
+        child.stdout.on('data', (data) => {
+            output += data;
+        });
+
+        child.on('close', (code) => {
+            if (code === 0) {
+                res.json({ success: true, message: 'Account created successfully' });
+            } else {
+                res.status(400).json({ success: false, message: 'Failed to create account' });
+            }
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Signup failed' });
+    }
+});
+
+// Add category route
+app.post('/add-category', authenticateToken, (req, res) => {
+    const { name, type } = req.body;
+    
+    try {
+        const child = spawn('./monity', ['add-category', name, type]);
+        let output = '';
+
+        child.stdout.on('data', (data) => {
+            output += data;
+        });
+
+        child.on('close', (code) => {
+            if (code === 0) {
+                res.json({ success: true, message: 'Category added successfully' });
+            } else {
+                res.status(400).json({ success: false, message: 'Failed to add category' });
+            }
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Failed to add category' });
+    }
+});
+
+// Change password route
+app.post('/change-password', authenticateToken, (req, res) => {
+    const { currentPassword, newPassword } = req.body;
+    
+    try {
+        const child = spawn('./monity', ['change-password', currentPassword, newPassword]);
+        let output = '';
+
+        child.stdout.on('data', (data) => {
+            output += data;
+        });
+
+        child.on('close', (code) => {
+            if (code === 0) {
+                res.json({ success: true, message: 'Password changed successfully' });
+            } else {
+                res.status(400).json({ success: false, message: 'Failed to change password' });
+            }
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Failed to change password' });
+    }
+});
 
 //SERVER
 app.listen(3000, () => {

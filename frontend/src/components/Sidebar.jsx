@@ -16,9 +16,6 @@ export default function Sidebar() {
         <NavLink to="/categories" className={({isActive}) => isActive ? "bg-[#01C38D] text-[#191E29] rounded px-3 py-2 font-semibold transition-colors" : "text-white px-3 py-2 rounded hover:bg-[#23263a] transition-colors"}>
           Categories
         </NavLink>
-        <NavLink to="/history" className={({isActive}) => isActive ? "bg-[#01C38D] text-[#191E29] rounded px-3 py-2 font-semibold transition-colors" : "text-white px-3 py-2 rounded hover:bg-[#23263a] transition-colors"}>
-          History
-        </NavLink>
         <NavLink to="/settings" className={({isActive}) => isActive ? "bg-[#01C38D] text-[#191E29] rounded px-3 py-2 font-semibold transition-colors" : "text-white px-3 py-2 rounded hover:bg-[#23263a] transition-colors"}>
           Settings
         </NavLink>
