@@ -3,11 +3,11 @@ import ListIncomes from "./IncomeList";
 
 function Transactions() {
     return (
-        <div className="p-6">
+        <div className="p-6 bg-[#23263a] rounded-xl shadow-lg mt-8 mx-auto max-w-5xl">
             <div className="p-6">
                 <ListExpenses />
             </div>
-            <div className="p-6">
+            <div className="p-6 mt-6 border-t border-[#31344d]">
                 <ListIncomes />
             </div>
         </div>

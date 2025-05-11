@@ -73,29 +73,24 @@ function ListExpenses() {
     }
 
     return (
-        <div className="bg-[#191E29] border-1 p-4 rounded shadow-lg shadow-red-400 ring-2 ring-red-400/50 ">
-            <div className='flex items-center justify-between gap-10'>
-                <h3>Total Expenses: ${sum.toFixed(2)}</h3>
-                <div>
-                    <label><input type="text" value={category} onChange={(e) => setCategory(e.target.value)} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="e.g. Food" /></label>
-                    <label><input type="text" value={date} onChange={(e) => setDate(e.target.value)} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="DD/MM/YY" /></label>
+        <div className="bg-[#23263a] border-1 p-4 rounded-xl shadow-lg shadow-red-400 ring-2 ring-red-400/50">
+            <div className='flex flex-col md:flex-row items-center justify-between gap-6 mb-4'>
+                <h3 className="text-lg font-bold text-[#FF6384]">Total Expenses: <span className="text-white">${sum.toFixed(2)}</span></h3>
+                <div className="flex gap-2">
+                    <input type="text" value={category} onChange={(e) => setCategory(e.target.value)} className="bg-[#191E29] border border-[#31344d] text-white text-sm rounded-lg focus:ring-[#FF6384] focus:border-[#FF6384] block w-full p-2.5 placeholder-gray-400" placeholder="e.g. Food" />
+                    <input type="text" value={date} onChange={(e) => setDate(e.target.value)} className="bg-[#191E29] border border-[#31344d] text-white text-sm rounded-lg focus:ring-[#FF6384] focus:border-[#FF6384] block w-full p-2.5 placeholder-gray-400" placeholder="DD/MM/YY" />
                 </div>
-
                 <Link
                     to="/add-expense"
-                    className="inline-block text-white hover:text-white bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br shadow-lg shadow-red-500/50 dark:shadow-red-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 focus:outline-none focus:ring-0 focus:shadow-none">
+                    className="inline-block text-white hover:text-[#23263a] bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-red-300 shadow-lg shadow-red-500/50 dark:shadow-red-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 focus:outline-none focus:ring-0 focus:shadow-none transition-colors">
                     Add Expense
                 </Link>
-
-
             </div>
-            <ul >
+            <ul>
                 {filtered.map((expense, index) => (
-                    <li key={index} className="odd:bg-[#191E25] p-4 rounded shadow flex justify-between items-center">
-                        <span>
-                            {expense.category} - ${expense.amount} ({expense.description}) on {expense.date}
-                        </span>
-                        <button onClick={() => handleDelete(index)}>🗑️</button>
+                    <li key={index} className="odd:bg-[#191E25] p-4 rounded shadow flex justify-between items-center border-b border-[#31344d] last:border-b-0">
+                        <span className="text-white">{expense.category} - <span className="text-[#FF6384]">${expense.amount}</span> ({expense.description}) on {expense.date}</span>
+                        <button className="text-red-400 hover:text-red-300 font-semibold transition-colors" onClick={() => handleDelete(index)}>🗑️</button>
                     </li>
                 ))}
             </ul>

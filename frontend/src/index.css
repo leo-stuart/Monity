@@ -34,6 +34,10 @@ h1 {
   font-size: 3.2em;
   line-height: 1.1;
 }
+h2 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
 
 button {
   border-radius: 8px;
@@ -67,9 +71,8 @@ button:focus-visible {
   }
 }
 
-@import "tailwindcss/base.css";
-@import "tailwindcss/components.css";
-@import "tailwindcss/utilities.css";
+@import "tailwindcss/preflight";
+@tailwind utilities;
 
 @theme {
   --color-darkerst: #191E29;
