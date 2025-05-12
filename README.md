@@ -1,6 +1,41 @@
 # Monity 💸 – Personal Finance Manager
 
-Monity is a full‑stack **C + Node.js + React** application that lets you record expenses & incomes, crunch the numbers with a blazingly‑fast C engine, and explore the results in a modern web dashboard.
+[![Build](https://img.shields.io/github/actions/workflow/status/leo-stuart/Monity/ci.yml?label=build)](https://github.com/leo-stuart/Monity/actions)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Open Issues](https://img.shields.io/github/issues/leo-stuart/Monity)](https://github.com/leo-stuart/Monity/issues)
+[![Last Commit](https://img.shields.io/github/last-commit/leo-stuart/Monity)](https://github.com/leo-stuart/Monity/commits/main)
+
+> **Mission:** *Make budgeting delightfully fast, totally transparent, and hacker‑friendly.*
+
+![Monity Dashboard](docs/assets/dashboard-light.png)
+
+<details open>
+<summary>📑 Table of Contents</summary>
+
+* [Key Features](#-key-features)
+* [Architecture](#-architecture-at-a-glance)
+* [Quick‑Start](#-quick-start-local-dev)
+* [CLI Cheatsheet](#-cli-cheatsheet-monity)
+* [REST API](#-rest-api-selected-routes)
+* [Security](#-security)
+* [Roadmap](#-roadmap)
+* [Contributing](#-contributing)
+* [License](#-license)
+* [About Monity](docs/about.md)
+
+</details>
+
+---
+
+## ✨ Key Features
+
+| Category      | Highlights                                                                                                |
+| ------------- | --------------------------------------------------------------------------------------------------------- |
+| **Tracking**  | Add, edit, delete expenses & incomes; CSV‑style plain‑text storage; category & date tags                  |
+| **Analytics** | Monthly balance, category pie, income vs expense trends, “most expensive purchase” widget                 |
+| **UX**        | JWT login / signup, mobile‑first layout, real‑time dashboard updates, skeleton loaders & spinners         |
+| **Data**      | One‑click JSON export / import (via JSON Server)                                                          |
+| **CLI**       | `monity add-expense`, `monity balance`, `monity monthly-history`, cleanup utilities – great for scripting |
 
 ---
 
@@ -30,132 +65,39 @@ arguments           └──────────────┘
 
 ---
 
-## ✨ Key Features
-
-| Category      | Highlights                                                                                                |
-| ------------- | --------------------------------------------------------------------------------------------------------- |
-| **Tracking**  | Add, edit, delete expenses & incomes; CSV‑style plain‑text storage; category & date tags                  |
-| **Analytics** | Monthly balance, category pie, income vs expense trends, “most expensive purchase” widget                 |
-| **UX**        | JWT login / signup, mobile‑first layout, real‑time dashboard updates, skeleton loaders & spinners         |
-| **Data**      | One‑click JSON export / import (via JSON Server)                                                          |
-| **CLI**       | `monity add-expense`, `monity balance`, `monity monthly-history`, cleanup utilities – great for scripting |
-
-Additional goodies:
-
-* 📊 **Interactive Dashboard** – Insight‑rich charts (Category pie, Income vs Expense trends, Monthly history)
-* 🔍 **Advanced Search & Filters** – Drill down by category, amount range, date, or free‑text
-* 📱 **Responsive Design** – Looks great on phones, tablets, and 4K monitors alike
-* 🔄 **Real‑time Updates** – Instant UI refresh after every CRUD action
-* 🔒 **Security First** – BCrypt passwords, JWT tokens, robust input validation & CORS policy
-
----
-
-## 🛠️ Tech Stack
-
-### Frontend
-
-* React 19
-* Tailwind CSS (utility‑first styling)
-* Chart.js 4 (data visualisation)
-* React Router 7
-* Axios for API calls
-
-### Backend
-
-* Node.js 18 + Express
-* JSON Server (mock DB) – easy local persistence
-* JWT for auth, bcrypt for hashing, cors/helmet for security headers
-
-### Core Engine
-
-* C11‑compliant ISO C, compiled with `gcc` or `clang`
-
----
-
-## 🗂️ Repository Tour
-
-```
-Monity/
-├── backend/
-│   ├── main.c              # CLI entry – parses argv & routes commands
-│   ├── expenses.c|h        # Add / list / total / delete expense logic
-│   ├── incomes.c|h         # Ditto for incomes
-│   ├── cleanup.c|h         # Optional: purge duplicates, trim ledgers
-│   ├── shared.c|h          # Date parsing, validations, helpers
-│   ├── expenses.txt        # Plain‑text expense ledger (⟨desc;amount;cat;dd/mm/yyyy⟩)
-│   ├── incomes.txt         # Plain‑text income ledger
-│   ├── api.js              # Express server, JWT auth, ⇄ C binary glue
-│   ├── db.json             # Mock DB for JSON Server
-│   ├── package.json        # Node dependencies
-│   └── monity              # Compiled CLI (created after build)
-└── frontend/
-    ├── src/components/     # 20+ Tailwind React components
-    │   ├── Dashboard.jsx
-    │   ├── ExpenseChart.jsx
-    │   ├── AddExpense.jsx
-    │   ├── AddIncome.jsx
-    │   ├── BalanceCard.jsx
-    │   ├── …
-    ├── App.jsx             # React router layout
-    ├── index.html          # Vite entry
-    ├── tailwind.config.js  # Theme tokens & plugins
-    └── package.json        # React 19, Chart.js 4, React Router 7
-```
-
----
-
-## 🔧 Prerequisites
-
-| Tool            | Version                    |
-| --------------- | -------------------------- |
-| **Node.js**     | ≥ 18 (tested on v18 & v20) |
-| **npm / pnpm**  | bundled with Node          |
-| **GCC / clang** | any C11‑capable compiler   |
-| **JSON Server** | `npm i -g json-server`     |
-
----
-
 ## 🚀 Quick‑Start (Local Dev)
 
-1. **Clone & enter repo**
+1. **Clone the repo & enter**
 
    ```bash
    git clone https://github.com/leo-stuart/Monity.git
    cd Monity
    ```
 
-2. **Build the C engine**
+2. **Build the C engine & install backend deps**
 
    ```bash
    cd backend
    gcc main.c expenses.c incomes.c cleanup.c shared.c -o monity -std=c11 -Wall -Wextra
-   # optional: make install PREFIX=/usr/local
-   ```
-
-3. **Install & run backend**
-
-   ```bash
    npm install          # installs express, bcrypt, jwt, cors…
-   node api.js          # API runs on :3000 by default
    ```
 
-4. **Start JSON Server (mock DB)**
+3. **Run the services (three terminals)**
 
    ```bash
+   # Terminal 1 – REST API (port 3000)
+   node api.js
+
+   # Terminal 2 – JSON Server mock DB (port 3001)
    json-server --watch db.json --port 3001
-   ```
 
-5. **Launch the frontend**
-
-   ```bash
-   cd ../frontend
-   npm install
-   npm run dev          # Vite on :5173
+   # Terminal 3 – Frontend (Vite on 5173)
+   cd ../frontend && npm install && npm run dev
    ```
 
    Open **[http://localhost:5173](http://localhost:5173)** and log in with `demo@monity.dev / demopass` (seeded in `db.json`).
 
-> **TIP:** Copy `.env.example` to `.env` and override `JWT_SECRET`, port numbers, or file paths as needed.
+> **TIP:** Copy `.env.example` to `.env` to customise ports, JWT secret, or file paths.
 
 ---
 
@@ -185,17 +127,16 @@ Monity/
 
 ## 🌐 REST API (selected routes)
 
-*Base URL: `http://localhost:3000`*
+A complete OpenAPI spec lives in **`docs/api.yaml`** (import into Postman or Swagger UI). Below is a taste:
 
-| Method | Endpoint                                               | Body                                      | Description                  |
-| ------ | ------------------------------------------------------ | ----------------------------------------- | ---------------------------- |
-| `POST` | `/login`                                               | `{ email, password }`                     | Returns `{ token }`          |
-| `POST` | `/add-expense`                                         | `{ description, amount, category, date }` | Adds expense via C engine    |
-| `GET`  | `/list-expenses`                                       | –                                         | Array of expenses (from CLI) |
-| `POST` | `/total-expenses`                                      | `{ monthReq }`                            | Float total for given month  |
-| `…`    | plus all `/categories`, `/incomes`, etc. in **api.js** |                                           |                              |
+| Method | Endpoint          | Body                                      | Description                  |
+| ------ | ----------------- | ----------------------------------------- | ---------------------------- |
+| `POST` | `/login`          | `{ email, password }`                     | returns `{ token }`          |
+| `POST` | `/add-expense`    | `{ description, amount, category, date }` | Adds expense via C engine    |
+| `GET`  | `/list-expenses`  | –                                         | Array of expenses (from CLI) |
+| `POST` | `/total-expenses` | `{ monthReq }`                            | Float total for given month  |
 
-All protected routes expect an `Authorization: Bearer <jwt>` header.
+*All protected routes require `Authorization: Bearer <jwt>`. See the full docs for `/categories`, `/incomes`, etc.*
 
 ---
 
@@ -210,11 +151,14 @@ All protected routes expect an `Authorization: Bearer <jwt>` header.
 
 ## 🗓️ Roadmap
 
-* [ ] Replace JSON Server with SQLite or PostgreSQL
-* [ ] Docker Compose for one‑command spin‑up
-* [ ] Unit tests (Vitest + Supertest + CMocka)
-* [ ] i18n (English ↔ Português switch)
-* [ ] Dark mode 🌙
+| Quarter     | Milestone                                                               |
+| ----------- | ----------------------------------------------------------------------- |
+| **Q3‑2025** | SQLite / PostgreSQL backend option                                      |
+| **Q4‑2025** | Docker Compose – one‑click spin‑up                                      |
+| **Q1‑2026** | Mobile PWA & native macOS status menu                                   |
+| **Q2‑2026** | Plugin ecosystem (currency conversion, bank integrations, custom calcs) |
+
+*Project tracking lives in **GitHub Projects > Roadmap**.*
 
 ---
 
@@ -225,17 +169,16 @@ All protected routes expect an `Authorization: Bearer <jwt>` header.
 3. Push ➜ open PR → fill template
 4. Be excellent to each other ✨
 
+**Code of Conduct:** We pledge to foster an open, welcoming environment. Be kind, be constructive, and help each other grow.
+
 ---
 
 ## 📝 License
 
-Licensed under the **MIT License** (see [`LICENSE`](LICENSE)).
+Distributed under the **MIT License**. See [`LICENSE`](LICENSE) for details.
 
 ---
 
-## 🙏 Acknowledgements
+## 📚 About Monity
 
-* **React & Vite** teams – blazing DX
-* **Tailwind CSS** – style at the speed of thought
-* **Chart.js** – gorgeous charts
-* **JSON Server** – zero‑config REST mock
+Curious about the philosophy, principles, and origin story? Check out **[About Monity](docs/about.md)**.
