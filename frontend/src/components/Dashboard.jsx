@@ -2,6 +2,7 @@ import BalanceCard from "./BalanceCard";
 import BalanceChart from "./BalanceChart";
 import ExpenseChart from "./ExpenseChart";
 import ExpensivePurchase from "./ExpensivePurchase";
+import Savings from "./Savings";
 
 function CardWrapper({ children, title, accent }) {
     return (
@@ -25,11 +26,11 @@ function Dashboard() {
                     <ExpenseChart />
                 </CardWrapper>
                 <CardWrapper title="Savings" accent="text-[#FFCE56]">
-                    <h2>Savings</h2>
+                    <Savings />
                 </CardWrapper>
             </div>
             <div>
-                <CardWrapper title="Balance Evolution" accent="text-[#FFCE56]">
+                <CardWrapper title="Balance Per Month" accent="text-[#FFCE56]">
                     <BalanceChart />
                 </CardWrapper>
             </div>

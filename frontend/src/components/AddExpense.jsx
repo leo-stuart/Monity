@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 function AddExpense({ onAdd }) {
+    const [categories, setCategories] = useState([]);
     const [description, setDescription] = useState('');
     const [amount, setAmount] = useState('');
     const [category, setCategory] = useState('');
@@ -8,6 +9,21 @@ function AddExpense({ onAdd }) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
+
+    useEffect(() => {
+        fetch('http://localhost:3001/categories')
+            .then(res => res.json())
+            .then(data => {
+                setCategories(data);
+            })
+            .catch(err => {
+                console.error('Error fetching categories:', err);
+                setError('Failed to load categories');
+            });
+    }, []);
+
+    const expenseCategories = categories
+    .filter(category => category.typeId === 1 || category.name === "Make Investments")
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -50,13 +66,17 @@ function AddExpense({ onAdd }) {
                     onChange={e => setAmount(e.target.value)}
                     required
                 />
-                <input
+                <select 
                     className="bg-[#191E29] border border-[#31344d] text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#FF6384] focus:outline-none placeholder-gray-400"
                     placeholder="Category"
                     value={category}
                     onChange={e => setCategory(e.target.value)}
-                    required
-                />
+                    required>
+                        <option value="">Select a category</option>
+                    {expenseCategories.map((cat, index) => (
+                        <option key={index} value={cat.name}>{cat.name}</option>
+                    ))}
+                </select>
                 <input
                     className="bg-[#191E29] border border-[#31344d] text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#FF6384] focus:outline-none placeholder-gray-400"
                     placeholder="Date (DD/MM/YY)"

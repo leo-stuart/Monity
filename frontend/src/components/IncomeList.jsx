@@ -67,7 +67,7 @@ function ListIncomes() {
                 <h3 className="text-lg font-bold text-[#01C38D]">Total Incomes: <span className="text-white">${sum.toFixed(2)}</span></h3>
                 <div>
                     <Link
-                        to="/add-expense"
+                        to="/add-income"
                         className="inline-block text-white hover:text-[#23263a] bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-green-300 shadow-lg shadow-green-500/50 dark:shadow-green-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 focus:outline-none focus:ring-0 focus:shadow-none transition-colors">
                         Add Income
                     </Link>
