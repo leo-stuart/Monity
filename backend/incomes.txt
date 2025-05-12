@@ -39,3 +39,4 @@ Reembolso plano de saúde,122.80,13/05/25
 Juros poupança,19.05,20/05/25
 Freelance correção bug,380.00,23/05/25
 Dividendos ações,99.40,27/05/25
+Withdraw Investments,200.00,11/05/25

@@ -48,3 +48,4 @@ Airport parking,80.00,Travel,28/03/25
 Museum ticket,40.00,Entretenimento,30/03/25
 Groceries,152.00,Food,04/04/25
 Skincare cream,95.00,Saude,05/04/25
+CDB,1200.00,Make Investments,11/05/25

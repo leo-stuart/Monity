@@ -8,13 +8,19 @@ function AddCategory() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        let categoryId;
+        if(categoryType === 'expense'){
+            categoryId = 1
+        } else if(categoryType === 'income'){
+            categoryId = 2
+        }
         try {
-            const response = await fetch('http://localhost:3000/add-category', {
+            const response = await fetch('http://localhost:3000/categories', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ name: categoryName, type: categoryType }),
+                body: JSON.stringify({ name: categoryName, typeId: categoryId }),
             });
 
             if (!response.ok) {
@@ -24,6 +30,7 @@ function AddCategory() {
             setSuccess('Category added successfully!');
             setCategoryName('');
             setError('');
+            setCategoryType('expense');
         } catch (err) {
             setError('Failed to add category');
             setSuccess('');

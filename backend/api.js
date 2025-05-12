@@ -4,12 +4,16 @@ const { spawn } = require('child_process')
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const axios = require('axios');
 
 app.use(cors())
 app.use(express.json())
 
 // JWT Secret Key
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+
+// JSON Server URL
+const JSON_SERVER_URL = 'http://localhost:3001';
 
 // Middleware to verify JWT token
 const authenticateToken = (req, res, next) => {
@@ -29,100 +33,32 @@ const authenticateToken = (req, res, next) => {
     });
 };
 
-// Login route
-app.post('/login', async (req, res) => {
-    const { email, password } = req.body;
-    
+
+// Proxy requests to JSON Server for categories
+app.get('/categories', async (req, res) => {
     try {
-        const child = spawn('./monity', ['login', email, password]);
-        let output = '';
-
-        child.stdout.on('data', (data) => {
-            output += data;
-        });
-
-        child.on('close', (code) => {
-            if (code === 0) {
-                const token = jwt.sign({ email }, JWT_SECRET, { expiresIn: '24h' });
-                res.json({ success: true, token });
-            } else {
-                res.status(401).json({ success: false, message: 'Invalid credentials' });
-            }
-        });
+        const response = await axios.get(`${JSON_SERVER_URL}/categories`);
+        res.json(response.data);
     } catch (error) {
-        res.status(500).json({ success: false, message: 'Login failed' });
+        res.status(500).json({ error: 'Failed to fetch categories' });
     }
 });
 
-// Signup route
-app.post('/signup', async (req, res) => {
-    const { name, email, password } = req.body;
-    
+app.post('/categories', async (req, res) => {
     try {
-        const child = spawn('./monity', ['signup', name, email, password]);
-        let output = '';
-
-        child.stdout.on('data', (data) => {
-            output += data;
-        });
-
-        child.on('close', (code) => {
-            if (code === 0) {
-                res.json({ success: true, message: 'Account created successfully' });
-            } else {
-                res.status(400).json({ success: false, message: 'Failed to create account' });
-            }
-        });
+        const response = await axios.post(`${JSON_SERVER_URL}/categories`, req.body);
+        res.json(response.data);
     } catch (error) {
-        res.status(500).json({ success: false, message: 'Signup failed' });
+        res.status(500).json({ error: 'Failed to create category' });
     }
 });
 
-// Add category route
-app.post('/add-category', authenticateToken, (req, res) => {
-    const { name, type } = req.body;
-    
+app.delete('/categories/:id', async (req, res) => {
     try {
-        const child = spawn('./monity', ['add-category', name, type]);
-        let output = '';
-
-        child.stdout.on('data', (data) => {
-            output += data;
-        });
-
-        child.on('close', (code) => {
-            if (code === 0) {
-                res.json({ success: true, message: 'Category added successfully' });
-            } else {
-                res.status(400).json({ success: false, message: 'Failed to add category' });
-            }
-        });
+        const response = await axios.delete(`${JSON_SERVER_URL}/categories/${req.params.id}`);
+        res.json(response.data);
     } catch (error) {
-        res.status(500).json({ success: false, message: 'Failed to add category' });
-    }
-});
-
-// Change password route
-app.post('/change-password', authenticateToken, (req, res) => {
-    const { currentPassword, newPassword } = req.body;
-    
-    try {
-        const child = spawn('./monity', ['change-password', currentPassword, newPassword]);
-        let output = '';
-
-        child.stdout.on('data', (data) => {
-            output += data;
-        });
-
-        child.on('close', (code) => {
-            if (code === 0) {
-                res.json({ success: true, message: 'Password changed successfully' });
-            } else {
-                res.status(400).json({ success: false, message: 'Failed to change password' });
-            }
-        });
-    } catch (error) {
-        res.status(500).json({ success: false, message: 'Failed to change password' });
+        res.status(500).json({ error: 'Failed to delete category' });
     }
 });
 
