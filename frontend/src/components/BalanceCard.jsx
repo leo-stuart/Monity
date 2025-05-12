@@ -40,7 +40,7 @@ function BalanceCard() {
 
     return (
         <>
-        <h2>${total.toFixed(2)}</h2>
+        <h2 className="text-4xl font-bold mb-4">${total.toFixed(2)}</h2>
         </>
     )
 }

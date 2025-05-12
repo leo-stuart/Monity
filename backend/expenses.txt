@@ -1,8 +1,51 @@
-Roupas de frio,300.00,Roupa,27/03/25
-Gasoline,150.00,Car,28/03/25
-Nutella,200.00,Sobremesas,27/03/25
-Tenis yeezy,200.00,Roupas,31/03/25
-Mochila faculdade,150.00,Acessorio,31/03/25
-Pizza,22.50,Food,04/03/25
-Groceries,150.75,Food,04/10/25
-Groceries,150.75,Food,04/10/25
+Cafe da manhã,15.90,Food,02/01/25
+Monthly Bus Pass,120.00,Transporte,03/01/25
+Netflix subscription,39.90,Assinaturas,05/01/25
+Electricity bill,230.00,Casa,06/01/25
+Dinner sushi,85.40,Food,07/01/25
+Uber to campus,18.50,Transporte,10/01/25
+Livro de algoritmos,120.00,Educacao,12/01/25
+Headphones,320.00,Eletronicos,15/01/25
+Remédio resfriado,45.00,Saude,16/01/25
+Cinema tickets,48.00,Entretenimento,18/01/25
+Spotify,19.90,Assinaturas,18/01/25
+Grocery run,180.25,Food,20/01/25
+Gym membership,99.00,Saude,25/01/25
+Water bill,75.80,Casa,27/01/25
+Dog food,110.30,Pet,28/01/25
+Chocolate cake,35.50,Sobremesas,31/01/25
+Diesel fuel,210.00,Car,02/02/25
+New jeans,250.00,Roupas,04/02/25
+Mochila esportiva,140.00,Acessorio,05/02/25
+Lunch burger,32.00,Food,06/02/25
+Groceries,154.60,Food,10/02/25
+Apple iCloud,9.99,Assinaturas,11/02/25
+Course subscription,249.99,Educacao,12/02/25
+Valentine dinner,200.00,Entretenimento,14/02/25
+Gasoline,160.00,Car,15/02/25
+Phone bill,60.00,Telecom,17/02/25
+Pizza,24.50,Food,20/02/25
+Movie streaming,12.99,Assinaturas,21/02/25
+Birthday gift,300.00,Presentes,23/02/25
+Concert ticket,180.00,Entretenimento,25/02/25
+Tablet case,80.00,Acessorio,28/02/25
+Croissants,18.75,Sobremesas,03/03/25
+Car wash,50.00,Car,05/03/25
+Salad lunch,27.30,Food,06/03/25
+Vitamin supplements,65.00,Saude,08/03/25
+Tenis running,290.00,Roupas,09/03/25
+Bookshelf,420.00,Casa,11/03/25
+Groceries,160.20,Food,12/03/25
+Espresso beans,55.00,Food,15/03/25
+Bicycle repair,120.00,Transporte,18/03/25
+Ice cream,22.00,Sobremesas,18/03/25
+Earrings,200.00,Acessorio,20/03/25
+Gasoline,155.00,Car,22/03/25
+Laptop sleeve,89.90,Acessorio,23/03/25
+Dinner thai,78.60,Food,24/03/25
+Streaming Disney+,28.90,Assinaturas,26/03/25
+Airport parking,80.00,Travel,28/03/25
+Museum ticket,40.00,Entretenimento,30/03/25
+Groceries,152.00,Food,04/04/25
+Skincare cream,95.00,Saude,05/04/25
+CDB,1200.00,Make Investments,11/05/25

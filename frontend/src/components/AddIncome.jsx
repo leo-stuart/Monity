@@ -1,87 +1,93 @@
 import { useState, useEffect } from 'react';
 
-function AddIncome(){
+function AddIncome({ onAdd }) {
+    const [categories, setCategories] = useState([]);
     const [category, setCategory] = useState('');
-    const [amount, setAmount] = useState(0);
+    const [amount, setAmount] = useState('');
     const [date, setDate] = useState('');
-    const [message, setMessage] = useState(null);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [loading, setLoading] = useState(null);
-    
-    const HandleSubmit = (e) => {
-        setLoading(true);
-        setMessage(null);
-        setError(null);
-        
-        e.preventDefault();
-        if(!category.trim() || amount <= 0 || !date){
-            setError('Please fill in all fields correctly.')
-            return
-        }
-        
-        const formatDate = (inputDate) => {
-            if (!inputDate) return "";
-            const [year, month, day] = inputDate.split('-');
-            return `${day}/${month}/${year.slice(2)}`;
-        };
-        
-        const formattedDate = formatDate(date);
-        
-        const incomeData = { category, amount, date: formattedDate };
-
-
-        fetch('http://localhost:3000/add-income', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(incomeData)
-        })
-            .then(response => {
-                if(!response.ok){
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                setMessage(data.message);
-                setCategory('');
-                setAmount(0);
-                setDate('');
-                setLoading(false);
-            })
-            .catch(error => {
-                setError(error.message);
-                setCategory('');
-                setAmount('');
-                setDate('');
-                setLoading(false);
-            })
-    }
+    const [success, setSuccess] = useState(null);
 
     useEffect(() => {
-        if(message || error){
-            const timer = setTimeout(() => {
-                setMessage(null);
-                setError(null);
-            }, 3000)
-            return () => clearTimeout(timer);
+        fetch('http://localhost:3001/categories')
+            .then(res => res.json())
+            .then(data => {
+                setCategories(data);
+            })
+            .catch(err => {
+                console.error('Error fetching categories:', err);
+                setError('Failed to load categories');
+            });
+    }, []);
+
+    const incomeCategories = categories
+    .filter(category => category.typeId === 2 || category.name === "Withdraw Investments")
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        setError(null);
+        setSuccess(null);
+        try {
+            const res = await fetch('http://localhost:3000/add-income', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ category, amount, date })
+            });
+            if (!res.ok) throw new Error('Failed to add income');
+            setSuccess('Income added!');
+            setCategory(''); setAmount(''); setDate('');
+            if (onAdd) onAdd();
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
         }
-    }, [message, error]);
+    };
 
     return (
-        <>
-            <form onSubmit={HandleSubmit}>
-                <label>Income Category <input type="text" value={category} onChange={(e) => setCategory(e.target.value)} required /></label>
-                <label>Income Amount <input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} required /></label>
-                <label>Income Date <input type="date" value={date} onChange={(e) => setDate(e.target.value)} required /></label>
-                <button type='submit' disabled={loading}>
+        <div className="bg-[#23263a] rounded-xl shadow-lg w-full max-w-2xl mx-auto mt-10 p-8 md:p-12">
+            <h2 className="text-2xl font-bold mb-6 text-[#01C38D]">Add Income</h2>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                <select
+                    className="bg-[#191E29] border border-[#31344d] text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#01C38D] focus:outline-none placeholder-gray-400"
+                    placeholder="Category"
+                    value={category}
+                    onChange={e => setCategory(e.target.value)}
+                    required>
+                        <option value="">Select a category</option>
+                        {incomeCategories.map((cat, index) => (
+                            <option key={index} value={cat.name}>{cat.name}</option>
+                        ))}
+                </select>
+                <input
+                    type="number"
+                    className="bg-[#191E29] border border-[#31344d] text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#01C38D] focus:outline-none placeholder-gray-400"
+                    placeholder="Amount"
+                    value={amount}
+                    onChange={e => setAmount(e.target.value)}
+                    required
+                />
+                <input
+                    className="bg-[#191E29] border border-[#31344d] text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#01C38D] focus:outline-none placeholder-gray-400"
+                    placeholder="Date (DD/MM/YY)"
+                    value={date}
+                    onChange={e => setDate(e.target.value)}
+                    required
+                />
+                <button
+                    type="submit"
+                    className="bg-gradient-to-r from-green-400 via-green-500 to-green-600 text-white font-bold py-2 rounded-lg shadow hover:from-green-500 hover:to-green-700 transition-colors disabled:opacity-60 mt-2"
+                    disabled={loading}
+                >
                     {loading ? 'Adding...' : 'Add Income'}
                 </button>
+                {error && <div className="text-red-400 text-sm mt-2">{error}</div>}
+                {success && <div className="text-green-400 text-sm mt-2">{success}</div>}
             </form>
-            {message && <p style={{ color: 'green' }}>{message}</p>}
-            {error && <p style={{ color: 'red' }}>Error: {error}</p>}
-        </>
-    )
-    
+        </div>
+    );
 }
 
 export default AddIncome;

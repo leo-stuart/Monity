@@ -2,30 +2,43 @@ import BalanceCard from "./BalanceCard";
 import BalanceChart from "./BalanceChart";
 import ExpenseChart from "./ExpenseChart";
 import ExpensivePurchase from "./ExpensivePurchase";
+import Savings from "./Savings";
+
+function CardWrapper({ children, title, accent }) {
+    return (
+        <div className="flex-1 min-w-[250px] p-6 rounded-2xl shadow-lg border border-[#23263a] bg-gradient-to-br from-[#23263a] via-[#23263a]/80 to-[#31344d] flex flex-col items-center justify-center">
+            <h2 className={`text-2xl font-bold mb-4 ${accent}`}>{title}</h2>
+            <div className="w-full flex justify-center items-center">
+                {children}
+            </div>
+        </div>
+    );
+}
 
 function Dashboard() {
     return (
-        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6 mt-6 ">
-                <div className="bg-white p-6 rounded shadow">
-                    <h2>Your Balance</h2>
+        <div className="w-full flex flex-col gap-8 mt-8">
+            <div className="flex flex-col md:flex-row gap-6">
+                <CardWrapper title="Your Balance" accent="text-[#01C38D]">
                     <BalanceCard />
-                </div>
-
-                <div className="bg-white p-6 rounded shadow">
-                    <h2>Most Expensive Purchases Made</h2>
+                </CardWrapper>
+                <CardWrapper title="Total Expenses by Category" accent="text-[#FF6384]">
                     <ExpenseChart />
-                </div>
-
-                <div className="bg-white p-6 rounded shadow">
-                    <h2>Total Expenses by Category</h2>
-                    <ExpensivePurchase />
-                </div>
-
-                <div className="bg-white p-6 rounded shadow">
-                    <h2>Balance Evolution</h2>
+                </CardWrapper>
+                <CardWrapper title="Savings" accent="text-[#FFCE56]">
+                    <Savings />
+                </CardWrapper>
+            </div>
+            <div>
+                <CardWrapper title="Balance Per Month" accent="text-[#FFCE56]">
                     <BalanceChart />
-                </div>
-
+                </CardWrapper>
+            </div>
+            <div>
+                <CardWrapper title="Most Expensive Purchases Made" accent="text-[#36A2EB]">
+                    <ExpensivePurchase />
+                </CardWrapper>
+            </div>
         </div>
     )
 }

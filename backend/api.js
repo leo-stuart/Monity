@@ -2,9 +2,65 @@ const express = require('express')
 const app = express()
 const { spawn } = require('child_process')
 const cors = require('cors');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const axios = require('axios');
 
 app.use(cors())
 app.use(express.json())
+
+// JWT Secret Key
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+
+// JSON Server URL
+const JSON_SERVER_URL = 'http://localhost:3001';
+
+// Middleware to verify JWT token
+const authenticateToken = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (!token) {
+        return res.status(401).json({ message: 'Authentication required' });
+    }
+
+    jwt.verify(token, JWT_SECRET, (err, user) => {
+        if (err) {
+            return res.status(403).json({ message: 'Invalid token' });
+        }
+        req.user = user;
+        next();
+    });
+};
+
+
+// Proxy requests to JSON Server for categories
+app.get('/categories', async (req, res) => {
+    try {
+        const response = await axios.get(`${JSON_SERVER_URL}/categories`);
+        res.json(response.data);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch categories' });
+    }
+});
+
+app.post('/categories', async (req, res) => {
+    try {
+        const response = await axios.post(`${JSON_SERVER_URL}/categories`, req.body);
+        res.json(response.data);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to create category' });
+    }
+});
+
+app.delete('/categories/:id', async (req, res) => {
+    try {
+        const response = await axios.delete(`${JSON_SERVER_URL}/categories/${req.params.id}`);
+        res.json(response.data);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to delete category' });
+    }
+});
 
 //SERVER
 app.listen(3000, () => {
