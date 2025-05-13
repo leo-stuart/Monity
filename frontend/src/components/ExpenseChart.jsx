@@ -7,6 +7,7 @@ import {
     Tooltip,
     Legend,
 } from 'chart.js';
+import { getToken, get } from '../utils/api';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -16,22 +17,29 @@ function ExpenseChart(){
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        fetch('http://localhost:3000/list-expenses')
-        .then(response => {
-            if(!response.ok){
-                throw new Error(`HTTP error! status: ${response.status}`);
+        const fetchExpenses = async () => {
+            const token = getToken();
+            if (!token) {
+                setError('Authentication required');
+                setLoading(false);
+                return;
             }
-            return response.json();
-        })
-    
-        .then(data => {
-            setExpenses(data.data);
-            setLoading(false);
-        })
-        .catch(error => {
-            setError(error.message);
-            setLoading(false);
-        })
+
+            try {
+                const data = await get('/transactions');
+                // Ensure data is an array and filter only expense type transactions
+                const expenseData = Array.isArray(data) 
+                    ? data.filter(transaction => transaction.typeId === "1")
+                    : [];
+                setExpenses(expenseData);
+                setLoading(false);
+            } catch (error) {
+                setError(error.message);
+                setLoading(false);
+            }
+        };
+        
+        fetchExpenses();
     }, []);
 
     if(loading){
@@ -39,6 +47,9 @@ function ExpenseChart(){
     }
     if(error){
         return <p>Error: {error}</p>
+    }
+    if(!expenses.length){
+        return <p>No expenses found.</p>
     }
 
     // Calculate totals by category
