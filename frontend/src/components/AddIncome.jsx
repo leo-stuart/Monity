@@ -12,7 +12,7 @@ function AddIncome({ onAdd }) {
 
     useEffect(() => {
         const token = getToken();
-        fetch('http://localhost:3001/categories', {
+        fetch('http://localhost:3000/categories', {
             headers: token ? { 'Authorization': `Bearer ${token}` } : {}
         })
             .then(res => res.json())

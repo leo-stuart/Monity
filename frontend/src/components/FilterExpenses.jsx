@@ -9,7 +9,7 @@ function FilterExpenses() {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        fetch('http://localhost:3000/list-expenses')
+        fetch('http://localhost:3000/transactions')
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -18,7 +18,11 @@ function FilterExpenses() {
             })
 
             .then(data => {
-                setExpenses(data.data);
+                // Filter expense transactions (typeId === "1")
+                const expenseData = Array.isArray(data) 
+                    ? data.filter(transaction => transaction.typeId === "1")
+                    : [];
+                setExpenses(expenseData);
                 setLoading(false);
             })
             .catch(error => {

@@ -17,10 +17,9 @@ function TotalExpenses() {
             return
         }
 
-        fetch('http://localhost:3000/total-expenses', {
-            method: 'POST',
+        fetch(`http://localhost:3000/transactions/month/${monthReq}`, {
+            method: 'GET',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ monthReq })
         })
             .then(response => {
                 if (!response.ok) {
@@ -29,7 +28,11 @@ function TotalExpenses() {
                 return response.json()
             })
             .then(data => {
-                setTotal(data.message)
+                // Calculate total expenses from the transactions
+                const totalExpenses = data
+                    .filter(transaction => transaction.typeId === "1") // Filter expense type
+                    .reduce((sum, expense) => sum + parseFloat(expense.amount), 0);
+                setTotal(totalExpenses.toFixed(2))
                 setMonthReq('')
                 setLoading(false)
             })

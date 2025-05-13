@@ -17,10 +17,9 @@ function Balance() {
             return
         }
 
-        fetch('http://localhost:3000/balance', {
-            method: 'POST',
+        fetch(`http://localhost:3000/balance/${monthReq}`, {
+            method: 'GET',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ monthReq })
         })
             .then(response => {
                 if (!response.ok) {

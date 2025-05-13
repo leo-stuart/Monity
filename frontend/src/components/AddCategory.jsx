@@ -22,7 +22,7 @@ function AddCategory() {
             if (!token) {
                 throw new Error('You must be logged in to add a category');
             }
-            const response = await fetch('http://localhost:3000/categories', {
+            const response = await fetch('http://localhost:3001/categories', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
