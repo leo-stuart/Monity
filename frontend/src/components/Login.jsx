@@ -1,13 +1,18 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
+        setError('');
+        
         try {
             const response = await fetch('http://localhost:3000/login', {
                 method: 'POST',
@@ -17,14 +22,24 @@ function Login() {
                 body: JSON.stringify({ email, password }),
             });
 
+            const data = await response.json();
+            
             if (!response.ok) {
-                throw new Error('Login failed');
+                throw new Error(data.message || 'Login failed');
             }
 
-            const data = await response.json();
-            // Handle successful login (e.g., store token, redirect)
+            // Store token in localStorage
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('user', JSON.stringify(data.user));
+            
+            // Set Authorization header for future requests
+            setTimeout(() => {
+                navigate('/');
+            }, 500);
         } catch (err) {
-            setError('Invalid email or password');
+            setError(err.message || 'Invalid email or password');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -65,9 +80,10 @@ function Login() {
                     </div>
                     <button
                         type="submit"
-                        className="w-full bg-gradient-to-r from-[#01C38D] to-[#01C38D]/80 text-white py-2.5 rounded-lg hover:from-[#01C38D]/90 hover:to-[#01C38D]/70 transition-all"
+                        className="w-full bg-gradient-to-r from-[#01C38D] to-[#01C38D]/80 text-white py-2.5 rounded-lg hover:from-[#01C38D]/90 hover:to-[#01C38D]/70 transition-all disabled:opacity-50"
+                        disabled={loading}
                     >
-                        Login
+                        {loading ? 'Logging in...' : 'Login'}
                     </button>
                 </form>
                 <p className="mt-4 text-center text-white">

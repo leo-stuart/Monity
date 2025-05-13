@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { getToken } from '../utils/api';
 
 function AddIncome({ onAdd }) {
     const [categories, setCategories] = useState([]);
@@ -10,7 +11,10 @@ function AddIncome({ onAdd }) {
     const [success, setSuccess] = useState(null);
 
     useEffect(() => {
-        fetch('http://localhost:3001/categories')
+        const token = getToken();
+        fetch('http://localhost:3001/categories', {
+            headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+        })
             .then(res => res.json())
             .then(data => {
                 setCategories(data);
@@ -30,12 +34,25 @@ function AddIncome({ onAdd }) {
         setError(null);
         setSuccess(null);
         try {
+            const token = getToken();
+            if (!token) {
+                throw new Error('You must be logged in to add income');
+            }
+            
             const res = await fetch('http://localhost:3000/add-income', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
                 body: JSON.stringify({ category, amount, date })
             });
-            if (!res.ok) throw new Error('Failed to add income');
+            
+            if (!res.ok) {
+                const errorData = await res.json().catch(() => ({ message: 'Failed to add income' }));
+                throw new Error(errorData.message || 'Failed to add income');
+            }
+            
             setSuccess('Income added!');
             setCategory(''); setAmount(''); setDate('');
             if (onAdd) onAdd();

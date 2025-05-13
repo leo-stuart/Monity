@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom'
 import Spinner from './Spinner';
+import { getToken } from '../utils/api';
 
 function ListIncomes() {
     const [incomes, setIncomes] = useState([]);
@@ -9,10 +10,17 @@ function ListIncomes() {
     const handleDelete = index => {
         if (!window.confirm("Are you sure you want to delete this income?")) return
 
+        const token = getToken();
+        if (!token) {
+            setError('Authentication required');
+            return;
+        }
+
         fetch(`http://localhost:3000/delete-income`, {
             method: 'DELETE',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify({ index })
         })
@@ -29,7 +37,18 @@ function ListIncomes() {
     }
 
     useEffect(() => {
-        fetch('http://localhost:3000/list-incomes')
+        const token = getToken();
+        if (!token) {
+            setError('Authentication required');
+            setLoading(false);
+            return;
+        }
+
+        fetch('http://localhost:3000/list-incomes', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);

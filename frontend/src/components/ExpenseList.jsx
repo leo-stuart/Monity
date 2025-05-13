@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import Spinner from './Spinner'
+import { getToken } from '../utils/api'
 
 function ListExpenses() {
     const [expenses, setExpenses] = useState([]);
@@ -11,11 +12,18 @@ function ListExpenses() {
 
     const handleDelete = index => {
         if (!window.confirm("Are you sure you want to delete this expense?")) return
+        
+        const token = getToken();
+        if (!token) {
+            setError('Authentication required');
+            return;
+        }
 
         fetch(`http://localhost:3000/delete-expense`, {
             method: 'DELETE',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify({ index })
         })
@@ -32,7 +40,18 @@ function ListExpenses() {
     }
 
     useEffect(() => {
-        fetch('http://localhost:3000/list-expenses')
+        const token = getToken();
+        if (!token) {
+            setError('Authentication required');
+            setLoading(false);
+            return;
+        }
+
+        fetch('http://localhost:3000/list-expenses', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);

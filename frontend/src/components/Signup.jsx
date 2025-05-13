@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 function Signup() {
     const [name, setName] = useState('');
@@ -7,11 +7,17 @@ function Signup() {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
+        setError('');
+        
         if (password !== confirmPassword) {
             setError('Passwords do not match');
+            setLoading(false);
             return;
         }
 
@@ -21,17 +27,31 @@ function Signup() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ name, email, password }),
+                body: JSON.stringify({ 
+                    nome: name, 
+                    email, 
+                    password 
+                }),
             });
 
+            const data = await response.json();
+            
             if (!response.ok) {
-                throw new Error('Signup failed');
+                throw new Error(data.message || 'Signup failed');
             }
 
-            const data = await response.json();
-            // Handle successful signup (e.g., redirect to login)
+            // Store token and user data in localStorage
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('user', JSON.stringify(data.user));
+            
+            // Navigate to dashboard
+            setTimeout(() => {
+                navigate('/');
+            }, 500);
         } catch (err) {
-            setError('Failed to create account');
+            setError(err.message || 'Failed to create account');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -91,9 +111,10 @@ function Signup() {
                     </div>
                     <button
                         type="submit"
-                        className="w-full bg-gradient-to-r from-[#01C38D] to-[#01C38D]/80 text-white py-2.5 rounded-lg hover:from-[#01C38D]/90 hover:to-[#01C38D]/70 transition-all"
+                        className="w-full bg-gradient-to-r from-[#01C38D] to-[#01C38D]/80 text-white py-2.5 rounded-lg hover:from-[#01C38D]/90 hover:to-[#01C38D]/70 transition-all disabled:opacity-50"
+                        disabled={loading}
                     >
-                        Sign Up
+                        {loading ? 'Creating Account...' : 'Sign Up'}
                     </button>
                 </form>
                 <p className="mt-4 text-center text-white">

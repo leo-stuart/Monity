@@ -1,5 +1,6 @@
 import Spinner from "./Spinner"
 import { useState, useEffect } from 'react';
+import { getToken } from '../utils/api';
 
 function ExpensivePurchase() {
     const [expenses, setExpenses] = useState([]);
@@ -7,7 +8,18 @@ function ExpensivePurchase() {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        fetch('http://localhost:3000/list-expenses')
+        const token = getToken();
+        if (!token) {
+            setError('Authentication required');
+            setLoading(false);
+            return;
+        }
+
+        fetch('http://localhost:3000/list-expenses', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -25,6 +37,39 @@ function ExpensivePurchase() {
             })
     }, []);
 
+    const handleDelete = (index) => {
+        const token = getToken();
+        if (!token) {
+            setError('Authentication required');
+            return;
+        }
+        
+        if (window.confirm("Are you sure you want to delete this expense?")) {
+            fetch(`http://localhost:3000/delete-expense`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ index })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`)
+                }
+                setExpenses(prev => {
+                    // Create a new array without the deleted expense
+                    const newExpenses = [...prev];
+                    newExpenses.splice(index, 1);
+                    return newExpenses;
+                });
+            })
+            .catch(error => {
+                console.error(error);
+                setError("Could not delete - please try again.");
+            });
+        }
+    };
 
     if (loading) {
         return <Spinner message="Loading the most expensive purchases ..." />

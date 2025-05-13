@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import Spinner from './Spinner';
+import { getToken } from '../utils/api';
 
 function Savings() {
     const [incomes, setIncomes] = useState([]);
@@ -8,7 +9,18 @@ function Savings() {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        fetch('http://localhost:3000/list-expenses')
+        const token = getToken();
+        if (!token) {
+            setError('Authentication required');
+            setLoading(false);
+            return;
+        }
+
+        fetch('http://localhost:3000/list-expenses', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -25,8 +37,20 @@ function Savings() {
                 setLoading(false);
             })
     }, []);
+    
     useEffect(() => {
-        fetch('http://localhost:3000/list-incomes')
+        const token = getToken();
+        if (!token) {
+            setError('Authentication required');
+            setLoading(false);
+            return;
+        }
+
+        fetch('http://localhost:3000/list-incomes', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);

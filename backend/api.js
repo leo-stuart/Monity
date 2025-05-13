@@ -5,6 +5,7 @@ const cors = require('cors');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const axios = require('axios');
+const path = require('path');
 
 app.use(cors())
 app.use(express.json())
@@ -33,9 +34,131 @@ const authenticateToken = (req, res, next) => {
     });
 };
 
+// Login route
+app.post('/login', async (req, res) => {
+    try {
+        const { email, password } = req.body;
 
+        // Validate input
+        if (!email || !password) {
+            return res.status(400).json({ message: 'Email and password are required' });
+        }
+
+        // Get user from DB
+        const usersResponse = await axios.get(`${JSON_SERVER_URL}/usuarios`);
+        const users = usersResponse.data;
+        const user = users.find(u => u.email === email);
+
+        if (!user) {
+            return res.status(401).json({ message: 'Invalid email or password' });
+        }
+
+        // Compare passwords
+        const passwordMatch = await bcrypt.compare(password, user.senha);
+        if (!passwordMatch) {
+            return res.status(401).json({ message: 'Invalid email or password' });
+        }
+
+        // Generate token
+        const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: '24h' });
+
+        // Return user info and token (excluding password)
+        const { senha, ...userWithoutPassword } = user;
+        res.json({
+            user: userWithoutPassword,
+            token
+        });
+    } catch (error) {
+        console.error('Login error:', error);
+        res.status(500).json({ message: 'Server error during login' });
+    }
+});
+
+// Signup route
+app.post('/signup', async (req, res) => {
+    try {
+        const { nome, email, password } = req.body;
+
+        // Validate input
+        if (!nome || !email || !password) {
+            return res.status(400).json({ message: 'Name, email and password are required' });
+        }
+
+        // Check if user already exists
+        const usersResponse = await axios.get(`${JSON_SERVER_URL}/usuarios`);
+        const users = usersResponse.data;
+        const existingUser = users.find(u => u.email === email);
+
+        if (existingUser) {
+            return res.status(409).json({ message: 'User with this email already exists' });
+        }
+
+        // Hash password
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Create new user
+        const newUser = {
+            nome,
+            email,
+            senha: hashedPassword
+        };
+
+        const response = await axios.post(`${JSON_SERVER_URL}/usuarios`, newUser);
+        const createdUser = response.data;
+
+        // Generate token
+        const token = jwt.sign({ id: createdUser.id, email: createdUser.email }, JWT_SECRET, { expiresIn: '24h' });
+
+        // Return user info and token (excluding password)
+        const { senha, ...userWithoutPassword } = createdUser;
+        res.status(201).json({
+            user: userWithoutPassword,
+            token
+        });
+    } catch (error) {
+        console.error('Signup error:', error);
+        res.status(500).json({ message: 'Server error during signup' });
+    }
+});
+
+// Change password route
+app.post('/change-password', authenticateToken, async (req, res) => {
+    try {
+        const { currentPassword, newPassword } = req.body;
+        const userId = req.user.id;
+
+        // Validate input
+        if (!currentPassword || !newPassword) {
+            return res.status(400).json({ message: 'Current password and new password are required' });
+        }
+
+        // Get user from DB
+        const userResponse = await axios.get(`${JSON_SERVER_URL}/usuarios/${userId}`);
+        const user = userResponse.data;
+
+        // Verify current password
+        const passwordMatch = await bcrypt.compare(currentPassword, user.senha);
+        if (!passwordMatch) {
+            return res.status(401).json({ message: 'Current password is incorrect' });
+        }
+
+        // Hash new password
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        // Update user password
+        const updatedUser = { ...user, senha: hashedPassword };
+        await axios.put(`${JSON_SERVER_URL}/usuarios/${userId}`, updatedUser);
+
+        res.json({ message: 'Password changed successfully' });
+    } catch (error) {
+        console.error('Change password error:', error);
+        res.status(500).json({ message: 'Server error while changing password' });
+    }
+});
+
+// Protected routes below this line
 // Proxy requests to JSON Server for categories
-app.get('/categories', async (req, res) => {
+app.get('/categories', authenticateToken, async (req, res) => {
     try {
         const response = await axios.get(`${JSON_SERVER_URL}/categories`);
         res.json(response.data);
@@ -44,7 +167,7 @@ app.get('/categories', async (req, res) => {
     }
 });
 
-app.post('/categories', async (req, res) => {
+app.post('/categories', authenticateToken, async (req, res) => {
     try {
         const response = await axios.post(`${JSON_SERVER_URL}/categories`, req.body);
         res.json(response.data);
@@ -53,7 +176,7 @@ app.post('/categories', async (req, res) => {
     }
 });
 
-app.delete('/categories/:id', async (req, res) => {
+app.delete('/categories/:id', authenticateToken, async (req, res) => {
     try {
         const response = await axios.delete(`${JSON_SERVER_URL}/categories/${req.params.id}`);
         res.json(response.data);
@@ -68,12 +191,18 @@ app.listen(3000, () => {
 })
 
 // ADD EXPENSE route
-app.post('/add-expense', (req, res) => {
-    var desc = req.body.description
-    var amou = req.body.amount
-    var cat = req.body.category
-    var data = req.body.date
-    const child = spawn('./monity', ['add-expense', desc, amou, cat, data])
+app.post('/add-expense', authenticateToken, (req, res) => {
+    var desc = req.body.description || ""
+    var amou = req.body.amount ? req.body.amount.toString() : "0"
+    var cat = req.body.category || ""
+    var data = req.body.date || ""
+    
+    console.log('Adding expense with values:', { desc, amou, cat, data })
+    
+    const monityPath = path.join(__dirname, 'monity');
+    console.log('Using monity at path:', monityPath);
+    
+    const child = spawn(monityPath, ['add-expense', desc, amou, cat, data])
 
     child.stdout.on('data', (data) => {
         console.log(`stdout: ${data}`)
@@ -83,6 +212,7 @@ app.post('/add-expense', (req, res) => {
     })
 
     child.on('close', (code) => {
+        console.log(`Child process exited with code ${code}`)
         if (code === 0) {
             res.json({ success: true, message: "Expense added!" })
         } else {
@@ -92,12 +222,14 @@ app.post('/add-expense', (req, res) => {
 })
 
 // ADD INCOME ROUTE
-app.post('/add-income', (req, res) => {
-    var cat = req.body.category
-    var amou = req.body.amount
-    var data = req.body.date
+app.post('/add-income', authenticateToken, (req, res) => {
+    var cat = req.body.category || ""
+    var amou = req.body.amount ? req.body.amount.toString() : "0"
+    var data = req.body.date || ""
 
-    const child = spawn('./monity', ['add-income', cat, amou, data])
+    console.log('Adding income with values:', { cat, amou, data })
+    
+    const child = spawn('./monity', ['add-income', cat, amou, data], { cwd: __dirname })
 
     child.stdout.on('data', (data) => {
         console.log(`stdout: ${data}`)
@@ -108,6 +240,7 @@ app.post('/add-income', (req, res) => {
     })
 
     child.on('close', (code) => {
+        console.log(`Child process exited with code ${code}`)
         if (code === 0) {
             res.json({ success: true, message: "Income added!" })
         } else {
@@ -116,10 +249,13 @@ app.post('/add-income', (req, res) => {
     })
 })
 
-app.post('/total-expenses', (req, res) => {
+app.post('/total-expenses', authenticateToken, (req, res) => {
     var month = req.body.monthReq
 
-    const child = spawn('./monity', ['total-expenses', month])
+    const path = require('path');
+    const monityPath = path.join(__dirname, 'monity');
+    
+    const child = spawn(monityPath, ['total-expenses', month])
     let output = ""
     child.stdout.on('data', (data) => {
         output += data
@@ -138,10 +274,13 @@ app.post('/total-expenses', (req, res) => {
     })
 })
 
-app.post('/balance', (req, res) => {
+app.post('/balance', authenticateToken, (req, res) => {
     const month = req.body.monthReq
 
-    const child = spawn('./monity', ['balance', month])
+    const path = require('path');
+    const monityPath = path.join(__dirname, 'monity');
+    
+    const child = spawn(monityPath, ['balance', month])
     let output = ""
 
     child.stdout.on('data', (data) => {
@@ -161,8 +300,11 @@ app.post('/balance', (req, res) => {
     })
 })
 
-app.get('/list-expenses', (req, res) => {
-    const child = spawn('./monity', ['list-expenses'])
+app.get('/list-expenses', authenticateToken, (req, res) => {
+    const path = require('path');
+    const monityPath = path.join(__dirname, 'monity');
+    
+    const child = spawn(monityPath, ['list-expenses'])
     let output = ""
 
     child.stdout.on('data', (data) => {
@@ -182,13 +324,16 @@ app.get('/list-expenses', (req, res) => {
 
             res.json({ success: true, data: expenses })
         } else {
-            res.status(500).json({ message: "Failed to list incomes." })
+            res.status(500).json({ message: "Failed to list expenses." })
         }
     })
 })
 
-app.get('/list-incomes', (req, res) => {
-    const child = spawn('./monity', ['list-incomes'])
+app.get('/list-incomes', authenticateToken, (req, res) => {
+    const path = require('path');
+    const monityPath = path.join(__dirname, 'monity');
+    
+    const child = spawn(monityPath, ['list-incomes'])
     let output = ""
 
     child.stdout.on('data', (data) => {
@@ -212,8 +357,11 @@ app.get('/list-incomes', (req, res) => {
     })
 })
 
-app.get('/monthly-history', (req, res) => {
-    const child = spawn('./monity', ['monthly-history'])
+app.get('/monthly-history', authenticateToken, (req, res) => {
+    const path = require('path');
+    const monityPath = path.join(__dirname, 'monity');
+    
+    const child = spawn(monityPath, ['monthly-history'])
     let output = ""
 
     child.stdout.on('data', (data) => {
@@ -231,15 +379,18 @@ app.get('/monthly-history', (req, res) => {
                 })
             res.json({ success: true, data: history })
         } else {
-            res.sendStatus(500).json({ message: "Failed to list monthly history." })
+            res.status(500).json({ message: "Failed to list monthly history." })
         }
     })
 })
 
-app.delete('/delete-expense', (req, res) => {
+app.delete('/delete-expense', authenticateToken, (req, res) => {
     const index = req.body.index
 
-    const child = spawn('./monity', ['delete-expense', index])
+    const path = require('path');
+    const monityPath = path.join(__dirname, 'monity');
+    
+    const child = spawn(monityPath, ['delete-expense', index])
 
     child.stderr.on('data', (data) => {
         console.error(`delete-expense stderr: ${data}`)
@@ -254,10 +405,13 @@ app.delete('/delete-expense', (req, res) => {
     })
 })
 
-app.delete('/delete-income', (req, res) => {
+app.delete('/delete-income', authenticateToken, (req, res) => {
     const index = req.body.index
 
-    const child = spawn('./monity', ['delete-income', index])
+    const path = require('path');
+    const monityPath = path.join(__dirname, 'monity');
+    
+    const child = spawn(monityPath, ['delete-income', index])
 
     child.stderr.on('data', (data) => {
         console.error(`delete-income stderr: ${data}`)
@@ -267,7 +421,7 @@ app.delete('/delete-income', (req, res) => {
         if (code === 0) {
             res.json({ success: true })
         } else {
-            res.sendStatus(500).json({ success: false })
+            res.status(500).json({ success: false })
         }
     })
 })

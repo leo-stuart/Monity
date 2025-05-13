@@ -10,6 +10,7 @@ import {
     Legend,
   } from "chart.js";
 import Spinner from './Spinner';
+import { getToken } from '../utils/api';
   
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -19,7 +20,18 @@ function BalanceChart(){
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        fetch('http://localhost:3000/monthly-history')
+        const token = getToken();
+        if (!token) {
+            setError('Authentication required');
+            setLoading(false);
+            return;
+        }
+
+        fetch('http://localhost:3000/monthly-history', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! status ${response.status}`);

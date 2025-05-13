@@ -7,6 +7,7 @@ import {
     Tooltip,
     Legend,
 } from 'chart.js';
+import { getToken } from '../utils/api';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -16,7 +17,18 @@ function ExpenseChart(){
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        fetch('http://localhost:3000/list-expenses')
+        const token = getToken();
+        if (!token) {
+            setError('Authentication required');
+            setLoading(false);
+            return;
+        }
+
+        fetch('http://localhost:3000/list-expenses', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
         .then(response => {
             if(!response.ok){
                 throw new Error(`HTTP error! status: ${response.status}`);
