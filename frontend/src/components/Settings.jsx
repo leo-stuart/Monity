@@ -55,12 +55,12 @@ function Settings() {
         }
     };
 
-    const handleDeleteAccount = () => {
-        if (window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
-            // Implement the delete account functionality
-            console.log('Delete account functionality not implemented yet');
-        }
-    };
+    // const handleDeleteAccount = () => {
+    //     if (window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+    //         // Implement the delete account functionality
+    //         console.log('Delete account functionality not implemented yet');
+    //     }
+    // };
 
     return (
         <div className="bg-[#23263a] p-6 rounded-xl shadow-lg">
@@ -115,7 +115,7 @@ function Settings() {
                 </form>
             </div>
 
-            {/* Account Settings Section */}
+            {/* Account Settings Section
             <div>
                 <h3 className="text-xl font-semibold text-white mb-4">Account Settings</h3>
                 <div className="space-y-4">
@@ -126,7 +126,7 @@ function Settings() {
                         Delete Account
                     </button>
                 </div>
-            </div>
+            </div> */}
         </div>
     );
 }
