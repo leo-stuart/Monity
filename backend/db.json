@@ -1,0 +1,92 @@
+{
+  "categories": [
+    {
+      "id": "1",
+      "name": "Food",
+      "typeId": 1
+    },
+    {
+      "id": "2",
+      "name": "Transportation",
+      "typeId": 1
+    },
+    {
+      "id": "3",
+      "name": "Entertainment",
+      "typeId": 1
+    },
+    {
+      "id": "4",
+      "name": "Shopping",
+      "typeId": 1
+    },
+    {
+      "id": "5",
+      "name": "Health",
+      "typeId": 1
+    },
+    {
+      "id": "6",
+      "name": "Education",
+      "typeId": 1
+    },
+    {
+      "id": "7",
+      "name": "Home",
+      "typeId": 1
+    },
+    {
+      "id": "8",
+      "name": "Salary",
+      "typeId": 2
+    },
+    {
+      "id": "9",
+      "name": "Freelance",
+      "typeId": 2
+    },
+    {
+      "id": "10",
+      "name": "Make Investments",
+      "typeId": 3
+    },
+    {
+      "id": "11",
+      "name": "Withdraw Investments",
+      "typeId": 3
+    },
+    {
+      "id": "44b7",
+      "name": "Travel",
+      "typeId": 1
+    }
+  ],
+  "usuarios": [
+    {
+      "id": "1",
+      "nome": "admin",
+      "email": "leostuart05@gmail.com",
+      "senha": "123"
+    },
+    {
+      "id": "304a",
+      "nome": "Milena",
+      "email": "milenasalomao100@gmail.com",
+      "senha": "$2b$10$Jn7KCPVGmE.l2QPV.5CKmuYTicB/mtB9hbzpMejOL7uaA50.0Zlga"
+    }
+  ],
+  "transactionTypes": [
+    {
+      "id": "1",
+      "name": "Expense"
+    },
+    {
+      "id": "2",
+      "name": "Income"
+    },
+    {
+      "id": "3",
+      "name": "Savings"
+    }
+  ]
+}

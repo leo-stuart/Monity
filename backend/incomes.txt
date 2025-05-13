@@ -1,0 +1,41 @@
+Freelance site landing page,450.00,12/01/25
+Reembolso plano de saúde,120.50,15/01/25
+Dividendos ações,95.30,20/01/25
+Venda de livro usado,60.00,23/01/25
+Pix familiar,200.00,25/01/25
+Salary,1424.00,05/02/25
+Cashback cartão,35.70,08/02/25
+Freelance correção de código,300.00,10/02/25
+Reembolso transporte,78.00,13/02/25
+Aniversário presente em dinheiro,250.00,20/02/25
+Juros poupança,18.25,24/02/25
+Bolsista monitoria,500.00,28/02/25
+Salario,1424.00,05/03/25
+Venda de tênis usado,220.00,06/03/25
+Freelance design logo,600.00,09/03/25
+Pix devolução compra,150.00,11/03/25
+Dividendos ações,97.10,18/03/25
+Cashback aplicativo,22.40,22/03/25
+Reembolso material faculdade,85.60,24/03/25
+Salario,1424.00,05/04/25
+Freelance aula de programação,350.00,07/04/25
+Restituição imposto,430.00,09/04/25
+Venda de mochila,120.00,12/04/25
+Juros CDB,64.85,14/04/25
+Pix familiar,180.00,18/04/25
+Cashback marketplace,45.90,20/04/25
+Salario,1424.00,16/04/25
+Tradução de artigo,270.00,22/04/25
+Reembolso viagem acadêmica,210.00,24/04/25
+Salario,1424.00,25/04/25
+Dividendos ações,101.55,28/04/25
+Venda de cadeira gamer,300.00,30/04/25
+Freelance site responsivo,700.00,03/05/25
+Cashback cartão,36.10,04/05/25
+Bolsa de iniciação científica,800.00,06/05/25
+Pix presente Dia das Mães,250.00,11/05/25
+Reembolso plano de saúde,122.80,13/05/25
+Juros poupança,19.05,20/05/25
+Freelance correção bug,380.00,23/05/25
+Dividendos ações,99.40,27/05/25
+Withdraw Investments,200.00,11/05/25
