@@ -88,5 +88,927 @@
       "id": "3",
       "name": "Savings"
     }
+  ],
+  "transactions": [
+    {
+      "id": "d40d4d76-3e4e-41df-a4cb-22131b37f824",
+      "userId": "1",
+      "description": "Cafe da manhã",
+      "amount": 15.9,
+      "category": "Food",
+      "date": "02/01/25",
+      "typeId": "1",
+      "createdAt": "2025-05-13T16:47:56.342Z"
+    },
+    {
+      "id": "8e5ae033-12da-4315-8ad4-262e7fe23638",
+      "userId": "1",
+      "description": "Monthly Bus Pass",
+      "amount": 120,
+      "category": "Transporte",
+      "date": "03/01/25",
+      "typeId": "1",
+      "createdAt": "2025-05-13T16:47:56.343Z"
+    },
+    {
+      "id": "2bc9e7ab-8c31-44e2-b508-cb29d0396de1",
+      "userId": "1",
+      "description": "Netflix subscription",
+      "amount": 39.9,
+      "category": "Assinaturas",
+      "date": "05/01/25",
+      "typeId": "1",
+      "createdAt": "2025-05-13T16:47:56.345Z"
+    },
+    {
+      "id": "f48c5a71-94f9-463a-9a91-c510654e34ef",
+      "userId": "1",
+      "description": "Electricity bill",
+      "amount": 230,
+      "category": "Casa",
+      "date": "06/01/25",
+      "typeId": "1",
+      "createdAt": "2025-05-13T16:47:56.346Z"
+    },
+    {
+      "id": "becd3d20-321e-482e-a3eb-31fbfe71c95e",
+      "userId": "1",
+      "description": "Dinner sushi",
+      "amount": 85.4,
+      "category": "Food",
+      "date": "07/01/25",
+      "typeId": "1",
+      "createdAt": "2025-05-13T16:47:56.348Z"
+    },
+    {
+      "id": "311556b2-a215-4da6-8f0c-f2f3a750664a",
+      "userId": "1",
+      "description": "Uber to campus",
+      "amount": 18.5,
+      "category": "Transporte",
+      "date": "10/01/25",
+      "typeId": "1",
+      "createdAt": "2025-05-13T16:47:56.348Z"
+    },
+    {
+      "id": "00aedef3-abd6-4e7b-a7fd-5c9d323a4571",
+      "userId": "1",
+      "description": "Livro de algoritmos",
+      "amount": 120,
+      "category": "Educacao",
+      "date": "12/01/25",
+      "typeId": "1",
+      "createdAt": "2025-05-13T16:47:56.349Z"
+    },
+    {
+      "id": "8af8726f-bd5c-46e4-93e3-937e06f5d6ba",
+      "userId": "1",
+      "description": "Headphones",
+      "amount": 320,
+      "category": "Eletronicos",
+      "date": "15/01/25",
+      "typeId": "1",
+      "createdAt": "2025-05-13T16:47:56.352Z"
+    },
+    {
+      "id": "3d421e97-7907-40e2-99d1-d373d770d114",
+      "userId": "1",
+      "description": "Remédio resfriado",
+      "amount": 45,
+      "category": "Saude",
+      "date": "16/01/25",
+      "typeId": "1",
+      "createdAt": "2025-05-13T16:47:56.352Z"
+    },
+    {
+      "id": "58654395-c105-4b60-95b1-4521507fa272",
+      "userId": "1",
+      "description": "Cinema tickets",
+      "amount": 48,
+      "category": "Entretenimento",
+      "date": "18/01/25",
+      "typeId": "1",
+      "createdAt": "2025-05-13T16:47:56.353Z"
+    },
+    {
+      "id": "5ac13612-5af9-4d3b-8f9e-ac96c7c649f8",
+      "userId": "1",
+      "description": "Spotify",
+      "amount": 19.9,
+      "category": "Assinaturas",
+      "date": "18/01/25",
+      "typeId": "1",
+      "createdAt": "2025-05-13T16:47:56.354Z"
+    },
+    {
+      "id": "8a198c83-d004-49b4-8ef8-79f41b68ddae",
+      "userId": "1",
+      "description": "Grocery run",
+      "amount": 180.25,
+      "category": "Food",
+      "date": "20/01/25",
+      "typeId": "1",
+      "createdAt": "2025-05-13T16:47:56.355Z"
+    },
+    {
+      "id": "6885d20a-110f-45ea-82fb-8fe67473a1f2",
+      "userId": "1",
+      "description": "Gym membership",
+      "amount": 99,
+      "category": "Saude",
+      "date": "25/01/25",
+      "typeId": "1",
+      "createdAt": "2025-05-13T16:47:56.355Z"
+    },
+    {
+      "id": "f4b1156a-8918-4ed3-8c05-c5e6be788397",
+      "userId": "1",
+      "description": "Water bill",
+      "amount": 75.8,
+      "category": "Casa",
+      "date": "27/01/25",
+      "typeId": "1",
+      "createdAt": "2025-05-13T16:47:56.356Z"
+    },
+    {
+      "id": "70645a29-9530-4c10-be42-a018ab65fdc5",
+      "userId": "1",
+      "description": "Dog food",
+      "amount": 110.3,
+      "category": "Pet",
+      "date": "28/01/25",
+      "typeId": "1",
+      "createdAt": "2025-05-13T16:47:56.357Z"
+    },
+    {
+      "id": "99b64f2c-cca2-4392-ac76-12907f0f482e",
+      "userId": "1",
+      "description": "Chocolate cake",
+      "amount": 35.5,
+      "category": "Sobremesas",
+      "date": "31/01/25",
+      "typeId": "1",
+      "createdAt": "2025-05-13T16:47:56.358Z"
+    },
+    {
+      "id": "f2334af7-4828-47c3-b54a-7e4258ab7852",
+      "userId": "1",
+      "description": "Diesel fuel",
+      "amount": 210,
+      "category": "Car",
+      "date": "02/02/25",
+      "typeId": "1",
+      "createdAt": "2025-05-13T16:47:56.359Z"
+    },
+    {
+      "id": "d0aaf2f0-8ebb-47df-b1f3-14954e5f3ae0",
+      "userId": "1",
+      "description": "New jeans",
+      "amount": 250,
+      "category": "Roupas",
+      "date": "04/02/25",
+      "typeId": "1",
+      "createdAt": "2025-05-13T16:47:56.360Z"
+    },
+    {
+      "id": "fbe63da2-cf45-4d62-911d-5f80ff761f77",
+      "userId": "1",
+      "description": "Mochila esportiva",
+      "amount": 140,
+      "category": "Acessorio",
+      "date": "05/02/25",
+      "typeId": "1",
+      "createdAt": "2025-05-13T16:47:56.360Z"
+    },
+    {
+      "id": "f4cba80b-c24e-41d9-9ab2-8b34e47555ab",
+      "userId": "1",
+      "description": "Lunch burger",
+      "amount": 32,
+      "category": "Food",
+      "date": "06/02/25",
+      "typeId": "1",
+      "createdAt": "2025-05-13T16:47:56.361Z"
+    },
+    {
+      "id": "f32a0c03-a7b1-4196-8179-888d1ebbf75c",
+      "userId": "1",
+      "description": "Groceries",
+      "amount": 154.6,
+      "category": "Food",
+      "date": "10/02/25",
+      "typeId": "1",
+      "createdAt": "2025-05-13T16:47:56.361Z"
+    },
+    {
+      "id": "9cfb7452-af78-4b0c-80fb-023c9b81afda",
+      "userId": "1",
+      "description": "Apple iCloud",
+      "amount": 9.99,
+      "category": "Assinaturas",
+      "date": "11/02/25",
+      "typeId": "1",
+      "createdAt": "2025-05-13T16:47:56.363Z"
+    },
+    {
+      "id": "dd4095c9-fea2-4c2a-b459-0e0888111dcb",
+      "userId": "1",
+      "description": "Course subscription",
+      "amount": 249.99,
+      "category": "Educacao",
+      "date": "12/02/25",
+      "typeId": "1",
+      "createdAt": "2025-05-13T16:47:56.363Z"
+    },
+    {
+      "id": "08b66e62-6aa6-49bc-8f82-8b9ef45fd284",
+      "userId": "1",
+      "description": "Valentine dinner",
+      "amount": 200,
+      "category": "Entretenimento",
+      "date": "14/02/25",
+      "typeId": "1",
+      "createdAt": "2025-05-13T16:47:56.364Z"
+    },
+    {
+      "id": "95862197-4c36-46f9-8424-e0aac95c1760",
+      "userId": "1",
+      "description": "Gasoline",
+      "amount": 160,
+      "category": "Car",
+      "date": "15/02/25",
+      "typeId": "1",
+      "createdAt": "2025-05-13T16:47:56.365Z"
+    },
+    {
+      "id": "50b0ed0b-c3dd-4831-b875-5ebe3b399a2b",
+      "userId": "1",
+      "description": "Phone bill",
+      "amount": 60,
+      "category": "Telecom",
+      "date": "17/02/25",
+      "typeId": "1",
+      "createdAt": "2025-05-13T16:47:56.366Z"
+    },
+    {
+      "id": "a026a304-65d5-442f-ba65-e1f41756bfdb",
+      "userId": "1",
+      "description": "Pizza",
+      "amount": 24.5,
+      "category": "Food",
+      "date": "20/02/25",
+      "typeId": "1",
+      "createdAt": "2025-05-13T16:47:56.366Z"
+    },
+    {
+      "id": "45486f25-19fb-47e5-8747-e7aaa674ee0a",
+      "userId": "1",
+      "description": "Movie streaming",
+      "amount": 12.99,
+      "category": "Assinaturas",
+      "date": "21/02/25",
+      "typeId": "1",
+      "createdAt": "2025-05-13T16:47:56.367Z"
+    },
+    {
+      "id": "d1a6258e-b6b1-4c69-be08-360737ec3290",
+      "userId": "1",
+      "description": "Birthday gift",
+      "amount": 300,
+      "category": "Presentes",
+      "date": "23/02/25",
+      "typeId": "1",
+      "createdAt": "2025-05-13T16:47:56.368Z"
+    },
+    {
+      "id": "36289934-986f-4f16-9a0f-125f906d1665",
+      "userId": "1",
+      "description": "Concert ticket",
+      "amount": 180,
+      "category": "Entretenimento",
+      "date": "25/02/25",
+      "typeId": "1",
+      "createdAt": "2025-05-13T16:47:56.368Z"
+    },
+    {
+      "id": "c48f6c99-da67-4aa5-ab4c-ed14b2867247",
+      "userId": "1",
+      "description": "Tablet case",
+      "amount": 80,
+      "category": "Acessorio",
+      "date": "28/02/25",
+      "typeId": "1",
+      "createdAt": "2025-05-13T16:47:56.369Z"
+    },
+    {
+      "id": "7638e50e-7d46-4680-8996-3c3df32d0786",
+      "userId": "1",
+      "description": "Croissants",
+      "amount": 18.75,
+      "category": "Sobremesas",
+      "date": "03/03/25",
+      "typeId": "1",
+      "createdAt": "2025-05-13T16:47:56.370Z"
+    },
+    {
+      "id": "74d088a3-7534-4253-9475-2336953f9e8e",
+      "userId": "1",
+      "description": "Car wash",
+      "amount": 50,
+      "category": "Car",
+      "date": "05/03/25",
+      "typeId": "1",
+      "createdAt": "2025-05-13T16:47:56.371Z"
+    },
+    {
+      "id": "29fdfb23-c0fb-4061-8253-33ae1f972126",
+      "userId": "1",
+      "description": "Salad lunch",
+      "amount": 27.3,
+      "category": "Food",
+      "date": "06/03/25",
+      "typeId": "1",
+      "createdAt": "2025-05-13T16:47:56.372Z"
+    },
+    {
+      "id": "38495bcd-d76f-4ba1-9360-5278be2f7b45",
+      "userId": "1",
+      "description": "Vitamin supplements",
+      "amount": 65,
+      "category": "Saude",
+      "date": "08/03/25",
+      "typeId": "1",
+      "createdAt": "2025-05-13T16:47:56.373Z"
+    },
+    {
+      "id": "2f4a3f36-0aea-4004-a3da-900f4a4098a0",
+      "userId": "1",
+      "description": "Tenis running",
+      "amount": 290,
+      "category": "Roupas",
+      "date": "09/03/25",
+      "typeId": "1",
+      "createdAt": "2025-05-13T16:47:56.373Z"
+    },
+    {
+      "id": "66bb7e44-3d43-41ae-be31-c6435b745d85",
+      "userId": "1",
+      "description": "Bookshelf",
+      "amount": 420,
+      "category": "Casa",
+      "date": "11/03/25",
+      "typeId": "1",
+      "createdAt": "2025-05-13T16:47:56.374Z"
+    },
+    {
+      "id": "50236b42-3a37-49b9-949b-415d61762023",
+      "userId": "1",
+      "description": "Groceries",
+      "amount": 160.2,
+      "category": "Food",
+      "date": "12/03/25",
+      "typeId": "1",
+      "createdAt": "2025-05-13T16:47:56.375Z"
+    },
+    {
+      "id": "b8badc19-03d5-41b8-a122-69e2e9bce6e8",
+      "userId": "1",
+      "description": "Espresso beans",
+      "amount": 55,
+      "category": "Food",
+      "date": "15/03/25",
+      "typeId": "1",
+      "createdAt": "2025-05-13T16:47:56.375Z"
+    },
+    {
+      "id": "5b35b463-8070-4fd1-a45f-cbf70569bbfa",
+      "userId": "1",
+      "description": "Bicycle repair",
+      "amount": 120,
+      "category": "Transporte",
+      "date": "18/03/25",
+      "typeId": "1",
+      "createdAt": "2025-05-13T16:47:56.376Z"
+    },
+    {
+      "id": "34e97712-d1bd-4665-9198-6bc9cee3c089",
+      "userId": "1",
+      "description": "Ice cream",
+      "amount": 22,
+      "category": "Sobremesas",
+      "date": "18/03/25",
+      "typeId": "1",
+      "createdAt": "2025-05-13T16:47:56.377Z"
+    },
+    {
+      "id": "b61eaab5-4bd4-4c1f-9f18-529f4e383062",
+      "userId": "1",
+      "description": "Earrings",
+      "amount": 200,
+      "category": "Acessorio",
+      "date": "20/03/25",
+      "typeId": "1",
+      "createdAt": "2025-05-13T16:47:56.377Z"
+    },
+    {
+      "id": "e381a07d-a12d-498a-ad97-4a98cc21e164",
+      "userId": "1",
+      "description": "Gasoline",
+      "amount": 155,
+      "category": "Car",
+      "date": "22/03/25",
+      "typeId": "1",
+      "createdAt": "2025-05-13T16:47:56.378Z"
+    },
+    {
+      "id": "526d328c-4a18-4d09-821e-dd147a26dfc2",
+      "userId": "1",
+      "description": "Laptop sleeve",
+      "amount": 89.9,
+      "category": "Acessorio",
+      "date": "23/03/25",
+      "typeId": "1",
+      "createdAt": "2025-05-13T16:47:56.379Z"
+    },
+    {
+      "id": "db0fc618-4b62-43e9-9a6c-d47f43d22d4b",
+      "userId": "1",
+      "description": "Dinner thai",
+      "amount": 78.6,
+      "category": "Food",
+      "date": "24/03/25",
+      "typeId": "1",
+      "createdAt": "2025-05-13T16:47:56.379Z"
+    },
+    {
+      "id": "b3981457-5510-4654-8f45-b77d65312c69",
+      "userId": "1",
+      "description": "Streaming Disney+",
+      "amount": 28.9,
+      "category": "Assinaturas",
+      "date": "26/03/25",
+      "typeId": "1",
+      "createdAt": "2025-05-13T16:47:56.380Z"
+    },
+    {
+      "id": "dcd2fa1d-6778-44d3-8178-26cdbf463c55",
+      "userId": "1",
+      "description": "Airport parking",
+      "amount": 80,
+      "category": "Travel",
+      "date": "28/03/25",
+      "typeId": "1",
+      "createdAt": "2025-05-13T16:47:56.381Z"
+    },
+    {
+      "id": "e122371c-85ea-4761-a02d-61c47731786b",
+      "userId": "1",
+      "description": "Museum ticket",
+      "amount": 40,
+      "category": "Entretenimento",
+      "date": "30/03/25",
+      "typeId": "1",
+      "createdAt": "2025-05-13T16:47:56.381Z"
+    },
+    {
+      "id": "be337f0b-d229-47f3-bb13-2ac43b4663dc",
+      "userId": "1",
+      "description": "Groceries",
+      "amount": 152,
+      "category": "Food",
+      "date": "04/04/25",
+      "typeId": "1",
+      "createdAt": "2025-05-13T16:47:56.382Z"
+    },
+    {
+      "id": "109cafba-e71b-494e-986f-035425946a7e",
+      "userId": "1",
+      "description": "Skincare cream",
+      "amount": 95,
+      "category": "Saude",
+      "date": "05/04/25",
+      "typeId": "1",
+      "createdAt": "2025-05-13T16:47:56.382Z"
+    },
+    {
+      "id": "d3d4d3f7-b738-4955-b4cb-16f88433c3f2",
+      "userId": "1",
+      "description": "CDB",
+      "amount": 1200,
+      "category": "Make Investments",
+      "date": "11/05/25",
+      "typeId": "1",
+      "createdAt": "2025-05-13T16:47:56.383Z"
+    },
+    {
+      "id": "6b85d938-ea91-424a-a908-06eee4302d90",
+      "userId": "1",
+      "description": "Freelance site landing page",
+      "amount": 450,
+      "category": "Freelance site landing page",
+      "date": "12/01/25",
+      "typeId": "2",
+      "createdAt": "2025-05-13T16:47:56.384Z"
+    },
+    {
+      "id": "e8fb66c4-05f6-444a-b636-937ae1e6ab9a",
+      "userId": "1",
+      "description": "Reembolso plano de saúde",
+      "amount": 120.5,
+      "category": "Reembolso plano de saúde",
+      "date": "15/01/25",
+      "typeId": "2",
+      "createdAt": "2025-05-13T16:47:56.384Z"
+    },
+    {
+      "id": "4bc4b20e-64b8-4a1e-8001-4dd7c977a3a7",
+      "userId": "1",
+      "description": "Dividendos ações",
+      "amount": 95.3,
+      "category": "Dividendos ações",
+      "date": "20/01/25",
+      "typeId": "2",
+      "createdAt": "2025-05-13T16:47:56.385Z"
+    },
+    {
+      "id": "9026a398-f14a-41aa-9ea5-0e85e09d02e1",
+      "userId": "1",
+      "description": "Venda de livro usado",
+      "amount": 60,
+      "category": "Venda de livro usado",
+      "date": "23/01/25",
+      "typeId": "2",
+      "createdAt": "2025-05-13T16:47:56.385Z"
+    },
+    {
+      "id": "32ebb314-c4ed-42fc-bcdf-678ce0da8f62",
+      "userId": "1",
+      "description": "Pix familiar",
+      "amount": 200,
+      "category": "Pix familiar",
+      "date": "25/01/25",
+      "typeId": "2",
+      "createdAt": "2025-05-13T16:47:56.386Z"
+    },
+    {
+      "id": "bd883c67-8bc7-4979-a767-3153db107880",
+      "userId": "1",
+      "description": "Salary",
+      "amount": 1424,
+      "category": "Salary",
+      "date": "05/02/25",
+      "typeId": "2",
+      "createdAt": "2025-05-13T16:47:56.386Z"
+    },
+    {
+      "id": "32d7367d-f875-4685-b83a-d8dff2de68cd",
+      "userId": "1",
+      "description": "Cashback cartão",
+      "amount": 35.7,
+      "category": "Cashback cartão",
+      "date": "08/02/25",
+      "typeId": "2",
+      "createdAt": "2025-05-13T16:47:56.387Z"
+    },
+    {
+      "id": "4baf17aa-f217-41cf-a904-6340465ca010",
+      "userId": "1",
+      "description": "Freelance correção de código",
+      "amount": 300,
+      "category": "Freelance correção de código",
+      "date": "10/02/25",
+      "typeId": "2",
+      "createdAt": "2025-05-13T16:47:56.387Z"
+    },
+    {
+      "id": "71ee2e6b-7194-4e67-b9c0-67a31d4fdb59",
+      "userId": "1",
+      "description": "Reembolso transporte",
+      "amount": 78,
+      "category": "Reembolso transporte",
+      "date": "13/02/25",
+      "typeId": "2",
+      "createdAt": "2025-05-13T16:47:56.388Z"
+    },
+    {
+      "id": "ee08923b-cde1-43a6-a419-494370d70732",
+      "userId": "1",
+      "description": "Aniversário presente em dinheiro",
+      "amount": 250,
+      "category": "Aniversário presente em dinheiro",
+      "date": "20/02/25",
+      "typeId": "2",
+      "createdAt": "2025-05-13T16:47:56.388Z"
+    },
+    {
+      "id": "2dff8254-eabd-4704-b51c-f997b1a25eb0",
+      "userId": "1",
+      "description": "Juros poupança",
+      "amount": 18.25,
+      "category": "Juros poupança",
+      "date": "24/02/25",
+      "typeId": "2",
+      "createdAt": "2025-05-13T16:47:56.389Z"
+    },
+    {
+      "id": "75ae3f8e-1533-449e-b22d-769b615e6d70",
+      "userId": "1",
+      "description": "Bolsista monitoria",
+      "amount": 500,
+      "category": "Bolsista monitoria",
+      "date": "28/02/25",
+      "typeId": "2",
+      "createdAt": "2025-05-13T16:47:56.389Z"
+    },
+    {
+      "id": "1d363635-198e-46a5-a27e-7ef9ed5c2132",
+      "userId": "1",
+      "description": "Salario",
+      "amount": 1424,
+      "category": "Salario",
+      "date": "05/03/25",
+      "typeId": "2",
+      "createdAt": "2025-05-13T16:47:56.390Z"
+    },
+    {
+      "id": "a27fd347-32df-4e0b-accc-c2f50f90b6e3",
+      "userId": "1",
+      "description": "Venda de tênis usado",
+      "amount": 220,
+      "category": "Venda de tênis usado",
+      "date": "06/03/25",
+      "typeId": "2",
+      "createdAt": "2025-05-13T16:47:56.390Z"
+    },
+    {
+      "id": "41df8f72-8d93-4e81-9510-0d655805dbc4",
+      "userId": "1",
+      "description": "Freelance design logo",
+      "amount": 600,
+      "category": "Freelance design logo",
+      "date": "09/03/25",
+      "typeId": "2",
+      "createdAt": "2025-05-13T16:47:56.391Z"
+    },
+    {
+      "id": "d52eb4b6-15af-4cf4-9567-fa95c8c35a94",
+      "userId": "1",
+      "description": "Pix devolução compra",
+      "amount": 150,
+      "category": "Pix devolução compra",
+      "date": "11/03/25",
+      "typeId": "2",
+      "createdAt": "2025-05-13T16:47:56.392Z"
+    },
+    {
+      "id": "48202f95-88f0-41ce-9cf2-04d1d759f862",
+      "userId": "1",
+      "description": "Dividendos ações",
+      "amount": 97.1,
+      "category": "Dividendos ações",
+      "date": "18/03/25",
+      "typeId": "2",
+      "createdAt": "2025-05-13T16:47:56.392Z"
+    },
+    {
+      "id": "40f21619-bf84-4959-878e-4113ff0b970e",
+      "userId": "1",
+      "description": "Cashback aplicativo",
+      "amount": 22.4,
+      "category": "Cashback aplicativo",
+      "date": "22/03/25",
+      "typeId": "2",
+      "createdAt": "2025-05-13T16:47:56.393Z"
+    },
+    {
+      "id": "ada7c95b-bf57-4464-a5cb-b8461ea94414",
+      "userId": "1",
+      "description": "Reembolso material faculdade",
+      "amount": 85.6,
+      "category": "Reembolso material faculdade",
+      "date": "24/03/25",
+      "typeId": "2",
+      "createdAt": "2025-05-13T16:47:56.393Z"
+    },
+    {
+      "id": "efc218b3-5358-408f-9d80-9c6ca2f3cdd6",
+      "userId": "1",
+      "description": "Salario",
+      "amount": 1424,
+      "category": "Salario",
+      "date": "05/04/25",
+      "typeId": "2",
+      "createdAt": "2025-05-13T16:47:56.394Z"
+    },
+    {
+      "id": "59090a3f-fc7b-491e-a926-028bcce18aec",
+      "userId": "1",
+      "description": "Freelance aula de programação",
+      "amount": 350,
+      "category": "Freelance aula de programação",
+      "date": "07/04/25",
+      "typeId": "2",
+      "createdAt": "2025-05-13T16:47:56.394Z"
+    },
+    {
+      "id": "2e32594c-233b-4741-95b1-a256598cb517",
+      "userId": "1",
+      "description": "Restituição imposto",
+      "amount": 430,
+      "category": "Restituição imposto",
+      "date": "09/04/25",
+      "typeId": "2",
+      "createdAt": "2025-05-13T16:47:56.395Z"
+    },
+    {
+      "id": "94124827-7b58-4b50-be3a-c8b8a6d26715",
+      "userId": "1",
+      "description": "Venda de mochila",
+      "amount": 120,
+      "category": "Venda de mochila",
+      "date": "12/04/25",
+      "typeId": "2",
+      "createdAt": "2025-05-13T16:47:56.395Z"
+    },
+    {
+      "id": "d4355620-d967-4a6f-a6e9-472e90e3d77b",
+      "userId": "1",
+      "description": "Juros CDB",
+      "amount": 64.85,
+      "category": "Juros CDB",
+      "date": "14/04/25",
+      "typeId": "2",
+      "createdAt": "2025-05-13T16:47:56.396Z"
+    },
+    {
+      "id": "7aabdd8d-e297-4679-a0ae-69160c4f88c3",
+      "userId": "1",
+      "description": "Pix familiar",
+      "amount": 180,
+      "category": "Pix familiar",
+      "date": "18/04/25",
+      "typeId": "2",
+      "createdAt": "2025-05-13T16:47:56.396Z"
+    },
+    {
+      "id": "9d985ddb-0b6a-4fc4-98f2-f79c080f3b7e",
+      "userId": "1",
+      "description": "Cashback marketplace",
+      "amount": 45.9,
+      "category": "Cashback marketplace",
+      "date": "20/04/25",
+      "typeId": "2",
+      "createdAt": "2025-05-13T16:47:56.397Z"
+    },
+    {
+      "id": "a95101e7-0487-40a6-a788-38e6b6c78535",
+      "userId": "1",
+      "description": "Salario",
+      "amount": 1424,
+      "category": "Salario",
+      "date": "16/04/25",
+      "typeId": "2",
+      "createdAt": "2025-05-13T16:47:56.397Z"
+    },
+    {
+      "id": "c3fa717a-1780-4404-8d1c-32bd0c83ed0b",
+      "userId": "1",
+      "description": "Tradução de artigo",
+      "amount": 270,
+      "category": "Tradução de artigo",
+      "date": "22/04/25",
+      "typeId": "2",
+      "createdAt": "2025-05-13T16:47:56.398Z"
+    },
+    {
+      "id": "e02fd1cd-55b6-4fbb-affb-22d20dc84df8",
+      "userId": "1",
+      "description": "Reembolso viagem acadêmica",
+      "amount": 210,
+      "category": "Reembolso viagem acadêmica",
+      "date": "24/04/25",
+      "typeId": "2",
+      "createdAt": "2025-05-13T16:47:56.398Z"
+    },
+    {
+      "id": "b127a862-f822-4d89-8de6-6346446e5b7e",
+      "userId": "1",
+      "description": "Salario",
+      "amount": 1424,
+      "category": "Salario",
+      "date": "25/04/25",
+      "typeId": "2",
+      "createdAt": "2025-05-13T16:47:56.399Z"
+    },
+    {
+      "id": "939e02ea-3208-4d87-b351-3116b71e776a",
+      "userId": "1",
+      "description": "Dividendos ações",
+      "amount": 101.55,
+      "category": "Dividendos ações",
+      "date": "28/04/25",
+      "typeId": "2",
+      "createdAt": "2025-05-13T16:47:56.400Z"
+    },
+    {
+      "id": "ff268242-b15b-4a27-bad2-b7b1917a000b",
+      "userId": "1",
+      "description": "Venda de cadeira gamer",
+      "amount": 300,
+      "category": "Venda de cadeira gamer",
+      "date": "30/04/25",
+      "typeId": "2",
+      "createdAt": "2025-05-13T16:47:56.400Z"
+    },
+    {
+      "id": "adc5fb01-8406-4314-a028-91f4c0ea360a",
+      "userId": "1",
+      "description": "Freelance site responsivo",
+      "amount": 700,
+      "category": "Freelance site responsivo",
+      "date": "03/05/25",
+      "typeId": "2",
+      "createdAt": "2025-05-13T16:47:56.401Z"
+    },
+    {
+      "id": "acc84d8f-712d-4e15-8e86-e0ac5d3e4c22",
+      "userId": "1",
+      "description": "Cashback cartão",
+      "amount": 36.1,
+      "category": "Cashback cartão",
+      "date": "04/05/25",
+      "typeId": "2",
+      "createdAt": "2025-05-13T16:47:56.401Z"
+    },
+    {
+      "id": "f67facfc-8cfe-41a1-8672-c6e8190b930f",
+      "userId": "1",
+      "description": "Bolsa de iniciação científica",
+      "amount": 800,
+      "category": "Bolsa de iniciação científica",
+      "date": "06/05/25",
+      "typeId": "2",
+      "createdAt": "2025-05-13T16:47:56.402Z"
+    },
+    {
+      "id": "45d57a15-21fe-4a9e-a9f7-512f54443277",
+      "userId": "1",
+      "description": "Pix presente Dia das Mães",
+      "amount": 250,
+      "category": "Pix presente Dia das Mães",
+      "date": "11/05/25",
+      "typeId": "2",
+      "createdAt": "2025-05-13T16:47:56.403Z"
+    },
+    {
+      "id": "4b269096-cf63-4aa5-9c74-1aa26dd09ef5",
+      "userId": "1",
+      "description": "Reembolso plano de saúde",
+      "amount": 122.8,
+      "category": "Reembolso plano de saúde",
+      "date": "13/05/25",
+      "typeId": "2",
+      "createdAt": "2025-05-13T16:47:56.403Z"
+    },
+    {
+      "id": "33ac340a-a877-45f1-807f-cfc15ef61844",
+      "userId": "1",
+      "description": "Juros poupança",
+      "amount": 19.05,
+      "category": "Juros poupança",
+      "date": "20/05/25",
+      "typeId": "2",
+      "createdAt": "2025-05-13T16:47:56.404Z"
+    },
+    {
+      "id": "1c7d2b5b-2642-4958-a2dc-488a194104bc",
+      "userId": "1",
+      "description": "Freelance correção bug",
+      "amount": 380,
+      "category": "Freelance correção bug",
+      "date": "23/05/25",
+      "typeId": "2",
+      "createdAt": "2025-05-13T16:47:56.404Z"
+    },
+    {
+      "id": "6a84141e-870b-4fac-b629-aa65e8791992",
+      "userId": "1",
+      "description": "Dividendos ações",
+      "amount": 99.4,
+      "category": "Dividendos ações",
+      "date": "27/05/25",
+      "typeId": "2",
+      "createdAt": "2025-05-13T16:47:56.405Z"
+    },
+    {
+      "id": "f1f4f988-02d9-4250-85e2-adcfa1f4855a",
+      "userId": "1",
+      "description": "Withdraw Investments",
+      "amount": 200,
+      "category": "Withdraw Investments",
+      "date": "11/05/25",
+      "typeId": "3",
+      "createdAt": "2025-05-13T16:47:56.405Z"
+    }
   ]
 }
