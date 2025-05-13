@@ -15,7 +15,7 @@ function BalanceCard() {
             return;
         }
 
-        fetch('http://localhost:3000/monthly-history', {
+        fetch('http://localhost:3000/months', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -27,21 +27,66 @@ function BalanceCard() {
                 return response.json()
             })
             .then(data => {
-                setHistory(data.data)
+                // data will be an array of month strings
+                setHistory(data);
                 setLoading(false)
             })
             .catch(error => {
                 setError(error.message)
                 setLoading(false)
             })
-
     }, [])
 
-    let total = 0
+    // Initialize total balance
+    const [totalBalance, setTotalBalance] = useState(0);
 
-    history.forEach(balance => {
-        total += parseFloat(balance.balance)
-    })
+    // Fetch balance for each month and calculate total
+    useEffect(() => {
+        if (!history.length || loading) return;
+        
+        const token = getToken();
+        if (!token) return;
+        
+        let total = 0;
+        let completedRequests = 0;
+        
+        // Create a function to fetch balance for a single month
+        const fetchMonthBalance = async (month) => {
+            try {
+                const response = await fetch(`http://localhost:3000/balance/${month}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status ${response.status}`);
+                }
+                
+                const data = await response.json();
+                return data.balance || 0;
+            } catch (error) {
+                console.error(`Error fetching balance for ${month}:`, error);
+                return 0;
+            }
+        };
+        
+        // Process each month and update total
+        const processAllMonths = async () => {
+            setLoading(true);
+            let sum = 0;
+            
+            for (const month of history) {
+                const balance = await fetchMonthBalance(month);
+                sum += parseFloat(balance);
+            }
+            
+            setTotalBalance(sum);
+            setLoading(false);
+        };
+        
+        processAllMonths();
+    }, [history]);
 
     if(loading){
         return <Spinner message="Loading balance..." />
@@ -52,7 +97,7 @@ function BalanceCard() {
 
     return (
         <>
-        <h2 className="text-4xl font-bold mb-4">${total.toFixed(2)}</h2>
+        <h2 className="text-4xl font-bold mb-4">${totalBalance.toFixed(2)}</h2>
         </>
     )
 }

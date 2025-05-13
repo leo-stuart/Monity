@@ -62,7 +62,18 @@ export const apiRequest = async (endpoint, options = {}) => {
     };
     
     try {
+        console.log(`Making API request to: ${API_URL}${endpoint}`);
         const response = await fetch(`${API_URL}${endpoint}`, requestOptions);
+        
+        // Handle non-JSON responses
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+            if (!response.ok) {
+                throw new Error(`API request failed with status: ${response.status}`);
+            }
+            return { success: true, message: 'Non-JSON response received' };
+        }
+        
         const data = await response.json();
         
         if (!response.ok) {
@@ -70,7 +81,7 @@ export const apiRequest = async (endpoint, options = {}) => {
             if (response.status === 401 || response.status === 403) {
                 logout();
             }
-            throw new Error(data.message || 'API request failed');
+            throw new Error(data.message || `API request failed with status: ${response.status}`);
         }
         
         return data;

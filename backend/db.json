@@ -59,6 +59,16 @@
       "id": "44b7",
       "name": "Travel",
       "typeId": 1
+    },
+    {
+      "id": "9760",
+      "name": "Comida",
+      "typeId": 1
+    },
+    {
+      "id": "aee9",
+      "name": "Travel",
+      "typeId": 1
     }
   ],
   "usuarios": [
@@ -66,13 +76,13 @@
       "id": "1",
       "nome": "admin",
       "email": "leostuart05@gmail.com",
-      "senha": "123"
+      "senha": "$2a$10$EhH8i6ak.pNMpqVLMzdgEuXctlQCu62xaeknuV1HYuM0lebHBf1MC"
     },
     {
       "id": "304a",
       "nome": "Milena",
       "email": "milenasalomao100@gmail.com",
-      "senha": "$2b$10$Jn7KCPVGmE.l2QPV.5CKmuYTicB/mtB9hbzpMejOL7uaA50.0Zlga"
+      "senha": "$2b$10$kEEnqb0zzHa6hXjQ116KNeZD1I5FGUZu8/9OqYrrjJ8hkXW7LMjwi"
     }
   ],
   "transactionTypes": [
@@ -1009,6 +1019,26 @@
       "date": "11/05/25",
       "typeId": "3",
       "createdAt": "2025-05-13T16:47:56.405Z"
+    },
+    {
+      "id": "d0cc6fc4-deae-4bec-bf92-9cfbf98f7b1c",
+      "userId": "1",
+      "description": "lunch",
+      "amount": 44,
+      "category": "Food",
+      "date": "12/05/2025",
+      "typeId": "1",
+      "createdAt": "2025-05-13T17:54:21.923Z"
+    },
+    {
+      "id": "2e5a9343-889e-41b9-9e51-e07bcb0233dc",
+      "userId": "304a",
+      "description": "Salary",
+      "amount": 1424,
+      "category": "Salary",
+      "date": "20/05/25",
+      "typeId": "2",
+      "createdAt": "2025-05-13T18:13:32.001Z"
     }
   ]
 }

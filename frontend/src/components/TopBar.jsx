@@ -63,7 +63,7 @@ export default function TopBar() {
               <li>
                 <button 
                   onClick={handleLogout}
-                  className="block w-full text-left px-4 py-2 text-red-400 hover:bg-[#31344d] transition-colors"
+                  className="block w-full text-center px-4 py-2 text-red-400 hover:bg-[#31344d] transition-colors"
                 >
                   Logout
                 </button>

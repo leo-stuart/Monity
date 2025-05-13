@@ -457,6 +457,58 @@ app.get('/balance/:month', authenticateToken, async (req, res) => {
     }
 });
 
+// Calculate monthly balance with separated month/year params
+app.get('/balance/:month/:year', authenticateToken, async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const month = req.params.month;
+        const year = req.params.year;
+        const monthYearFormat = `${month}/${year}`; // Format: MM/YY
+        
+        // Get all transactions from JSON Server
+        const response = await axios.get(`${JSON_SERVER_URL}/transactions`);
+        
+        // Filter for user's transactions by month
+        const userTransactions = response.data.filter(t => 
+            t.userId === userId && t.date.includes(monthYearFormat)
+        );
+        
+        // Calculate totals by type
+        let totalExpenses = 0;
+        let totalIncome = 0;
+        let totalSavings = 0;
+        
+        userTransactions.forEach(transaction => {
+            const amount = parseFloat(transaction.amount);
+            
+            if (transaction.typeId === "1") { // Expense
+                totalExpenses += amount;
+            } else if (transaction.typeId === "2") { // Income
+                totalIncome += amount;
+            } else if (transaction.typeId === "3") { // Savings
+                if (transaction.category === "Make Investments") {
+                    totalSavings -= amount; // Money going out
+                } else if (transaction.category === "Withdraw Investments") {
+                    totalSavings += amount; // Money coming in
+                }
+            }
+        });
+        
+        const balance = totalIncome - totalExpenses + totalSavings;
+        
+        res.json({
+            month: monthYearFormat,
+            totalExpenses,
+            totalIncome,
+            totalSavings,
+            balance
+        });
+    } catch (error) {
+        console.error('Get balance error:', error);
+        res.status(500).json({ error: 'Failed to calculate balance' });
+    }
+});
+
 // Get all months with transactions
 app.get('/months', authenticateToken, async (req, res) => {
     try {

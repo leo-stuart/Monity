@@ -3,8 +3,7 @@ import Spinner from './Spinner';
 import { getToken } from '../utils/api';
 
 function Savings() {
-    const [incomes, setIncomes] = useState([]);
-    const [expenses, setExpenses] = useState([]);
+    const [transactions, setTransactions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -16,7 +15,7 @@ function Savings() {
             return;
         }
 
-        fetch('http://localhost:3000/list-expenses', {
+        fetch('http://localhost:3000/transactions', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -27,74 +26,57 @@ function Savings() {
                 }
                 return response.json();
             })
-
             .then(data => {
-                setExpenses(data.data);
+                // API returns transactions directly, not wrapped in data.data
+                setTransactions(data);
                 setLoading(false);
             })
             .catch(error => {
                 setError(error.message);
                 setLoading(false);
-            })
+            });
     }, []);
+
+    // Handle loading and error states
+    if (loading) {
+        return <Spinner message="Loading savings..." />;
+    }
+    if (error) {
+        return <p>Error: {error}</p>;
+    }
+
+    // Ensure transactions is an array before filtering
+    if (!Array.isArray(transactions)) {
+        return <p>No transaction data available.</p>;
+    }
+
+    // Filter transactions by category and type
+    const savings = transactions.filter(transaction => 
+        transaction.category === "Make Investments" && transaction.typeId === "1"
+    );
     
-    useEffect(() => {
-        const token = getToken();
-        if (!token) {
-            setError('Authentication required');
-            setLoading(false);
-            return;
-        }
+    const withdrawals = transactions.filter(transaction => 
+        transaction.category === "Withdraw Investments" && transaction.typeId === "2"
+    );
 
-        fetch('http://localhost:3000/list-incomes', {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
-            })
-
-            .then(data => {
-                setIncomes(data.data);
-                setLoading(false);
-            })
-            .catch(error => {
-                setError(error.message);
-                setLoading(false);
-            })
-    }, []);
-
-    const savings = expenses.filter(expense => expense.category === "Make Investments")
-    const withdraw = incomes.filter(incomes => incomes.category === "Withdraw Investments")
-
-    let total = 0
+    // Calculate totals
+    let investmentsTotal = 0;
     savings.forEach(expense => {
-        total += parseFloat(expense.amount)
-    })
+        investmentsTotal += parseFloat(expense.amount);
+    });
 
-    let totalWithdraw = 0
-    withdraw.forEach(expense => {
-        totalWithdraw += parseFloat(expense.amount)
-    })
+    let withdrawalsTotal = 0;
+    withdrawals.forEach(income => {
+        withdrawalsTotal += parseFloat(income.amount);
+    });
 
-    let totalSavings = total - totalWithdraw
-
-    if(loading){
-        return <Spinner message="Loading savings..." />
-    }
-    if(error){
-        return <p>Error: {error}</p>
-    }
+    let totalSavings = investmentsTotal - withdrawalsTotal;
 
     return (
         <>
-        <h2 className="text-4xl font-bold mb-4">${totalSavings.toFixed(2)}</h2>
+            <h2 className="text-4xl font-bold mb-4">${Math.abs(totalSavings).toFixed(2)}</h2>
         </>
-    )
+    );
 }
 
-export default Savings
+export default Savings;
