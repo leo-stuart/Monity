@@ -69,6 +69,11 @@
       "id": "aee9",
       "name": "Travel",
       "typeId": 1
+    },
+    {
+      "id": "b503",
+      "name": "Comida",
+      "typeId": 1
     }
   ],
   "usuarios": [
@@ -83,6 +88,12 @@
       "nome": "Milena",
       "email": "milenasalomao100@gmail.com",
       "senha": "$2b$10$kEEnqb0zzHa6hXjQ116KNeZD1I5FGUZu8/9OqYrrjJ8hkXW7LMjwi"
+    },
+    {
+      "id": "875fdec1-b910-4ee0-ad88-1231d3315a23",
+      "nome": "Leo",
+      "email": "leostuart@gmail.com",
+      "senha": "$2b$10$lmq97hbUvZt5q4WeKvsMmOVhsMlq7ZASqGeu.Y83kM6lncmwmo3Ei"
     }
   ],
   "transactionTypes": [
@@ -447,16 +458,6 @@
       "amount": 65,
       "category": "Saude",
       "date": "08/03/25",
-      "typeId": "1",
-      "createdAt": "2025-05-13T16:47:56.373Z"
-    },
-    {
-      "id": "2f4a3f36-0aea-4004-a3da-900f4a4098a0",
-      "userId": "1",
-      "description": "Tenis running",
-      "amount": 290,
-      "category": "Roupas",
-      "date": "09/03/25",
       "typeId": "1",
       "createdAt": "2025-05-13T16:47:56.373Z"
     },
@@ -1021,16 +1022,6 @@
       "createdAt": "2025-05-13T16:47:56.405Z"
     },
     {
-      "id": "d0cc6fc4-deae-4bec-bf92-9cfbf98f7b1c",
-      "userId": "1",
-      "description": "lunch",
-      "amount": 44,
-      "category": "Food",
-      "date": "12/05/2025",
-      "typeId": "1",
-      "createdAt": "2025-05-13T17:54:21.923Z"
-    },
-    {
       "id": "2e5a9343-889e-41b9-9e51-e07bcb0233dc",
       "userId": "304a",
       "description": "Salary",
@@ -1039,6 +1030,26 @@
       "date": "20/05/25",
       "typeId": "2",
       "createdAt": "2025-05-13T18:13:32.001Z"
+    },
+    {
+      "id": "cb27abbb-15b8-49fd-a8d3-b3ca8fbcb962",
+      "userId": "1",
+      "description": "Freelance",
+      "amount": 140,
+      "category": "Freelance",
+      "date": "14/05/25",
+      "typeId": "2",
+      "createdAt": "2025-05-14T17:16:32.746Z"
+    },
+    {
+      "id": "d74a2a3f-736e-40e3-94c7-411a0ba7919c",
+      "userId": "875fdec1-b910-4ee0-ad88-1231d3315a23",
+      "description": "Freelance",
+      "amount": 140,
+      "category": "Freelance",
+      "date": "14/05/25",
+      "typeId": "2",
+      "createdAt": "2025-05-14T17:17:48.384Z"
     }
   ]
 }

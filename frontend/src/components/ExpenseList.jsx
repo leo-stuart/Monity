@@ -85,16 +85,23 @@ function ListExpenses() {
         sum += parseFloat(expense.amount)
     })
 
-    const reversedExpenses = [...expenses].reverse();
-    if (!expenses.length) {
+    const reversedExpenses = [...filtered].reverse();
+    if (!filtered.length) {
         return (
             <div className="bg-[#23263a] border-1 p-4 rounded-xl shadow-lg shadow-red-400 ring-2 ring-red-400/50">
+                <div className='flex flex-col md:flex-row items-center justify-between gap-6 mb-4'>
+                    <h3 className="text-lg font-bold text-[#FF6384]">Total Expenses: <span className="text-white">${sum.toFixed(2)}</span></h3>
+                    <div className="flex gap-2">
+                        <input type="text" value={category} onChange={(e) => setCategory(e.target.value)} className="bg-[#191E29] border border-[#31344d] text-white text-sm rounded-lg focus:ring-[#FF6384] focus:border-[#FF6384] block w-full p-2.5 placeholder-gray-400" placeholder="e.g. Food" />
+                        <input type="text" value={date} onChange={(e) => setDate(e.target.value)} className="bg-[#191E29] border border-[#31344d] text-white text-sm rounded-lg focus:ring-[#FF6384] focus:border-[#FF6384] block w-full p-2.5 placeholder-gray-400" placeholder="DD/MM/YY" />
+                    </div>
+                    <Link
+                        to="/add-expense"
+                        className="inline-block text-white hover:text-[#23263a] bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-red-300 shadow-lg shadow-red-500/50 dark:shadow-red-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 focus:outline-none focus:ring-0 focus:shadow-none transition-colors">
+                        Add Expense
+                    </Link>
+                </div>
                 <p>No expenses found.</p>
-                <Link
-                    to="/add-expense"
-        className="inline-block text-white hover:text-[#23263a] bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-red-300 shadow-lg shadow-red-500/50 dark:shadow-red-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 focus:outline-none focus:ring-0 focus:shadow-none transition-colors">
-                    Add Expense
-                </Link>
             </div>
         )
     }
