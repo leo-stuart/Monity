@@ -56,19 +56,18 @@ Monity began life as a lightning‑fast **C 17** command‑line program. While 
 
 ```mermaid
 flowchart TD
-    subgraph Node API
-        A[Express Server] -->|CRUD| B(JSON Ledger Store)
-        A -->|JWT auth| C[Auth Controller]
+    subgraph "Node API"
+        A[Express Server] -->|CRUD| B[JSON Ledger Store]
+        A -->|JWT auth| C[Auth Controller]
     end
 
     subgraph Frontend
-        D[React SPA] -->|REST| A
+        D[React SPA] -->|REST| A
     end
 
-    style B fill:#f6f6f6,stroke:#999,stroke-dasharray: 5
-    classDef legacy stroke-dasharray: 5 5;
-    subgraph Legacy (not used at runtime)
-        E((C Engine)):::legacy
+    %% Legacy layer for reference only
+    subgraph "Legacy C Engine (unused)"
+        E((C Engine))
     end
 ```
 
@@ -202,17 +201,6 @@ No quotes, no header row.
 * **JWT** tokens signed with `JWT_SECRET` (HS256).
 * Helmet‑style CORS policy (origin whitelist in `.env`).
 * Express‑validator for input sanitisation.
-
----
-
-## Testing
-
-| Layer    | Framework                      | Command                        |
-| -------- | ------------------------------ | ------------------------------ |
-| API      | Jest + Supertest               | `npm test` (inside `backend`)  |
-| Frontend | Vitest + React‑Testing‑Library | `npm test` (inside `frontend`) |
-
-CI pipeline runs on GitHub Actions against Ubuntu & macOS.
 
 ---
 
