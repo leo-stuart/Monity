@@ -2,7 +2,7 @@
 
 > **Mission:** *Make budgeting delightfully fast, totally transparent, and hacker‑friendly.*
 
-![Monity Dashboard](docs/screenshot-dashboard.png)
+![Monity Dashboard](docs/dashboard.gif)
 
 ## ⚠️ Legacy C Engine
 
