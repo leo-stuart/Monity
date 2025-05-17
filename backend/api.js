@@ -8,14 +8,37 @@ const path = require('path');
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 
+// Load environment variables (ensure .env is at the root or backend/ and dotenv is configured)
+// require('dotenv').config({ path: path.resolve(__dirname, '../.env') }); // If .env is at project root
+require('dotenv').config(); // If .env is in backend/ or handled by execution environment
+
 app.use(cors())
 app.use(express.json())
 
 // JWT Secret Key
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-fallback';
 
-// JSON Server URL
-const JSON_SERVER_URL = 'http://localhost:3001';
+// Supabase Configuration
+const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
+
+// URLs for Supabase tables (as provided by user)
+const SUPABASE_URL_USUARIOS = 'https://uastoompfymjolifijjj.supabase.com/v1/rest/usuarios';
+const SUPABASE_URL_CATEGORIES = 'https://uastoompfymjolifijjj.supabase.com/v1/rest/categories';
+const SUPABASE_URL_TRANSACTIONS = 'https://uastoompfymjolifijjj.supabase.com/v1/rest/transactions';
+const SUPABASE_URL_TRANSACTIONSTYPES = 'https://uastoompfymjolifijjj.supabase.com/v1/rest/transactionsType';
+
+// Axios instance for Supabase requests
+const supabaseAPI = axios.create();
+
+supabaseAPI.interceptors.request.use(config => {
+    config.headers = {
+        ...config.headers,
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        'Prefer': 'return=representation', // Get created/updated data back
+    };
+    return config;
+});
 
 // Middleware to verify JWT token
 const authenticateToken = (req, res, next) => {
@@ -30,7 +53,7 @@ const authenticateToken = (req, res, next) => {
         if (err) {
             return res.status(403).json({ message: 'Invalid token' });
         }
-        req.user = user;
+        req.user = user; // user should contain { id, email }
         next();
     });
 };
@@ -39,46 +62,32 @@ const authenticateToken = (req, res, next) => {
 app.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
-
-        // Validate input
         if (!email || !password) {
             return res.status(400).json({ message: 'Email and password are required' });
         }
 
-        // Get user from DB
-        const usersResponse = await axios.get(`${JSON_SERVER_URL}/usuarios`);
-        const users = usersResponse.data;
-        const user = users.find(u => u.email === email);
-
-        if (!user) {
+        // Get user from Supabase
+        const { data: users } = await supabaseAPI.get(`${SUPABASE_URL_USUARIOS}?email=eq.${email}&select=*`);
+        
+        if (!users || users.length === 0) {
             return res.status(401).json({ message: 'Invalid email or password' });
         }
+        const user = users[0];
 
         // Compare passwords
-        let passwordMatch;
-        if (user.senha.startsWith('$2b$') || user.senha.startsWith('$2a$')) {
-            // Password is hashed
-            passwordMatch = await bcrypt.compare(password, user.senha);
-        } else {
-            // Password is plain text (for legacy accounts)
-            passwordMatch = password === user.senha;
-        }
+        // Assuming 'senha' stores the hashed password in Supabase
+        const passwordMatch = await bcrypt.compare(password, user.senha);
 
         if (!passwordMatch) {
             return res.status(401).json({ message: 'Invalid email or password' });
         }
 
-        // Generate token
         const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: '24h' });
-
-        // Return user info and token (excluding password)
         const { senha, ...userWithoutPassword } = user;
-        res.json({
-            user: userWithoutPassword,
-            token
-        });
+        res.json({ user: userWithoutPassword, token });
+
     } catch (error) {
-        console.error('Login error:', error);
+        console.error('Login error:', error.response ? error.response.data : error.message);
         res.status(500).json({ message: 'Server error during login' });
     }
 });
@@ -87,45 +96,38 @@ app.post('/login', async (req, res) => {
 app.post('/signup', async (req, res) => {
     try {
         const { nome, email, password } = req.body;
-
-        // Validate input
         if (!nome || !email || !password) {
             return res.status(400).json({ message: 'Name, email and password are required' });
         }
 
         // Check if user already exists
-        const usersResponse = await axios.get(`${JSON_SERVER_URL}/usuarios`);
-        const users = usersResponse.data;
-        const existingUser = users.find(u => u.email === email);
-
-        if (existingUser) {
+        const { data: existingUsers } = await supabaseAPI.get(`${SUPABASE_URL_USUARIOS}?email=eq.${email}&select=id`);
+        if (existingUsers && existingUsers.length > 0) {
             return res.status(409).json({ message: 'User with this email already exists' });
         }
 
-        // Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
+        const newUserId = uuidv4(); // Assuming Supabase 'id' column for usuarios is UUID and client-settable
 
-        // Create new user
-        const newUser = {
-            id: uuidv4(),
+        const { data: createdUsers } = await supabaseAPI.post(SUPABASE_URL_USUARIOS, {
+            id: newUserId,
             nome,
             email,
             senha: hashedPassword
-        };
-
-        await axios.post(`${JSON_SERVER_URL}/usuarios`, newUser);
-
-        // Generate token
-        const token = jwt.sign({ id: newUser.id, email: newUser.email }, JWT_SECRET, { expiresIn: '24h' });
-
-        // Return user info and token (excluding password)
-        const { senha, ...userWithoutPassword } = newUser;
-        res.status(201).json({
-            user: userWithoutPassword,
-            token
+            // Add other fields like createdAt if your Supabase table has them
         });
+        
+        if (!createdUsers || createdUsers.length === 0) {
+            throw new Error("User creation failed in Supabase");
+        }
+        const newUser = createdUsers[0];
+
+        const token = jwt.sign({ id: newUser.id, email: newUser.email }, JWT_SECRET, { expiresIn: '24h' });
+        const { senha, ...userWithoutPassword } = newUser;
+        res.status(201).json({ user: userWithoutPassword, token });
+
     } catch (error) {
-        console.error('Signup error:', error);
+        console.error('Signup error:', error.response ? error.response.data : error.message);
         res.status(500).json({ message: 'Server error during signup' });
     }
 });
@@ -136,31 +138,27 @@ app.post('/change-password', authenticateToken, async (req, res) => {
         const { currentPassword, newPassword } = req.body;
         const userId = req.user.id;
 
-        // Validate input
         if (!currentPassword || !newPassword) {
             return res.status(400).json({ message: 'Current password and new password are required' });
         }
 
-        // Get user from DB
-        const userResponse = await axios.get(`${JSON_SERVER_URL}/usuarios/${userId}`);
-        const user = userResponse.data;
+        const { data: users } = await supabaseAPI.get(`${SUPABASE_URL_USUARIOS}?id=eq.${userId}&select=*`);
+        if (!users || users.length === 0) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        const user = users[0];
 
-        // Verify current password
         const passwordMatch = await bcrypt.compare(currentPassword, user.senha);
         if (!passwordMatch) {
             return res.status(401).json({ message: 'Current password is incorrect' });
         }
 
-        // Hash new password
         const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-        // Update user password
-        const updatedUser = { ...user, senha: hashedPassword };
-        await axios.put(`${JSON_SERVER_URL}/usuarios/${userId}`, updatedUser);
+        await supabaseAPI.patch(`${SUPABASE_URL_USUARIOS}?id=eq.${userId}`, { senha: hashedPassword });
 
         res.json({ message: 'Password changed successfully' });
     } catch (error) {
-        console.error('Change password error:', error);
+        console.error('Change password error:', error.response ? error.response.data : error.message);
         res.status(500).json({ message: 'Server error while changing password' });
     }
 });
@@ -168,10 +166,12 @@ app.post('/change-password', authenticateToken, async (req, res) => {
 // Get categories
 app.get('/categories', authenticateToken, async (req, res) => {
     try {
-        const response = await axios.get(`${JSON_SERVER_URL}/categories`);
-        res.json(response.data);
+        // Assuming categories are global or user-specific based on RLS in Supabase
+        // If user-specific and no RLS, add ?userId=eq.${req.user.id}
+        const { data: categories } = await supabaseAPI.get(`${SUPABASE_URL_CATEGORIES}?select=*`);
+        res.json(categories || []);
     } catch (error) {
-        console.error('Get categories error:', error);
+        console.error('Get categories error:', error.response ? error.response.data : error.message);
         res.status(500).json({ error: 'Failed to fetch categories' });
     }
 });
@@ -179,24 +179,25 @@ app.get('/categories', authenticateToken, async (req, res) => {
 // Add a new category
 app.post('/categories', authenticateToken, async (req, res) => {
     try {
-        const { name, typeId } = req.body;
-        
-        // Validate input
+        const { name, typeId } = req.body; // typeId refers to transactionTypes.id
         if (!name || !typeId) {
             return res.status(400).json({ message: 'Category name and type are required' });
         }
         
-        // Create new category
         const newCategory = {
-            id: uuidv4(),
+            id: uuidv4(), // Assuming Supabase 'id' for categories is client-settable UUID
             name,
             typeId
+            // userId: req.user.id // Add this if categories are user-specific
         };
         
-        const response = await axios.post(`${JSON_SERVER_URL}/categories`, newCategory);
-        res.status(201).json(response.data);
+        const { data: createdCategories } = await supabaseAPI.post(SUPABASE_URL_CATEGORIES, newCategory);
+        if (!createdCategories || createdCategories.length === 0) {
+            throw new Error("Category creation failed in Supabase");
+        }
+        res.status(201).json(createdCategories[0]);
     } catch (error) {
-        console.error('Add category error:', error);
+        console.error('Add category error:', error.response ? error.response.data : error.message);
         res.status(500).json({ error: 'Failed to create category' });
     }
 });
@@ -204,10 +205,11 @@ app.post('/categories', authenticateToken, async (req, res) => {
 // Delete a category
 app.delete('/categories/:id', authenticateToken, async (req, res) => {
     try {
-        const response = await axios.delete(`${JSON_SERVER_URL}/categories/${req.params.id}`);
-        res.json(response.data);
+        // Add &userId=eq.${req.user.id} if categories are user-specific and RLS isn't handling it
+        await supabaseAPI.delete(`${SUPABASE_URL_CATEGORIES}?id=eq.${req.params.id}`);
+        res.json({ message: 'Category deleted successfully' }); // Supabase delete returns 204 No Content or data if Prefer was set
     } catch (error) {
-        console.error('Delete category error:', error);
+        console.error('Delete category error:', error.response ? error.response.data : error.message);
         res.status(500).json({ error: 'Failed to delete category' });
     }
 });
@@ -215,149 +217,94 @@ app.delete('/categories/:id', authenticateToken, async (req, res) => {
 // Get transaction types
 app.get('/transaction-types', authenticateToken, async (req, res) => {
     try {
-        const response = await axios.get(`${JSON_SERVER_URL}/transactionTypes`);
-        res.json(response.data);
+        const { data: transactionTypes } = await supabaseAPI.get(`${SUPABASE_URL_TRANSACTIONSTYPES}?select=*`);
+        res.json(transactionTypes || []);
     } catch (error) {
-        console.error('Get transaction types error:', error);
+        console.error('Get transaction types error:', error.response ? error.response.data : error.message);
         res.status(500).json({ error: 'Failed to fetch transaction types' });
     }
 });
 
-// Add expense
-app.post('/add-expense', authenticateToken, async (req, res) => {
+// Add expense, income, or savings (generic transaction adder)
+const addTransaction = async (req, res, typeId, successMessage) => {
     try {
-        const { description, amount, category, date } = req.body;
+        const { description, amount, category, date } = req.body; // date is "DD/MM/YY" from client
         const userId = req.user.id;
         
-        // Validate input
         if (!description || !amount || !category || !date) {
             return res.status(400).json({ message: 'Description, amount, category, and date are required' });
         }
+
+        // Convert date from "DD/MM/YY" to "YYYY-MM-DD" for Supabase
+        const [day, month, yearShort] = date.split('/');
+        const formattedDate = `20${yearShort}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
         
-        // Create new transaction
         const newTransaction = {
-            id: uuidv4(),
+            id: uuidv4(), // Assuming Supabase 'id' for transactions is client-settable UUID
             userId,
             description,
             amount: parseFloat(amount),
-            category,
-            date,
-            typeId: "1", // Expense type
-            createdAt: new Date().toISOString()
+            category, // This might be category name. If Supabase expects category_id, adjust accordingly.
+            date: formattedDate, 
+            typeId, // "1" for Expense, "2" for Income, "3" for Savings
+            createdAt: new Date().toISOString() // Supabase might auto-set this if column type is timestamptz with default now()
         };
         
-        // Add to JSON Server
-        await axios.post(`${JSON_SERVER_URL}/transactions`, newTransaction);
-        
-        res.status(201).json({ success: true, message: "Expense added!", transaction: newTransaction });
-    } catch (error) {
-        console.error('Add expense error:', error);
-        res.status(500).json({ success: false, message: "Failed to add expense." });
-    }
-});
-
-// Add income
-app.post('/add-income', authenticateToken, async (req, res) => {
-    try {
-        const { category, amount, date } = req.body;
-        const userId = req.user.id;
-        
-        // Validate input
-        if (!category || !amount || !date) {
-            return res.status(400).json({ message: 'Category, amount, and date are required' });
+        const { data: createdTransactions } = await supabaseAPI.post(SUPABASE_URL_TRANSACTIONS, newTransaction);
+        if (!createdTransactions || createdTransactions.length === 0) {
+             throw new Error(`${successMessage.replace(" added!", "")} creation failed in Supabase`);
         }
-        
-        // Create new transaction
-        const newTransaction = {
-            id: uuidv4(),
-            userId,
-            description: category, // Using category as description for income
-            amount: parseFloat(amount),
-            category,
-            date,
-            typeId: "2", // Income type
-            createdAt: new Date().toISOString()
-        };
-        
-        // Add to JSON Server
-        await axios.post(`${JSON_SERVER_URL}/transactions`, newTransaction);
-        
-        res.status(201).json({ success: true, message: "Income added!", transaction: newTransaction });
+        res.status(201).json({ success: true, message: successMessage, transaction: createdTransactions[0] });
     } catch (error) {
-        console.error('Add income error:', error);
-        res.status(500).json({ success: false, message: "Failed to add income." });
+        console.error(`Add transaction (type ${typeId}) error:`, error.response ? error.response.data : error.message);
+        res.status(500).json({ success: false, message: `Failed to add ${successMessage.toLowerCase().split(' ')[0]}.` });
     }
-});
+};
 
-// Add savings transaction
-app.post('/add-savings', authenticateToken, async (req, res) => {
-    try {
-        const { description, amount, category, date } = req.body;
-        const userId = req.user.id;
-        
-        // Validate input
-        if (!description || !amount || !category || !date) {
-            return res.status(400).json({ message: 'Description, amount, category, and date are required' });
-        }
-        
-        // Create new transaction
-        const newTransaction = {
-            id: uuidv4(),
-            userId,
-            description,
-            amount: parseFloat(amount),
-            category,
-            date,
-            typeId: "3", // Savings type
-            createdAt: new Date().toISOString()
-        };
-        
-        // Add to JSON Server
-        await axios.post(`${JSON_SERVER_URL}/transactions`, newTransaction);
-        
-        res.status(201).json({ success: true, message: "Savings transaction added!", transaction: newTransaction });
-    } catch (error) {
-        console.error('Add savings error:', error);
-        res.status(500).json({ success: false, message: "Failed to add savings transaction." });
-    }
+app.post('/add-expense', authenticateToken, (req, res) => addTransaction(req, res, "1", "Expense added!"));
+app.post('/add-income', authenticateToken, (req, res) => {
+    // Income uses category as description in the old system if description not provided explicitly
+    if (!req.body.description && req.body.category) req.body.description = req.body.category;
+    addTransaction(req, res, "2", "Income added!");
 });
+app.post('/add-savings', authenticateToken, (req, res) => addTransaction(req, res, "3", "Savings transaction added!"));
 
 // Get transactions
 app.get('/transactions', authenticateToken, async (req, res) => {
     try {
         const userId = req.user.id;
-        
-        // Get all transactions from JSON Server
-        const response = await axios.get(`${JSON_SERVER_URL}/transactions`);
-        
-        // Filter for user's transactions only
-        const userTransactions = response.data.filter(t => t.userId === userId);
-        
-        res.json(userTransactions);
+        // Order by date or createdAt, Supabase format: `order=column.asc` or `order=column.desc`
+        const { data: transactions } = await supabaseAPI.get(`${SUPABASE_URL_TRANSACTIONS}?userId=eq.${userId}&select=*&order=date.desc,createdAt.desc`);
+        res.json(transactions || []);
     } catch (error) {
-        console.error('Get transactions error:', error);
+        console.error('Get transactions error:', error.response ? error.response.data : error.message);
         res.status(500).json({ error: 'Failed to fetch transactions' });
     }
 });
 
-// Get transactions by month
-app.get('/transactions/month/:month', authenticateToken, async (req, res) => {
+// Get transactions by month (e.g., /transactions/month/05/2025)
+app.get('/transactions/month/:monthStr', authenticateToken, async (req, res) => {
+    // :monthStr is MM/YY from client, like "05/25"
     try {
         const userId = req.user.id;
-        const month = req.params.month; // Format: MM/YY
+        const [month, yearShort] = req.params.monthStr.split('/');
+        const year = `20${yearShort}`;
+
+        if (!month || !year || month.length !== 2 || year.length !== 4) {
+            return res.status(400).json({ error: 'Invalid month format. Use MM/YY' });
+        }
         
-        // Get all transactions from JSON Server
-        const response = await axios.get(`${JSON_SERVER_URL}/transactions`);
-        
-        // Filter for user's transactions by month
-        const userTransactions = response.data.filter(t => 
-            t.userId === userId && t.date.includes(month)
+        const startDate = `${year}-${month.padStart(2, '0')}-01`;
+        const tempDate = new Date(parseInt(year), parseInt(month), 0); // Last day of target month
+        const endDate = `${year}-${month.padStart(2, '0')}-${String(tempDate.getDate()).padStart(2, '0')}`;
+
+        const { data: transactions } = await supabaseAPI.get(
+            `${SUPABASE_URL_TRANSACTIONS}?userId=eq.${userId}&date=gte.${startDate}&date=lte.${endDate}&select=*&order=date.asc`
         );
-        
-        res.json(userTransactions);
+        res.json(transactions || []);
     } catch (error) {
-        console.error('Get transactions by month error:', error);
-        res.status(500).json({ error: 'Failed to fetch transactions' });
+        console.error('Get transactions by month error:', error.response ? error.response.data : error.message);
+        res.status(500).json({ error: 'Failed to fetch transactions for the month' });
     }
 });
 
@@ -365,20 +312,15 @@ app.get('/transactions/month/:month', authenticateToken, async (req, res) => {
 app.get('/transactions/category/:category', authenticateToken, async (req, res) => {
     try {
         const userId = req.user.id;
-        const category = req.params.category;
-        
-        // Get all transactions from JSON Server
-        const response = await axios.get(`${JSON_SERVER_URL}/transactions`);
-        
-        // Filter for user's transactions by category
-        const userTransactions = response.data.filter(t => 
-            t.userId === userId && t.category === category
+        const category = req.params.category; // This is category name
+        // If Supabase uses category_id, frontend needs to send ID or backend needs to lookup ID first.
+        const { data: transactions } = await supabaseAPI.get(
+            `${SUPABASE_URL_TRANSACTIONS}?userId=eq.${userId}&category=eq.${category}&select=*&order=date.desc`
         );
-        
-        res.json(userTransactions);
+        res.json(transactions || []);
     } catch (error) {
-        console.error('Get transactions by category error:', error);
-        res.status(500).json({ error: 'Failed to fetch transactions' });
+        console.error('Get transactions by category error:', error.response ? error.response.data : error.message);
+        res.status(500).json({ error: 'Failed to fetch transactions for the category' });
     }
 });
 
@@ -388,238 +330,197 @@ app.delete('/transactions/:id', authenticateToken, async (req, res) => {
         const transactionId = req.params.id;
         const userId = req.user.id;
         
-        // Get the transaction
-        const transactionResponse = await axios.get(`${JSON_SERVER_URL}/transactions/${transactionId}`);
-        const transaction = transactionResponse.data;
-        
-        // Check if the transaction belongs to the user
-        if (transaction.userId !== userId) {
-            return res.status(403).json({ message: 'Not authorized to delete this transaction' });
-        }
-        
-        // Delete the transaction
-        await axios.delete(`${JSON_SERVER_URL}/transactions/${transactionId}`);
-        
+        // Ensure the transaction belongs to the user by adding userId to the query filter
+        await supabaseAPI.delete(`${SUPABASE_URL_TRANSACTIONS}?id=eq.${transactionId}&userId=eq.${userId}`);
         res.json({ message: 'Transaction deleted successfully' });
     } catch (error) {
-        console.error('Delete transaction error:', error);
+        console.error('Delete transaction error:', error.response ? error.response.data : error.message);
+        if (error.response && error.response.status === 404) { // Or 406 if Prefer: resolution=merge-duplicates is not handled
+             return res.status(404).json({ message: 'Transaction not found or not authorized to delete' });
+        }
         res.status(500).json({ error: 'Failed to delete transaction' });
     }
 });
 
-// Calculate monthly balance
-app.get('/balance/:month', authenticateToken, async (req, res) => {
+// Calculate monthly balance (e.g. /balance/month/05/2025)
+app.get('/balance/:monthStr', authenticateToken, async (req, res) => {
+    // :monthStr is MM/YY from client
     try {
         const userId = req.user.id;
-        const month = req.params.month; // Format: MM/YY
+        const [month, yearShort] = req.params.monthStr.split('/');
+        const year = `20${yearShort}`;
+
+        if (!month || !year || month.length !== 2 || year.length !== 4) {
+            return res.status(400).json({ error: 'Invalid month format. Use MM/YY' });
+        }
         
-        // Get all transactions from JSON Server
-        const response = await axios.get(`${JSON_SERVER_URL}/transactions`);
-        
-        // Filter for user's transactions by month
-        const userTransactions = response.data.filter(t => 
-            t.userId === userId && t.date.includes(month)
+        const startDate = `${year}-${month.padStart(2, '0')}-01`;
+        const tempDate = new Date(parseInt(year), parseInt(month), 0);
+        const endDate = `${year}-${month.padStart(2, '0')}-${String(tempDate.getDate()).padStart(2, '0')}`;
+
+        const { data: userTransactions } = await supabaseAPI.get(
+            `${SUPABASE_URL_TRANSACTIONS}?userId=eq.${userId}&date=gte.${startDate}&date=lte.${endDate}&select=amount,typeId,category`
         );
+
+        if (!userTransactions) {
+             return res.json({ month: req.params.monthStr, totalExpenses: 0, totalIncome: 0, totalSavings: 0, balance: 0 });
+        }
         
-        // Calculate totals by type
         let totalExpenses = 0;
         let totalIncome = 0;
-        let totalSavings = 0;
+        let totalSavings = 0; // Note: savings logic might need review based on Supabase schema
         
         userTransactions.forEach(transaction => {
             const amount = parseFloat(transaction.amount);
-            
-            if (transaction.typeId === "1") { // Expense
-                totalExpenses += amount;
-            } else if (transaction.typeId === "2") { // Income
-                totalIncome += amount;
-            } else if (transaction.typeId === "3") { // Savings
-                if (transaction.category === "Make Investments") {
-                    totalSavings -= amount; // Money going out
-                } else if (transaction.category === "Withdraw Investments") {
-                    totalSavings += amount; // Money coming in
-                }
+            if (transaction.typeId === "1") totalExpenses += amount;
+            else if (transaction.typeId === "2") totalIncome += amount;
+            else if (transaction.typeId === "3") { // Savings type
+                // This logic for "Make Investments" vs "Withdraw Investments" was specific.
+                // Ensure 'category' field exists and is correctly used.
+                if (transaction.category === "Make Investments") totalSavings -= amount; // Money out
+                else if (transaction.category === "Withdraw Investments") totalSavings += amount; // Money in
             }
         });
         
         const balance = totalIncome - totalExpenses + totalSavings;
-        
-        res.json({
-            month,
-            totalExpenses,
-            totalIncome,
-            totalSavings,
-            balance
-        });
+        res.json({ month: req.params.monthStr, totalExpenses, totalIncome, totalSavings, balance });
     } catch (error) {
-        console.error('Get balance error:', error);
+        console.error('Get balance error:', error.response ? error.response.data : error.message);
         res.status(500).json({ error: 'Failed to calculate balance' });
     }
 });
 
-// Calculate monthly balance with separated month/year params
-app.get('/balance/:month/:year', authenticateToken, async (req, res) => {
-    try {
-        const userId = req.user.id;
-        const month = req.params.month;
-        const year = req.params.year;
-        const monthYearFormat = `${month}/${year}`; // Format: MM/YY
-        
-        // Get all transactions from JSON Server
-        const response = await axios.get(`${JSON_SERVER_URL}/transactions`);
-        
-        // Filter for user's transactions by month
-        const userTransactions = response.data.filter(t => 
-            t.userId === userId && t.date.includes(monthYearFormat)
-        );
-        
-        // Calculate totals by type
-        let totalExpenses = 0;
-        let totalIncome = 0;
-        let totalSavings = 0;
-        
-        userTransactions.forEach(transaction => {
-            const amount = parseFloat(transaction.amount);
-            
-            if (transaction.typeId === "1") { // Expense
-                totalExpenses += amount;
-            } else if (transaction.typeId === "2") { // Income
-                totalIncome += amount;
-            } else if (transaction.typeId === "3") { // Savings
-                if (transaction.category === "Make Investments") {
-                    totalSavings -= amount; // Money going out
-                } else if (transaction.category === "Withdraw Investments") {
-                    totalSavings += amount; // Money coming in
-                }
-            }
-        });
-        
-        const balance = totalIncome - totalExpenses + totalSavings;
-        
-        res.json({
-            month: monthYearFormat,
-            totalExpenses,
-            totalIncome,
-            totalSavings,
-            balance
-        });
-    } catch (error) {
-        console.error('Get balance error:', error);
-        res.status(500).json({ error: 'Failed to calculate balance' });
-    }
-});
-
-// Get all months with transactions
+// Get all unique months with transactions
 app.get('/months', authenticateToken, async (req, res) => {
     try {
         const userId = req.user.id;
+        const { data: userTransactions } = await supabaseAPI.get(
+            `${SUPABASE_URL_TRANSACTIONS}?userId=eq.${userId}&select=date&order=date.asc`
+        );
         
-        // Get all transactions from JSON Server
-        const response = await axios.get(`${JSON_SERVER_URL}/transactions`);
+        if (!userTransactions) {
+            return res.json([]);
+        }
         
-        // Filter for user's transactions
-        const userTransactions = response.data.filter(t => t.userId === userId);
-        
-        // Extract unique months
         const months = new Set();
         userTransactions.forEach(transaction => {
-            // Extract month and year from date (format: DD/MM/YY)
-            const parts = transaction.date.split('/');
+            // Assuming date is "YYYY-MM-DD" from Supabase
+            const parts = transaction.date.split('-'); // YYYY-MM-DD
             if (parts.length >= 3) {
-                const month = `${parts[1]}/${parts[2]}`; // MM/YY
-                months.add(month);
+                const monthYear = `${parts[1]}/${parts[0].substring(2)}`; // MM/YY
+                months.add(monthYear);
             }
         });
         
-        res.json(Array.from(months).sort());
+        res.json(Array.from(months).sort((a, b) => { // Sort MM/YY
+            const [m1, y1] = a.split('/');
+            const [m2, y2] = b.split('/');
+            if (y1 !== y2) return y1.localeCompare(y2);
+            return m1.localeCompare(m2);
+        }));
     } catch (error) {
-        console.error('Get months error:', error);
+        console.error('Get months error:', error.response ? error.response.data : error.message);
         res.status(500).json({ error: 'Failed to fetch months' });
     }
 });
 
-// Import initial data if needed
+// Import initial data from .txt files if Supabase is empty for the default user
 const importExistingData = async () => {
     try {
-        console.log('Checking if data needs to be imported...');
+        console.log('Checking if data needs to be imported to Supabase...');
         
-        // Check if transactions already exist
-        const transactionsResponse = await axios.get(`${JSON_SERVER_URL}/transactions`);
-        if (transactionsResponse.data && transactionsResponse.data.length > 0) {
-            console.log('Transactions already exist, skipping import.');
+        // Get the first user (assuming it's the default/admin user for legacy data)
+        // This needs a reliable way to identify the "default" user in Supabase.
+        // For now, let's assume we fetch the first user by creation date or a specific email.
+        // This part is tricky without a defined "default" user ID for legacy data.
+        // Let's assume process.env.DEFAULT_USER_ID_FOR_IMPORT exists or use first created user.
+        
+        let defaultUserId = process.env.DEFAULT_USER_ID_FOR_IMPORT;
+        if (!defaultUserId) {
+            const { data: users } = await supabaseAPI.get(`${SUPABASE_URL_USUARIOS}?select=id&order=createdAt.asc&limit=1`);
+            if (users && users.length > 0) {
+                defaultUserId = users[0].id;
+            } else {
+                console.log('No users in Supabase to assign legacy data to. Skipping import.');
+                return;
+            }
+        }
+        
+        const { data: existingTransactions } = await supabaseAPI.get(
+            `${SUPABASE_URL_TRANSACTIONS}?userId=eq.${defaultUserId}&select=id&limit=1`
+        );
+
+        if (existingTransactions && existingTransactions.length > 0) {
+            console.log('Transactions already exist in Supabase for the default user, skipping import.');
             return;
         }
         
-        console.log('Importing existing data from expenses.txt and incomes.txt...');
-        
-        // Get the default user (admin)
-        const usersResponse = await axios.get(`${JSON_SERVER_URL}/usuarios`);
-        const defaultUserId = usersResponse.data[0].id;
-        
-        // Import expenses
-        if (fs.existsSync(path.join(__dirname, 'expenses.txt'))) {
-            const expensesData = fs.readFileSync(path.join(__dirname, 'expenses.txt'), 'utf8');
-            const expenseLines = expensesData.split('\n').filter(line => line.trim());
-            
-            for (const line of expenseLines) {
+        console.log(`Importing legacy data from .txt files for user ID: ${defaultUserId}...`);
+        const transactionsToImport = [];
+
+        const expensesFilePath = process.env.EXPENSES_FILE_PATH || path.join(__dirname, 'expenses.txt');
+        const incomesFilePath = process.env.INCOMES_FILE_PATH || path.join(__dirname, 'incomes.txt');
+
+        if (fs.existsSync(expensesFilePath)) {
+            const expensesData = fs.readFileSync(expensesFilePath, 'utf8');
+            expensesData.split('\n').filter(line => line.trim()).forEach(line => {
                 const parts = line.split(',');
                 if (parts.length >= 4) {
-                    const [description, amount, category, date] = parts;
-                    
-                    await axios.post(`${JSON_SERVER_URL}/transactions`, {
-                        id: uuidv4(),
-                        userId: defaultUserId,
-                        description,
-                        amount: parseFloat(amount),
-                        category,
-                        date,
-                        typeId: "1", // Expense
-                        createdAt: new Date().toISOString()
+                    const [description, amount, category, dateStr] = parts.map(p => p.trim());
+                    const [d, m, yShort] = dateStr.split('/');
+                    const formattedDate = `20${yShort}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
+                    transactionsToImport.push({
+                        id: uuidv4(), userId: defaultUserId, description, 
+                        amount: parseFloat(amount), category, date: formattedDate,
+                        typeId: "1", createdAt: new Date().toISOString()
                     });
                 }
-            }
+            });
         }
         
-        // Import incomes
-        if (fs.existsSync(path.join(__dirname, 'incomes.txt'))) {
-            const incomesData = fs.readFileSync(path.join(__dirname, 'incomes.txt'), 'utf8');
-            const incomeLines = incomesData.split('\n').filter(line => line.trim());
-            
-            for (const line of incomeLines) {
+        if (fs.existsSync(incomesFilePath)) {
+            const incomesData = fs.readFileSync(incomesFilePath, 'utf8');
+            incomesData.split('\n').filter(line => line.trim()).forEach(line => {
                 const parts = line.split(',');
                 if (parts.length >= 3) {
-                    const [category, amount, date] = parts;
-                    
-                    // Check if it's a savings transaction
-                    let typeId = "2"; // Default to Income
-                    if (category === "Make Investments" || category === "Withdraw Investments") {
-                        typeId = "3"; // Savings
-                    }
-                    
-                    await axios.post(`${JSON_SERVER_URL}/transactions`, {
-                        id: uuidv4(),
-                        userId: defaultUserId,
-                        description: category, // Use category as description for incomes
-                        amount: parseFloat(amount),
-                        category,
-                        date,
-                        typeId,
-                        createdAt: new Date().toISOString()
+                    const [category, amount, dateStr] = parts.map(p => p.trim());
+                    const [d, m, yShort] = dateStr.split('/');
+                    const formattedDate = `20${yShort}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
+                    let typeId = "2"; // Default Income
+                    if (category === "Make Investments" || category === "Withdraw Investments") typeId = "3"; // Savings
+                    transactionsToImport.push({
+                        id: uuidv4(), userId: defaultUserId, description: category, // Income used category as desc
+                        amount: parseFloat(amount), category, date: formattedDate,
+                        typeId, createdAt: new Date().toISOString()
                     });
                 }
+            });
+        }
+
+        if (transactionsToImport.length > 0) {
+            // Supabase REST API can accept an array of objects to insert multiple rows
+            const { data, error } = await supabaseAPI.post(SUPABASE_URL_TRANSACTIONS, transactionsToImport);
+            if (error) {
+                console.error('Error bulk inserting legacy data to Supabase:', error.response ? error.response.data : error);
+            } else {
+                console.log(`✅ Successfully imported ${data ? data.length : 0} legacy transactions to Supabase.`);
             }
+        } else {
+            console.log('No legacy data found in .txt files to import.');
         }
         
-        console.log('✅ Data import complete');
     } catch (error) {
-        console.error('Error importing data:', error);
+        console.error('Error during Supabase legacy data import process:', error.response ? error.response.data : error.message);
     }
 };
 
 // SERVER
-app.listen(3000, () => {
-    console.log('✅ Server is running at http://localhost:3000/');
-    
-    // Import existing data from the C backend on first run
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`✅ Server is running at http://localhost:${PORT}/`);
+    if (!SUPABASE_ANON_KEY) {
+        console.warn("⚠️ SUPABASE_ANON_KEY is not set. API requests to Supabase will likely fail.");
+    }
+    // Import existing data (now to Supabase) on first run if DB is empty for default user
     importExistingData();
 });

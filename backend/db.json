@@ -602,16 +602,6 @@
       "createdAt": "2025-05-13T16:47:56.382Z"
     },
     {
-      "id": "d3d4d3f7-b738-4955-b4cb-16f88433c3f2",
-      "userId": "1",
-      "description": "CDB",
-      "amount": 1200,
-      "category": "Make Investments",
-      "date": "11/05/25",
-      "typeId": "1",
-      "createdAt": "2025-05-13T16:47:56.383Z"
-    },
-    {
       "id": "6b85d938-ea91-424a-a908-06eee4302d90",
       "userId": "1",
       "description": "Freelance site landing page",
