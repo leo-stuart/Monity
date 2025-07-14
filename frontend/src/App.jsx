@@ -9,12 +9,19 @@ import Login from './components/Login'
 import Signup from './components/Signup'
 import AddCategory from './components/AddCategory'
 import Settings from './components/Settings'
-import { isAuthenticated } from './utils/api'
+import { useAuth } from './context/AuthContext'
+import Spinner from './components/Spinner'
 import { useEffect } from 'react'
 
 // Protected route component
 const ProtectedRoute = ({ children }) => {
-  if (!isAuthenticated()) {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return <Spinner />;
+  }
+
+  if (!user) {
     return <Navigate to="/login" replace />;
   }
   return children;
@@ -22,19 +29,16 @@ const ProtectedRoute = ({ children }) => {
 
 function App() {
   const location = useLocation();
+  const { user, loading } = useAuth();
   const isAuthPage = location.pathname === '/login' || location.pathname === '/signup';
-
-
-  useEffect(() => {
-    if (!isAuthPage && !isAuthenticated()) {
-      window.location.href = '/login';
-    }
-  }, [isAuthPage]);
-
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
+
+  if (loading && !isAuthPage) {
+    return <Spinner />;
+  }
 
   if (isAuthPage) {
     return (

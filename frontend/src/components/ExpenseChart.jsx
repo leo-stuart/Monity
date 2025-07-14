@@ -7,7 +7,7 @@ import {
     Tooltip,
     Legend,
 } from 'chart.js';
-import { getToken, get } from '../utils/api';
+import { get } from '../utils/api';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -18,23 +18,15 @@ function ExpenseChart(){
 
     useEffect(() => {
         const fetchExpenses = async () => {
-            const token = getToken();
-            if (!token) {
-                setError('Authentication required');
-                setLoading(false);
-                return;
-            }
-
             try {
-                const data = await get('/transactions');
-                // Ensure data is an array and filter only expense type transactions
+                const { data } = await get('/transactions');
                 const expenseData = Array.isArray(data) 
                     ? data.filter(transaction => transaction.typeId === "1")
                     : [];
                 setExpenses(expenseData);
-                setLoading(false);
             } catch (error) {
                 setError(error.message);
+            } finally {
                 setLoading(false);
             }
         };

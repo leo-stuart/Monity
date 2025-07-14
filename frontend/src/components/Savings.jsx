@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import Spinner from './Spinner';
-import { getToken } from '../utils/api';
+import { get } from '../utils/api';
 
 function Savings() {
     const [transactions, setTransactions] = useState([]);
@@ -8,33 +8,17 @@ function Savings() {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const token = getToken();
-        if (!token) {
-            setError('Authentication required');
-            setLoading(false);
-            return;
-        }
-
-        fetch('http://localhost:3000/transactions', {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                // API returns transactions directly, not wrapped in data.data
+        const fetchTransactions = async () => {
+            try {
+                const { data } = await get('/transactions');
                 setTransactions(data);
+            } catch(err) {
+                setError(err.message);
+            } finally {
                 setLoading(false);
-            })
-            .catch(error => {
-                setError(error.message);
-                setLoading(false);
-            });
+            }
+        };
+        fetchTransactions();
     }, []);
 
     // Handle loading and error states

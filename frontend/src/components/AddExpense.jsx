@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getToken } from '../utils/api';
+import { get, post } from '../utils/api';
 
 function AddExpense({ onAdd }) {
     const [categories, setCategories] = useState([]);
@@ -12,18 +12,16 @@ function AddExpense({ onAdd }) {
     const [success, setSuccess] = useState(null);
 
     useEffect(() => {
-        const token = getToken();
-        fetch('http://localhost:3000/categories', {
-            headers: token ? { 'Authorization': `Bearer ${token}` } : {}
-        })
-            .then(res => res.json())
-            .then(data => {
+        const fetchCategories = async () => {
+            try {
+                const { data } = await get('/categories');
                 setCategories(data);
-            })
-            .catch(err => {
+            } catch (err) {
                 console.error('Error fetching categories:', err);
                 setError('Failed to load categories');
-            });
+            }
+        };
+        fetchCategories();
     }, []);
 
     const expenseCategories = categories
@@ -35,30 +33,13 @@ function AddExpense({ onAdd }) {
         setError(null);
         setSuccess(null);
         try {
-            const token = getToken();
-            if (!token) {
-                throw new Error('You must be logged in to add an expense');
-            }
-            
-            const res = await fetch('http://localhost:3000/add-expense', {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ description, amount, category, date })
-            });
-            
-            if (!res.ok) {
-                const errorData = await res.json().catch(() => ({ message: 'Failed to add expense' }));
-                throw new Error(errorData.message || 'Failed to add expense');
-            }
+            await post('/add-expense', { description, amount, category, date });
             
             setSuccess('Expense added!');
             setDescription(''); setAmount(''); setCategory(''); setDate('');
             if (onAdd) onAdd();
         } catch (err) {
-            setError(err.message);
+            setError(err.response?.data?.message || 'Failed to add expense');
         } finally {
             setLoading(false);
         }

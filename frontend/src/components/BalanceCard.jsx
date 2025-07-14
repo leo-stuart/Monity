@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import Spinner from "./Spinner"
-import { getToken } from "../utils/api"
+import { get } from "../utils/api"
 
 function BalanceCard() {
     const [history, setHistory] = useState([])
@@ -8,84 +8,40 @@ function BalanceCard() {
     const [error, setError] = useState(null)
 
     useEffect(() => {
-        const token = getToken();
-        if (!token) {
-            setError('Authentication required');
-            setLoading(false);
-            return;
-        }
-
-        fetch('http://localhost:3000/months', {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status ${response.status}`)
-                }
-                return response.json()
-            })
-            .then(data => {
-                // data will be an array of month strings
+        const fetchMonths = async () => {
+            try {
+                const { data } = await get('/months');
                 setHistory(data);
-                setLoading(false)
-            })
-            .catch(error => {
-                setError(error.message)
-                setLoading(false)
-            })
-    }, [])
+            } catch (err) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchMonths();
+    }, []);
 
-    // Initialize total balance
     const [totalBalance, setTotalBalance] = useState(0);
 
-    // Fetch balance for each month and calculate total
     useEffect(() => {
-        if (!history.length || loading) return;
+        if (!history.length) return;
         
-        const token = getToken();
-        if (!token) return;
-        
-        let total = 0;
-        let completedRequests = 0;
-        
-        // Create a function to fetch balance for a single month
-        const fetchMonthBalance = async (month) => {
-            try {
-                const response = await fetch(`http://localhost:3000/balance/${month}`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status ${response.status}`);
-                }
-                
-                const data = await response.json();
-                return data.balance || 0;
-            } catch (error) {
-                console.error(`Error fetching balance for ${month}:`, error);
-                return 0;
-            }
-        };
-        
-        // Process each month and update total
-        const processAllMonths = async () => {
+        const fetchAllBalances = async () => {
             setLoading(true);
-            let sum = 0;
-            
-            for (const month of history) {
-                const balance = await fetchMonthBalance(month);
-                sum += parseFloat(balance);
+            try {
+                const balancePromises = history.map(month => get(`/balance/${month}`));
+                const balanceResponses = await Promise.all(balancePromises);
+                const total = balanceResponses.reduce((acc, response) => acc + (response.data.balance || 0), 0);
+                setTotalBalance(total);
+            } catch (err) {
+                console.error('Error fetching balances:', err);
+                setError('Failed to calculate total balance');
+            } finally {
+                setLoading(false);
             }
-            
-            setTotalBalance(sum);
-            setLoading(false);
         };
         
-        processAllMonths();
+        fetchAllBalances();
     }, [history]);
 
     if(loading){

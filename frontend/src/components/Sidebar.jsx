@@ -1,16 +1,16 @@
 import { NavLink, Link, useNavigate } from "react-router-dom";
-import { getUser, logout } from "../utils/api";
+import { useAuth } from "../context/AuthContext";
 import { useState, useRef, useEffect } from "react";
 
 export default function Sidebar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
-  const user = getUser();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     navigate('/login');
   };
 
@@ -142,18 +142,18 @@ export default function Sidebar() {
             >
               <div className="w-9 h-9 bg-[#01C38D] rounded-full flex items-center justify-center shadow-md group-hover:bg-[#01A071] transition-colors">
                 <span className="text-[#191E29] text-xl font-bold">
-                  {user?.nome ? user.nome.charAt(0).toUpperCase() : '👤'}
+                  {user?.user_metadata?.name ? user.user_metadata.name.charAt(0).toUpperCase() : '👤'}
                 </span>
               </div>
               <span className="text-white font-medium">
-                {user?.nome || 'User'}
+                {user?.user_metadata?.name || 'User'}
               </span>
             </button>
 
             {isDropdownOpen && (
               <div className="absolute left-0 bottom-full mb-2 w-full bg-[#23263a] border border-[#31344d] rounded-md shadow-lg z-10">
                 <div className="p-3 border-b border-[#31344d]">
-                  <p className="text-white font-medium">{user?.nome || 'User'}</p>
+                  <p className="text-white font-medium">{user?.user_metadata?.name || 'User'}</p>
                   <p className="text-gray-400 text-sm truncate">{user?.email || 'user@example.com'}</p>
                 </div>
                 <ul>

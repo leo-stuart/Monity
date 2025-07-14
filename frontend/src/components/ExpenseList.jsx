@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import Spinner from './Spinner'
-import { getToken } from '../utils/api'
+import { get, del } from '../utils/api'
 
 function ListExpenses() {
     const [expenses, setExpenses] = useState([]);
@@ -10,66 +10,33 @@ function ListExpenses() {
     const [category, setCategory] = useState('');
     const [date, setDate] = useState('');
 
-    const handleDelete = transactionId => {
+    const handleDelete = async (transactionId) => {
         if (!window.confirm("Are you sure you want to delete this expense?")) return
 
-        const token = getToken();
-        if (!token) {
-            setError('Authentication required');
-            return;
+        try {
+            await del(`/transactions/${transactionId}`);
+            setExpenses(prev => prev.filter(expense => expense.id !== transactionId))
+        } catch(err) {
+            console.error(err)
+            alert("Could not delete - please try again.")
         }
-
-        fetch(`http://localhost:3000/transactions/${transactionId}`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            }
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`)
-                }
-                setExpenses(prev => prev.filter(expense => expense.id !== transactionId))
-            })
-            .catch(error => {
-                console.error(error)
-                alert("Could not delete - please try again.")
-            })
     }
 
     useEffect(() => {
-        const token = getToken();
-        if (!token) {
-            setError('Authentication required');
-            setLoading(false);
-            return;
-        }
-
-        fetch('http://localhost:3000/transactions', {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
-            })
-
-            .then(data => {
-                // Filter expense transactions (typeId === "1")
+        const fetchExpenses = async () => {
+            try {
+                const { data } = await get('/transactions');
                 const expenseData = Array.isArray(data)
                     ? data.filter(transaction => transaction.typeId === "1")
                     : [];
                 setExpenses(expenseData);
+            } catch (err) {
+                setError(err.message);
+            } finally {
                 setLoading(false);
-            })
-            .catch(error => {
-                setError(error.message);
-                setLoading(false);
-            })
+            }
+        };
+        fetchExpenses();
     }, []);
 
     const filtered = expenses

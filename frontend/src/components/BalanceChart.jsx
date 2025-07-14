@@ -10,7 +10,7 @@ import {
     Legend,
   } from "chart.js";
 import Spinner from './Spinner';
-import { getToken } from '../utils/api';
+import { get } from '../utils/api';
   
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -20,64 +20,26 @@ function BalanceChart(){
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const token = getToken();
-        if (!token) {
-            setError('Authentication required');
-            setLoading(false);
-            return;
-        }
+        const fetchChartData = async () => {
+            try {
+                const { data: months } = await get('/months');
+                const balancePromises = months.map(month => get(`/balance/${month}`));
+                const balanceResponses = await Promise.all(balancePromises);
 
-        fetch('http://localhost:3000/months', {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(months => {
-                // Fetch balance data for each month
-                fetchBalanceData(months, token);
-            })
-            .catch(error => {
-                setError(error.message);
+                const monthlyBalances = balanceResponses.map((response, index) => ({
+                    month: months[index],
+                    balance: response.data.balance || 0
+                }));
+                
+                setHistory(monthlyBalances);
+            } catch (err) {
+                setError(err.message);
+            } finally {
                 setLoading(false);
-            });
-    }, []);
-
-    // Function to fetch balance data for each month
-    const fetchBalanceData = async (months, token) => {
-        try {
-            const monthlyBalances = [];
-            
-            for (const month of months) {
-                const response = await fetch(`http://localhost:3000/balance/${month}`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status ${response.status}`);
-                }
-                
-                const data = await response.json();
-                monthlyBalances.push({
-                    month,
-                    balance: data.balance || 0
-                });
             }
-            
-            setHistory(monthlyBalances);
-            setLoading(false);
-        } catch (error) {
-            setError(error.message);
-            setLoading(false);
-        }
-    };
+        };
+        fetchChartData();
+    }, []);
 
     // Sort history by month
     const sortedHistory = [...history].sort((a, b) => {

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { getToken } from '../utils/api';
+import { post } from '../utils/api';
 
 function AddCategory() {
     const [categoryName, setCategoryName] = useState('');
@@ -18,23 +18,7 @@ function AddCategory() {
             categoryId = 2
         }
         try {
-            const token = getToken();
-            if (!token) {
-                throw new Error('You must be logged in to add a category');
-            }
-            const response = await fetch('http://localhost:3001/categories', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ name: categoryName, typeId: categoryId }),
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to add category');
-            }
-
+            await post('/categories', { name: categoryName, typeId: categoryId });
             setSuccess('Category added successfully!');
             setCategoryName('');
             setError('');

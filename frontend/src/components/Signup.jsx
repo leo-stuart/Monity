@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 function Signup() {
     const [name, setName] = useState('');
@@ -9,6 +10,7 @@ function Signup() {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const { signup } = useAuth();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -22,32 +24,11 @@ function Signup() {
         }
 
         try {
-            const response = await fetch('http://localhost:3000/signup', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ 
-                    nome: name, 
-                    email, 
-                    password 
-                }),
-            });
-
-            const data = await response.json();
-            
-            if (!response.ok) {
-                throw new Error(data.message || 'Signup failed');
+            const { error } = await signup(name, email, password);
+            if (error) {
+                throw new Error(error);
             }
-
-            // Store token and user data in localStorage
-            localStorage.setItem('token', data.token);
-            localStorage.setItem('user', JSON.stringify(data.user));
-            
-            // Navigate to dashboard
-            setTimeout(() => {
-                navigate('/');
-            }, 500);
+            navigate('/');
         } catch (err) {
             setError(err.message || 'Failed to create account');
         } finally {
