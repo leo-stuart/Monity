@@ -7,6 +7,9 @@
     "start": "node api.js",
     "test": "jest"
   },
+  "engines": {
+    "node": "20.x"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
