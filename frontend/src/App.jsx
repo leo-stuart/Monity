@@ -28,82 +28,43 @@ const ProtectedRoute = ({ children }) => {
 };
 
 function App() {
-  const location = useLocation();
-  const { user, loading } = useAuth();
-  const isAuthPage = location.pathname === '/login' || location.pathname === '/signup';
-
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [location.pathname]);
-
-  if (loading && !isAuthPage) {
-    return <Spinner />;
-  }
-
-  if (isAuthPage) {
-    return (
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-      </Routes>
-    );
-  }
+  }, [useLocation().pathname]);
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#191E29]">
-      <div className="flex flex-1">
-        {/* Skip to main content link for accessibility */}
-        <a
-          href="#main-content"
-          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-[#01C38D] text-[#191E29] p-2 z-50 rounded"
-        >
-          Skip to main content
-        </a>
+    <Routes>
+      {/* Public routes */}
+      <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<Signup />} />
 
-        <Sidebar />
+      {/* Protected routes */}
+      <Route path="/" element={<ProtectedRoute><MainLayout><Dashboard /></MainLayout></ProtectedRoute>} />
+      <Route path="/transactions" element={<ProtectedRoute><MainLayout><Transactions /></MainLayout></ProtectedRoute>} />
+      <Route path="/add-expense" element={<ProtectedRoute><MainLayout><AddExpense /></MainLayout></ProtectedRoute>} />
+      <Route path="/add-income" element={<ProtectedRoute><MainLayout><AddIncome /></MainLayout></ProtectedRoute>} />
+      <Route path="/categories" element={<ProtectedRoute><MainLayout><AddCategory /></MainLayout></ProtectedRoute>} />
+      <Route path="/settings" element={<ProtectedRoute><MainLayout><Settings /></MainLayout></ProtectedRoute>} />
 
-        <main
-          id="main-content"
-          className="flex-1 p-4 md:p-6 pt-4 md:pt-2 ml-0 md:ml-64 overflow-y-auto transition-all duration-300"
-          aria-live="polite"
-        >
-          <Routes>
-            <Route path="/" element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            } />
-            <Route path="/transactions" element={
-              <ProtectedRoute>
-                <Transactions />
-              </ProtectedRoute>
-            } />
-            <Route path="/add-expense" element={
-              <ProtectedRoute>
-                <AddExpense />
-              </ProtectedRoute>
-            } />
-            <Route path="/add-income" element={
-              <ProtectedRoute>
-                <AddIncome />
-              </ProtectedRoute>
-            } />
-            <Route path="/categories" element={
-              <ProtectedRoute>
-                <AddCategory />
-              </ProtectedRoute>
-            } />
-            <Route path="/settings" element={
-              <ProtectedRoute>
-                <Settings />
-              </ProtectedRoute>
-            } />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </main>
-      </div>
-    </div>
-  )
+      {/* Fallback route */}
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
 }
 
-export default App
+// Main layout for protected pages
+const MainLayout = ({ children }) => (
+  <div className="flex flex-col min-h-screen bg-[#191E29]">
+    <div className="flex flex-1">
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-[#01C38D] text-[#191E29] p-2 z-50 rounded">
+        Skip to main content
+      </a>
+      <Sidebar />
+      <main id="main-content" className="flex-1 p-4 md:p-6 pt-4 md:pt-2 ml-0 md:ml-64 overflow-y-auto transition-all duration-300" aria-live="polite">
+        {children}
+      </main>
+    </div>
+  </div>
+);
+
+export default App;

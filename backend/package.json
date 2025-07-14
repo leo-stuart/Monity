@@ -4,7 +4,7 @@
   "description": "Backend for Monity expense tracking application",
   "main": "api.js",
   "scripts": {
-    "start": "node api.js",
+    "start": "node --trace-warnings api.js",
     "test": "jest"
   },
   "engines": {

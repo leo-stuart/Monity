@@ -20,6 +20,7 @@ app.use(express.json())
 app.get('/', (req, res) => {
     res.status(200).send('Monity API is running.');
 });
+console.log('Route registered: GET /');
 
 const authMiddleware = async (req, res, next) => {
     const token = req.headers.authorization?.split(' ')[1];
@@ -51,6 +52,7 @@ app.post('/signup', async (req, res) => {
 
     res.status(201).json({ user: data.user, session: data.session });
 });
+console.log('Route registered: POST /signup');
 
 // Login route
 app.post('/login', async (req, res) => {
@@ -71,6 +73,7 @@ app.post('/login', async (req, res) => {
 
     res.json({ user: data.user, session: data.session });
 });
+console.log('Route registered: POST /login');
 
 
 // Get categories
@@ -84,6 +87,7 @@ app.get('/categories', authMiddleware, async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch categories' });
     }
 });
+console.log('Route registered: GET /categories');
 
 // Add a new category
 app.post('/categories', authMiddleware, async (req, res) => {
@@ -112,6 +116,7 @@ app.post('/categories', authMiddleware, async (req, res) => {
         res.status(500).json({ error: 'Failed to create category' });
     }
 });
+console.log('Route registered: POST /categories');
 
 // Delete a category
 app.delete('/categories/:id', authMiddleware, async (req, res) => {
@@ -124,6 +129,7 @@ app.delete('/categories/:id', authMiddleware, async (req, res) => {
         res.status(500).json({ error: 'Failed to delete category' });
     }
 });
+console.log('Route registered: DELETE /categories/:id');
 
 // Get transaction types
 app.get('/transaction-types', authMiddleware, async (req, res) => {
@@ -135,6 +141,7 @@ app.get('/transaction-types', authMiddleware, async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch transaction types' });
     }
 });
+console.log('Route registered: GET /transaction-types');
 
 // Add expense, income, or savings (generic transaction adder)
 const addTransaction = async (req, res, typeId, successMessage) => {
@@ -172,11 +179,14 @@ const addTransaction = async (req, res, typeId, successMessage) => {
 };
 
 app.post('/add-expense', authMiddleware, (req, res) => addTransaction(req, res, "1", "Expense added!"));
+console.log('Route registered: POST /add-expense');
 app.post('/add-income', authMiddleware, (req, res) => {
     if (!req.body.description && req.body.category) req.body.description = req.body.category;
     addTransaction(req, res, "2", "Income added!");
 });
+console.log('Route registered: POST /add-income');
 app.post('/add-savings', authMiddleware, (req, res) => addTransaction(req, res, "3", "Savings transaction added!"));
+console.log('Route registered: POST /add-savings');
 
 // Get transactions
 app.get('/transactions', authMiddleware, async (req, res) => {
@@ -189,6 +199,7 @@ app.get('/transactions', authMiddleware, async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch transactions' });
     }
 });
+console.log('Route registered: GET /transactions');
 
 // Get transactions by month (e.g., /transactions/month/05/2025)
 app.get('/transactions/month/:monthStr', authMiddleware, async (req, res) => {
@@ -212,6 +223,7 @@ app.get('/transactions/month/:monthStr', authMiddleware, async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch transactions for the month' });
     }
 });
+console.log('Route registered: GET /transactions/month/:monthStr');
 
 // Get transactions by category
 app.get('/transactions/category/:category', authMiddleware, async (req, res) => {
@@ -225,6 +237,7 @@ app.get('/transactions/category/:category', authMiddleware, async (req, res) => 
         res.status(500).json({ error: 'Failed to fetch transactions for the category' });
     }
 });
+console.log('Route registered: GET /transactions/category/:category');
 
 // Delete a transaction
 app.delete('/transactions/:id', authMiddleware, async (req, res) => {
@@ -242,6 +255,7 @@ app.delete('/transactions/:id', authMiddleware, async (req, res) => {
         res.status(500).json({ error: 'Failed to delete transaction' });
     }
 });
+console.log('Route registered: DELETE /transactions/:id');
 
 // Calculate monthly balance (e.g. /balance/month/05/2025)
 app.get('/balance/:monthStr', authMiddleware, async (req, res) => {
@@ -285,6 +299,7 @@ app.get('/balance/:monthStr', authMiddleware, async (req, res) => {
         res.status(500).json({ error: 'Failed to calculate balance' });
     }
 });
+console.log('Route registered: GET /balance/:monthStr');
 
 // Get all unique months with transactions
 app.get('/months', authMiddleware, async (req, res) => {
@@ -316,6 +331,7 @@ app.get('/months', authMiddleware, async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch months' });
     }
 });
+console.log('Route registered: GET /months');
 
 // Import initial data from .txt files if Supabase is empty for the default user
 const importExistingData = async () => {
@@ -410,6 +426,7 @@ const port = process.env.PORT || 3000;
 if (process.env.NODE_ENV !== 'test') {
     app.listen(port, () => {
         console.log(`Server listening on port ${port}`);
+        console.log('--- APPLICATION STARTUP COMPLETE ---');
         // importExistingData();
     });
 }

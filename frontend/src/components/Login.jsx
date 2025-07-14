@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import apiClient from '../utils/api';
+import { useAuth } from '../context/AuthContext';
 
 function Login() {
     const [email, setEmail] = useState('');
@@ -8,6 +9,7 @@ function Login() {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const { login } = useAuth();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -15,22 +17,8 @@ function Login() {
         setError('');
         
         try {
-            const response = await apiClient.post('/login', { email, password });
-
-            const data = response.data;
-            
-            if (response.status !== 200) {
-                throw new Error(data.message || 'Login failed');
-            }
-
-            // Store token in localStorage
-            localStorage.setItem('token', data.session.access_token);
-            localStorage.setItem('user', JSON.stringify(data.user));
-            
-            // Set Authorization header for future requests
-            setTimeout(() => {
-                navigate('/');
-            }, 500);
+            await login(email, password);
+            navigate('/');
         } catch (err) {
             setError(err.message || 'Invalid email or password');
         } finally {
