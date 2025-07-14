@@ -15,7 +15,7 @@ function Login() {
         setError('');
         
         try {
-            const response = await apiClient.post('https://monity.onrender.com/login', { email, password });
+            const response = await apiClient.post('/login', { email, password });
 
             const data = response.data;
             
@@ -24,7 +24,7 @@ function Login() {
             }
 
             // Store token in localStorage
-            localStorage.setItem('token', data.token);
+            localStorage.setItem('token', data.session.access_token);
             localStorage.setItem('user', JSON.stringify(data.user));
             
             // Set Authorization header for future requests

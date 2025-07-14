@@ -17,12 +17,6 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 app.use(cors())
 app.use(express.json())
 
-// Add a simple logging middleware
-app.use((req, res, next) => {
-    console.log(`Received request: ${req.method} ${req.url}`);
-    next();
-});
-
 app.get('/', (req, res) => {
     res.status(200).send('Monity API is running.');
 });
@@ -60,26 +54,16 @@ app.post('/signup', async (req, res) => {
 
 // Login route
 app.post('/login', async (req, res) => {
-    console.log('--- LOGIN ROUTE HIT ---');
     const { email, password } = req.body;
-    console.log('Login attempt with email:', email);
-
-    if (!email || !password) {
-        console.log('Login failed: Missing email or password in request body.');
-        return res.status(400).json({ error: 'Email and password are required.' });
-    }
-
     const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
     });
 
     if (error) {
-        console.error('Supabase login error:', error.message);
         return res.status(400).json({ error: error.message });
     }
 
-    console.log('Supabase login successful for user:', data.user.id);
     res.json({ user: data.user, session: data.session });
 });
 
