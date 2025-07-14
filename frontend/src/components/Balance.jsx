@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react';
+import apiClient from '../utils/api';
 
 function Balance() {
     const [monthReq, setMonthReq] = useState('')
@@ -17,15 +18,12 @@ function Balance() {
             return
         }
 
-        fetch(`http://localhost:3000/balance/${monthReq}`, {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
-        })
+        apiClient.get(`/balance/${monthReq}`)
             .then(response => {
-                if (!response.ok) {
+                if (response.status !== 200) {
                     throw new Error(`HTTP error! status ${response.status}`)
                 }
-                return response.json()
+                return response.data;
             })
             .then(data => {
                 setMessage(data.balance)

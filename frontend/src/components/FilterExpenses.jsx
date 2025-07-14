@@ -1,5 +1,6 @@
 import Spinner from "./Spinner"
 import { useState, useEffect } from 'react';
+import apiClient from '../utils/api';
 
 function FilterExpenses() {
     const [expenses, setExpenses] = useState([]);
@@ -9,12 +10,12 @@ function FilterExpenses() {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        fetch('http://localhost:3000/transactions')
+        apiClient.get('/transactions')
             .then(response => {
-                if (!response.ok) {
+                if (response.status !== 200) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                return response.json();
+                return response.data;
             })
 
             .then(data => {

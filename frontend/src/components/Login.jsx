@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import apiClient from '../utils/api';
 
 function Login() {
     const [email, setEmail] = useState('');
@@ -14,17 +15,11 @@ function Login() {
         setError('');
         
         try {
-            const response = await fetch('http://localhost:3000/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email, password }),
-            });
+            const response = await apiClient.post('/login', { email, password });
 
-            const data = await response.json();
+            const data = response.data;
             
-            if (!response.ok) {
+            if (response.status !== 200) {
                 throw new Error(data.message || 'Login failed');
             }
 
@@ -61,6 +56,7 @@ function Login() {
                         <input
                             type="email"
                             id="email"
+                            autoComplete="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             className="w-full bg-[#191E29] border border-[#31344d] text-white rounded-lg p-2.5 focus:ring-[#01C38D] focus:border-[#01C38D]"
@@ -72,6 +68,7 @@ function Login() {
                         <input
                             type="password"
                             id="password"
+                            autoComplete="current-password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             className="w-full bg-[#191E29] border border-[#31344d] text-white rounded-lg p-2.5 focus:ring-[#01C38D] focus:border-[#01C38D]"

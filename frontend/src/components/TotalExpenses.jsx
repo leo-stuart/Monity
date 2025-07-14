@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react';
+import apiClient from '../utils/api';
 
 function TotalExpenses() {
     const [monthReq, setMonthReq] = useState('')
@@ -17,15 +18,12 @@ function TotalExpenses() {
             return
         }
 
-        fetch(`http://localhost:3000/transactions/month/${monthReq}`, {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
-        })
+        apiClient.get(`/transactions/month/${monthReq}`)
             .then(response => {
-                if (!response.ok) {
+                if (response.status !== 200) {
                     throw new Error(`HTTP error! status ${response.status}`)
                 }
-                return response.json()
+                return response.data;
             })
             .then(data => {
                 // Calculate total expenses from the transactions

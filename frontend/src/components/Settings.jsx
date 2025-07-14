@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import apiClient from '../utils/api';
 
 function Settings() {
     const [currentPassword, setCurrentPassword] = useState('');
@@ -21,26 +22,14 @@ function Settings() {
         }
 
         try {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                throw new Error('You must be logged in to change your password');
-            }
-
-            const response = await fetch('http://localhost:3000/change-password', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    currentPassword,
-                    newPassword,
-                }),
+            const response = await apiClient.post('/change-password', {
+                currentPassword,
+                newPassword,
             });
 
-            const data = await response.json();
+            const data = response.data;
             
-            if (!response.ok) {
+            if (response.status !== 200) {
                 throw new Error(data.message || 'Failed to change password');
             }
 
