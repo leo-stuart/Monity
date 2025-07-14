@@ -17,6 +17,10 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 app.use(cors())
 app.use(express.json())
 
+app.get('/', (req, res) => {
+    res.status(200).send('Monity API is running.');
+});
+
 const authMiddleware = async (req, res, next) => {
     const token = req.headers.authorization?.split(' ')[1];
     if (!token) {
