@@ -1,3 +1,4 @@
+
 # Monity Deployment Guide
 
 This guide provides instructions on how to deploy the Monity application, which consists of a Node.js backend and a React frontend.
@@ -72,4 +73,4 @@ This command generates a `dist` folder in the `frontend` directory containing th
 
 ### 3. Deploy Static Assets
 
-Deploy the contents of the `frontend/dist` directory to your chosen static hosting provider. Configure your hosting provider's build settings to use `npm run build` as the build command and `frontend/dist` as the publish directory.
+Deploy the contents of the `frontend/dist` directory to your chosen static hosting provider. Configure your hosting provider's build settings to use `npm run build` as the build command and `frontend/dist` as the publish directory. 
