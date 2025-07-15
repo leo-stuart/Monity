@@ -2,9 +2,8 @@ import { NavLink, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useState, useRef, useEffect } from "react";
 
-export default function Sidebar() {
+export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -27,18 +26,6 @@ export default function Sidebar() {
     };
   }, []);
 
-  // Handle window resize for responsive design
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth > 768) {
-        setIsMobileMenuOpen(false);
-      }
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
   return (
     <>
       {/* Mobile menu toggle */}
@@ -52,7 +39,7 @@ export default function Sidebar() {
       </button>
 
       <aside 
-        className={`bg-gradient-to-b from-[#191E29] via-[#23263a] to-[#31344d] h-screen md:w-64 flex flex-col p-6 shadow-lg fixed top-0 left-0 z-10 overflow-y-auto transition-all duration-300 ${isMobileMenuOpen ? 'w-64' : 'w-0 md:w-64'}`}
+        className={`bg-gradient-to-b from-[#191E29] via-[#23263a] to-[#31344d] h-screen w-64 flex-col p-6 shadow-lg fixed top-0 left-0 z-10 overflow-y-auto transition-transform duration-300 ease-in-out md:translate-x-0 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}
       >
         <div className="flex flex-col gap-2 justify-between h-full">
           <div>
