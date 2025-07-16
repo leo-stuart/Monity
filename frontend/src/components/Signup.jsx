@@ -9,6 +9,7 @@ function Signup() {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [role, setRole] = useState('user');
     const navigate = useNavigate();
     const { signup } = useAuth();
 
@@ -24,7 +25,7 @@ function Signup() {
         }
 
         try {
-            const { error } = await signup(name, email, password);
+            const { error } = await signup(name, email, password, role);
             if (error) {
                 throw new Error(error);
             }
@@ -67,6 +68,18 @@ function Signup() {
                             className="w-full bg-[#191E29] border border-[#31344d] text-white rounded-lg p-2.5 focus:ring-[#01C38D] focus:border-[#01C38D]"
                             required
                         />
+                    </div>
+                    <div>
+                        <label htmlFor="role" className="block text-white mb-2">Role</label>
+                        <select
+                            id="role"
+                            value={role}
+                            onChange={(e) => setRole(e.target.value)}
+                            className="w-full bg-[#191E29] border border-[#31344d] text-white rounded-lg p-2.5 focus:ring-[#01C38D] focus:border-[#01C38D]"
+                        >
+                            <option value="user">User</option>
+                            <option value="admin">Admin</option>
+                        </select>
                     </div>
                     <div>
                         <label htmlFor="password" className="block text-white mb-2">Password</label>

@@ -76,8 +76,9 @@ function AddExpense({ onAdd }) {
                     ))}
                 </select>
                 <input
+                    type="date"
                     className="bg-[#191E29] border border-[#31344d] text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#FF6384] focus:outline-none placeholder-gray-400"
-                    placeholder="Date (DD/MM/YY)"
+                    placeholder="Date"
                     value={date}
                     onChange={e => setDate(e.target.value)}
                     required

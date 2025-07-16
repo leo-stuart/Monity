@@ -10,11 +10,13 @@ export const useAuth = () => {
 export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [isAdmin, setIsAdmin] = useState(false);
 
     useEffect(() => {
         const getSession = async () => {
             const { data: { session } } = await supabase.auth.getSession();
             setUser(session?.user ?? null);
+            setIsAdmin(session?.user?.user_metadata?.role === 'admin');
             setLoading(false);
         };
 
@@ -22,6 +24,7 @@ export function AuthProvider({ children }) {
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
             setUser(session?.user ?? null);
+            setIsAdmin(session?.user?.user_metadata?.role === 'admin');
         });
 
         return () => {
@@ -36,14 +39,15 @@ export function AuthProvider({ children }) {
         }
     };
 
-    const signup = async (name, email, password) => {
+    const signup = async (name, email, password, role = 'user') => {
         const { error } = await supabase.auth.signUp(
             { 
                 email, 
                 password,
                 options: {
                     data: {
-                        name
+                        name,
+                        role
                     }
                 }
             }
@@ -62,6 +66,7 @@ export function AuthProvider({ children }) {
     const value = {
         user,
         loading,
+        isAdmin,
         login,
         signup,
         logout

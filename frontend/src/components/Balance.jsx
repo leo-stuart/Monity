@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import apiClient from '../utils/api';
+import { get } from '../utils/api';
 
 function Balance() {
     const [monthReq, setMonthReq] = useState('')
@@ -18,7 +18,7 @@ function Balance() {
             return
         }
 
-        apiClient.get(`/balance/${monthReq}`)
+        get(`/balance/${monthReq}`)
             .then(response => {
                 if (response.status !== 200) {
                     throw new Error(`HTTP error! status ${response.status}`)

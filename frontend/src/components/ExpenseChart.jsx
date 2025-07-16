@@ -11,17 +11,28 @@ import { get } from '../utils/api';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-function ExpenseChart(){
+function ExpenseChart({ selectedRange }) {
     const [expenses, setExpenses] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
         const fetchExpenses = async () => {
+            setLoading(true);
+            setError(null);
             try {
-                const { data } = await get('/transactions');
-                const expenseData = Array.isArray(data) 
-                    ? data.filter(transaction => transaction.typeId === "1")
+                let response;
+                if (selectedRange === "current_month") {
+                    const now = new Date();
+                    const month = String(now.getMonth() + 1).padStart(2, '0');
+                    const year = now.getFullYear();
+                    response = await get(`/transactions/month/${month}/${year}`);
+                } else { // 'all_time'
+                    response = await get('/transactions');
+                }
+                
+                const expenseData = Array.isArray(response.data) 
+                    ? response.data.filter(transaction => transaction.typeId === "1")
                     : [];
                 setExpenses(expenseData);
             } catch (error) {
@@ -32,10 +43,10 @@ function ExpenseChart(){
         };
         
         fetchExpenses();
-    }, []);
+    }, [selectedRange]);
 
     if(loading){
-        return <Spinner message="Loading expenses by category chart ..." />
+        return <Spinner message="Loading expenses chart..." />
     }
     if(error){
         return <p>Error: {error}</p>

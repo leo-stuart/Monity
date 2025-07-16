@@ -42,7 +42,8 @@ CREATE POLICY "Allow individual delete to transactions" ON "transactions" FOR DE
 -- Create a "profiles" table to store public user data
 CREATE TABLE "profiles" (
   "id" UUID PRIMARY KEY REFERENCES auth.users ON DELETE CASCADE,
-  "name" TEXT
+  "name" TEXT,
+  "role" TEXT DEFAULT 'user'
 );
 ALTER TABLE "profiles" ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Allow individual read access to profiles" ON "profiles" FOR SELECT USING (auth.uid() = "id");
@@ -52,8 +53,8 @@ CREATE POLICY "Allow individual update access to profiles" ON "profiles" FOR UPD
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO public.profiles (id, name)
-  VALUES (new.id, new.raw_user_meta_data->>'name');
+  INSERT INTO public.profiles (id, name, role)
+  VALUES (new.id, new.raw_user_meta_data->>'name', new.raw_user_meta_data->>'role');
   RETURN new;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;

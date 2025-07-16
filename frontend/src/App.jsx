@@ -9,6 +9,7 @@ import Login from './components/Login'
 import Signup from './components/Signup'
 import AddCategory from './components/AddCategory'
 import Settings from './components/Settings'
+import AdminDashboard from './components/AdminDashboard'
 import { useAuth } from './context/AuthContext'
 import Spinner from './components/Spinner'
 import { useEffect, useState } from 'react'
@@ -26,6 +27,20 @@ const ProtectedRoute = ({ children }) => {
   }
   return children;
 };
+
+// Admin route component
+const AdminRoute = ({ children }) => {
+  const { user, loading, isAdmin } = useAuth();
+
+  if (loading) {
+    return <Spinner />;
+  }
+
+  if (!user || !isAdmin) {
+    return <Navigate to="/" replace />;
+  }
+  return children;
+}
 
 function App() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -47,6 +62,9 @@ function App() {
       <Route path="/add-income" element={<ProtectedRoute><MainLayout isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen}><AddIncome /></MainLayout></ProtectedRoute>} />
       <Route path="/categories" element={<ProtectedRoute><MainLayout isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen}><AddCategory /></MainLayout></ProtectedRoute>} />
       <Route path="/settings" element={<ProtectedRoute><MainLayout isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen}><Settings /></MainLayout></ProtectedRoute>} />
+
+      {/* Admin route */}
+      <Route path="/admin" element={<AdminRoute><MainLayout isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen}><AdminDashboard /></MainLayout></AdminRoute>} />
 
       {/* Fallback route */}
       <Route path="*" element={<Navigate to="/" replace />} />

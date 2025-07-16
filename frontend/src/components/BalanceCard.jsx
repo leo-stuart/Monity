@@ -1,61 +1,48 @@
-import { useState, useEffect } from "react"
-import Spinner from "./Spinner"
-import { get } from "../utils/api"
+import { useState, useEffect } from "react";
+import Spinner from "./Spinner";
+import { get } from "../utils/api";
 
-function BalanceCard() {
-    const [history, setHistory] = useState([])
-    const [loading, setLoading] = useState(true)
-    const [error, setError] = useState(null)
-
-    useEffect(() => {
-        const fetchMonths = async () => {
-            try {
-                const { data } = await get('/months');
-                setHistory(data);
-            } catch (err) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchMonths();
-    }, []);
-
-    const [totalBalance, setTotalBalance] = useState(0);
+function BalanceCard({ selectedRange }) {
+    const [balance, setBalance] = useState(0);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
-        if (!history.length) return;
-        
-        const fetchAllBalances = async () => {
+        const fetchBalance = async () => {
             setLoading(true);
+            setError(null);
             try {
-                const balancePromises = history.map(month => get(`/balance/${month}`));
-                const balanceResponses = await Promise.all(balancePromises);
-                const total = balanceResponses.reduce((acc, response) => acc + (response.data.balance || 0), 0);
-                setTotalBalance(total);
+                let response;
+                if (selectedRange === "current_month") {
+                    const now = new Date();
+                    const month = String(now.getMonth() + 1).padStart(2, '0');
+                    const year = now.getFullYear();
+                    response = await get(`/balance/${month}/${year}`);
+                } else { // 'all_time'
+                    response = await get('/balance/all');
+                }
+                setBalance(response.data.balance || 0);
             } catch (err) {
-                console.error('Error fetching balances:', err);
-                setError('Failed to calculate total balance');
+                console.error("Error fetching balance:", err);
+                setError("Failed to fetch balance.");
             } finally {
                 setLoading(false);
             }
         };
-        
-        fetchAllBalances();
-    }, [history]);
 
-    if(loading){
-        return <Spinner message="Loading balance..." />
+        fetchBalance();
+    }, [selectedRange]);
+
+    if (loading) {
+        return <Spinner message="Loading balance..." />;
     }
-    if(error){
-        return <p>Error: {error}</p>
+    if (error) {
+        return <p className="text-red-500">{error}</p>;
     }
 
     return (
-        <>
-        <h2 className="text-4xl font-bold mb-4">${totalBalance.toFixed(2)}</h2>
-        </>
-    )
+        <h2 className="text-4xl font-bold mb-4">${balance.toFixed(2)}</h2>
+    );
 }
 
-export default BalanceCard
+export default BalanceCard;

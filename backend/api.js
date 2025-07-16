@@ -3,7 +3,6 @@ const app = express()
 const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
-const { v4: uuidv4 } = require('uuid');
 const { createClient } = require('@supabase/supabase-js');
 
 // Load environment variables
@@ -11,7 +10,8 @@ require('dotenv').config();
 
 // Supabase Configuration
 const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_KEY;
+// Use the ANONYMOUS key for all normal user operations
+const supabaseKey = process.env.SUPABASE_ANON_KEY; 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 app.use(cors())
@@ -35,15 +35,39 @@ const authMiddleware = async (req, res, next) => {
     }
 
     req.user = user;
+    req.user.role = user.user_metadata.role; // Attach role to user object
+    
+    // Create a new Supabase client based on user's role
+    let supabaseClient;
+    if (user.user_metadata.role === 'admin') {
+        supabaseClient = createClient(supabaseUrl, process.env.SUPABASE_KEY);
+    } else {
+        supabaseClient = createClient(supabaseUrl, supabaseKey, {
+            global: {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }
+        });
+    }
+    
+    req.supabase = supabaseClient; // Attach user-specific Supabase client to the request
+    
     next();
 };
 
 // Signup route
 app.post('/signup', async (req, res) => {
-    const { email, password } = req.body;
+    const { email, password, name } = req.body; // Add name
     const { data, error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+            data: {
+                role: 'user', // Default role
+                name: name    // Add user's name
+            }
+        }
     });
 
     if (error) {
@@ -80,7 +104,7 @@ console.log('Route registered: POST /login');
 app.get('/categories', authMiddleware, async (req, res) => {
     try {
         // TODO: Add user-specific logic if categories are tied to users.
-        const { data: categories } = await supabase.from('categories').select('*');
+        const { data: categories } = await req.supabase.from('categories').select('*');
         res.json(categories || []);
     } catch (error) {
         console.error('Get categories error:', error.response ? error.response.data : error.message);
@@ -100,15 +124,20 @@ app.post('/categories', authMiddleware, async (req, res) => {
         const userId = req.user.id; 
         
         const newCategory = {
-            id: uuidv4(),
             name,
             typeId,
             userId: userId 
         };
         
-        const { data: createdCategories } = await supabase.from('categories').insert([newCategory]).select();
+        const { data: createdCategories, error } = await req.supabase.from('categories').insert([newCategory]).select();
+        
+        if (error) {
+            console.error('Add category error:', error.message);
+            return res.status(500).json({ error: 'Failed to create category' });
+        }
+        
         if (!createdCategories || createdCategories.length === 0) {
-            throw new Error("Category creation failed in Supabase");
+            return res.status(500).json({ error: "Category creation failed in Supabase" });
         }
         res.status(201).json(createdCategories[0]);
     } catch (error) {
@@ -122,7 +151,7 @@ console.log('Route registered: POST /categories');
 app.delete('/categories/:id', authMiddleware, async (req, res) => {
     try {
         // TODO: Add user-specific logic for deletion if categories are tied to users.
-        await supabase.from('categories').delete().eq('id', req.params.id);
+        await req.supabase.from('categories').delete().eq('id', req.params.id);
         res.json({ message: 'Category deleted successfully' });
     } catch (error) {
         console.error('Delete category error:', error.response ? error.response.data : error.message);
@@ -131,10 +160,72 @@ app.delete('/categories/:id', authMiddleware, async (req, res) => {
 });
 console.log('Route registered: DELETE /categories/:id');
 
+// Get months
+app.get('/months', authMiddleware, async (req, res) => {
+    try {
+        const userId = req.user.id;
+
+        const { data, error } = await req.supabase
+            .from('transactions')
+            .select('date')
+            .eq('userId', userId);
+
+        if (error) {
+            console.error('Error fetching months:', error.message);
+            return res.status(500).json({ error: 'Failed to fetch transaction months' });
+        }
+
+        const months = new Set();
+        data.forEach(transaction => {
+            const date = new Date(transaction.date);
+            const year = date.getFullYear();
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            months.add(`${year}/${month}`);
+        });
+
+        res.json(Array.from(months));
+    } catch (error) {
+        console.error('Error in /months endpoint:', error.message);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+console.log('Route registered: GET /months');
+
+app.get('/balance/:year/:month', authMiddleware, async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const { year, month } = req.params;
+
+        const { data, error } = await req.supabase
+            .from('transactions')
+            .select('amount, typeId')
+            .eq('userId', userId)
+            .eq('date', `${year}-${month}-01`);
+
+        if (error) {
+            console.error('Error fetching balance:', error.message);
+            return res.status(500).json({ error: 'Failed to fetch balance' });
+        }
+
+        const balance = data.reduce((acc, transaction) => {
+            if (transaction.typeId === 2) { // Income
+                return acc + transaction.amount;
+            } else { // Expense
+                return acc - transaction.amount;
+            }
+        }, 0);
+
+        res.json({ balance });
+    } catch (error) {
+        console.error('Error in /balance endpoint:', error.message);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 // Get transaction types
 app.get('/transaction-types', authMiddleware, async (req, res) => {
     try {
-        const { data: transactionTypes } = await supabase.from('transaction_types').select('*');
+        const { data: transactionTypes } = await req.supabase.from('transaction_types').select('*');
         res.json(transactionTypes || []);
     } catch (error) {
         console.error('Get transaction types error:', error.response ? error.response.data : error.message);
@@ -142,6 +233,23 @@ app.get('/transaction-types', authMiddleware, async (req, res) => {
     }
 });
 console.log('Route registered: GET /transaction-types');
+
+app.get('/transactions', authMiddleware, async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const { data, error } = await req.supabase
+            .from('transactions')
+            .select('*')
+            .eq('userId', userId);
+        if (error) {
+            console.error('Get transactions error:', error.message);
+            return res.status(500).json({ error: 'Failed to fetch transactions' });
+        }
+        res.json(data);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch transactions' });
+    }
+});
 
 // Add expense, income, or savings (generic transaction adder)
 const addTransaction = async (req, res, typeId, successMessage) => {
@@ -157,7 +265,6 @@ const addTransaction = async (req, res, typeId, successMessage) => {
         const formattedDate = `20${yearShort}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
         
         const newTransaction = {
-            id: uuidv4(),
             userId,
             description,
             amount: parseFloat(amount),
@@ -167,9 +274,15 @@ const addTransaction = async (req, res, typeId, successMessage) => {
             createdAt: new Date().toISOString()
         };
         
-        const { data: createdTransactions } = await supabase.from('transactions').insert([newTransaction]).select();
+        const { data: createdTransactions, error } = await req.supabase.from('transactions').insert([newTransaction]).select();
+        
+        if (error) {
+            console.error(`Add transaction (type ${typeId}) error:`, error.message);
+            return res.status(500).json({ success: false, message: `Failed to add ${successMessage.toLowerCase().split(' ')[0]}.` });
+        }
+
         if (!createdTransactions || createdTransactions.length === 0) {
-             throw new Error(`${successMessage.replace(" added!", "")} creation failed in Supabase`);
+             return res.status(500).json({ success: false, message: `${successMessage.replace(" added!", "")} creation failed in Supabase` });
         }
         res.status(201).json({ success: true, message: successMessage, transaction: createdTransactions[0] });
     } catch (error) {
@@ -192,7 +305,7 @@ console.log('Route registered: POST /add-savings');
 app.get('/transactions', authMiddleware, async (req, res) => {
     try {
         const userId = req.user.id;
-        const { data: transactions } = await supabase.from('transactions').select('*').eq('userId', userId).order('date', { ascending: false }).order('createdAt', { ascending: false });
+        const { data: transactions } = await req.supabase.from('transactions').select('*').eq('userId', userId).order('date', { ascending: false }).order('createdAt', { ascending: false });
         res.json(transactions || []);
     } catch (error) {
         console.error('Get transactions error:', error.response ? error.response.data : error.message);
@@ -201,36 +314,150 @@ app.get('/transactions', authMiddleware, async (req, res) => {
 });
 console.log('Route registered: GET /transactions');
 
-// Get transactions by month (e.g., /transactions/month/05/2025)
-app.get('/transactions/month/:monthStr', authMiddleware, async (req, res) => {
+// Get all transactions (admin only)
+app.get('/transactions/all', authMiddleware, async (req, res) => {
+    if (req.user.role !== 'admin') {
+        return res.status(403).json({ error: 'Forbidden: Admins only' });
+    }
+
+    try {
+        // The authMiddleware already provides an admin-level Supabase client for admin users.
+        const { data: transactions } = await req.supabase.from('transactions').select('*').order('date', { ascending: false });
+        res.json(transactions || []);
+    } catch (error) {
+        console.error('Get all transactions error:', error.response ? error.response.data : error.message);
+        res.status(500).json({ error: 'Failed to fetch all transactions' });
+    }
+});
+console.log('Route registered: GET /transactions/all');
+
+// Get transactions for a specific month
+app.get('/transactions/month/:month/:year', authMiddleware, async (req, res) => {
     try {
         const userId = req.user.id;
-        const [month, yearShort] = req.params.monthStr.split('/');
-        const year = `20${yearShort}`;
+        let { month, year } = req.params;
+
+        if (isNaN(month) || isNaN(year)) {
+            return res.status(400).json({ error: 'Invalid month or year format.' });
+        }
+
+        month = parseInt(month, 10);
+        year = parseInt(year, 10);
+
+        if (month < 1 || month > 12) {
+            return res.status(400).json({ error: 'Invalid month. Must be between 1 and 12.' });
+        }
+
+        const startDate = new Date(year, month - 1, 1);
+        const endDate = new Date(year, month, 0);
+
+        const { data, error } = await req.supabase
+            .from('transactions')
+            .select('*')
+            .eq('userId', userId)
+            .gte('date', startDate.toISOString())
+            .lte('date', endDate.toISOString());
+
+        if (error) {
+            console.error('Error fetching monthly transactions:', error.message);
+            return res.status(500).json({ error: 'Failed to fetch transactions.' });
+        }
+
+        res.json(data || []);
+    } catch (error) {
+        console.error('Error in /transactions/month/:month/:year:', error.message);
+        res.status(500).json({ error: 'Internal server error.' });
+    }
+});
+console.log('Route registered: GET /transactions/month/:month/:year');
+
+
+// Balance for all time
+app.get('/balance/all', authMiddleware, async (req, res) => {
+    try {
+        const userId = req.user.id;
+
+        // Fetch all transactions for the user
+        const { data: transactions, error } = await req.supabase
+            .from('transactions')
+            .select('amount, typeId')
+            .eq('userId', userId);
+
+        if (error) {
+            console.error('Error fetching all transactions for balance:', error.message);
+            return res.status(500).json({ error: 'Failed to fetch transactions for balance calculation.' });
+        }
+
+        // Calculate balance
+        const balance = transactions.reduce((acc, transaction) => {
+            if (transaction.typeId === 1) { // Expense
+                return acc - transaction.amount;
+            } else if (transaction.typeId === 2) { // Income
+                return acc + transaction.amount;
+            }
+            return acc;
+        }, 0);
+
+        res.json({ balance });
+    } catch (error) {
+        console.error('Error in /balance/all endpoint:', error.message);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+console.log('Route registered: GET /balance/all');
+
+
+// Get user count (admin-only)
+app.get('/users/count', authMiddleware, async (req, res) => {
+    if (req.user.role !== 'admin') {
+        return res.status(403).json({ error: 'Forbidden: Admins only' });
+    }
+
+    try {
+        const { count, error } = await req.supabase.from('profiles').select('*', { count: 'exact', head: true });
+
+        if (error) {
+            throw error;
+        }
+
+        res.json({ count });
+    } catch (error) {
+        console.error('Get user count error:', error.message);
+        res.status(500).json({ error: 'Failed to fetch user count' });
+    }
+});
+console.log('Route registered: GET /users/count');
+
+
+// Get transactions by month (e.g., /transactions/month/07/2024)
+app.get('/transactions/month/:month/:year', authMiddleware, async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const { month, year } = req.params;
 
         if (!month || !year || month.length !== 2 || year.length !== 4) {
-            return res.status(400).json({ error: 'Invalid month format. Use MM/YY' });
+            return res.status(400).json({ error: 'Invalid date format. Use MM and YYYY' });
         }
         
         const startDate = `${year}-${month.padStart(2, '0')}-01`;
         const tempDate = new Date(parseInt(year), parseInt(month), 0);
         const endDate = `${year}-${month.padStart(2, '0')}-${String(tempDate.getDate()).padStart(2, '0')}`;
 
-        const { data: transactions } = await supabase.from('transactions').select('*').eq('userId', userId).gte('date', startDate).lte('date', endDate).order('date', { ascending: true });
+        const { data: transactions } = await req.supabase.from('transactions').select('*').eq('userId', userId).gte('date', startDate).lte('date', endDate).order('date', { ascending: true });
         res.json(transactions || []);
     } catch (error) {
         console.error('Get transactions by month error:', error.response ? error.response.data : error.message);
         res.status(500).json({ error: 'Failed to fetch transactions for the month' });
     }
 });
-console.log('Route registered: GET /transactions/month/:monthStr');
+console.log('Route registered: GET /transactions/month/:month/:year');
 
 // Get transactions by category
 app.get('/transactions/category/:category', authMiddleware, async (req, res) => {
     try {
         const userId = req.user.id;
         const category = req.params.category;
-        const { data: transactions } = await supabase.from('transactions').select('*').eq('userId', userId).eq('category', category).order('date', { ascending: false });
+        const { data: transactions } = await req.supabase.from('transactions').select('*').eq('userId', userId).eq('category', category).order('date', { ascending: false });
         res.json(transactions || []);
     } catch (error) {
         console.error('Get transactions by category error:', error.response ? error.response.data : error.message);
@@ -245,7 +472,7 @@ app.delete('/transactions/:id', authMiddleware, async (req, res) => {
         const transactionId = req.params.id;
         const userId = req.user.id;
         
-        await supabase.from('transactions').delete().eq('id', transactionId).eq('userId', userId);
+        await req.supabase.from('transactions').delete().eq('id', transactionId).eq('userId', userId);
         res.json({ message: 'Transaction deleted successfully' });
     } catch (error) {
         console.error('Delete transaction error:', error.response ? error.response.data : error.message);
@@ -257,25 +484,36 @@ app.delete('/transactions/:id', authMiddleware, async (req, res) => {
 });
 console.log('Route registered: DELETE /transactions/:id');
 
-// Calculate monthly balance (e.g. /balance/month/05/2025)
-app.get('/balance/:monthStr', authMiddleware, async (req, res) => {
+// Balance for a specific month
+app.get('/balance/:month/:year', authMiddleware, async (req, res) => {
     try {
         const userId = req.user.id;
-        const [month, yearShort] = req.params.monthStr.split('/');
-        const year = `20${yearShort}`;
+        let { month, year } = req.params;
 
-        if (!month || !year || month.length !== 2 || year.length !== 4) {
-            return res.status(400).json({ error: 'Invalid month format. Use MM/YY' });
+        // Basic validation to ensure month and year are numbers
+        if (isNaN(month) || isNaN(year)) {
+            return res.status(400).json({ error: 'Invalid month or year format.' });
+        }
+
+        month = parseInt(month, 10);
+        year = parseInt(year, 10);
+        
+        // Swap if year is smaller (likely month)
+        if (year < month) {
+            [month, year] = [year, month];
+        }
+
+        if (month < 1 || month > 12) {
+            return res.status(400).json({ error: 'Invalid month. Must be between 1 and 12.' });
         }
         
-        const startDate = `${year}-${month.padStart(2, '0')}-01`;
-        const tempDate = new Date(parseInt(year), parseInt(month), 0);
-        const endDate = `${year}-${month.padStart(2, '0')}-${String(tempDate.getDate()).padStart(2, '0')}`;
+        const startDate = new Date(year, month - 1, 1);
+        const endDate = new Date(year, month, 0);
 
-        const { data: userTransactions } = await supabase.from('transactions').select('amount,typeId,category').eq('userId', userId).gte('date', startDate).lte('date', endDate);
+        const { data: userTransactions } = await req.supabase.from('transactions').select('amount,typeId,category').eq('userId', userId).gte('date', startDate).lte('date', endDate);
 
         if (!userTransactions) {
-             return res.json({ month: req.params.monthStr, totalExpenses: 0, totalIncome: 0, totalSavings: 0, balance: 0 });
+             return res.json({ month: `${month}/${year}`, totalExpenses: 0, totalIncome: 0, totalSavings: 0, balance: 0 });
         }
         
         let totalExpenses = 0;
@@ -293,45 +531,13 @@ app.get('/balance/:monthStr', authMiddleware, async (req, res) => {
         });
         
         const balance = totalIncome - totalExpenses + totalSavings;
-        res.json({ month: req.params.monthStr, totalExpenses, totalIncome, totalSavings, balance });
+        res.json({ month: `${month}/${year}`, totalExpenses, totalIncome, totalSavings, balance });
     } catch (error) {
         console.error('Get balance error:', error.response ? error.response.data : error.message);
         res.status(500).json({ error: 'Failed to calculate balance' });
     }
 });
-console.log('Route registered: GET /balance/:monthStr');
-
-// Get all unique months with transactions
-app.get('/months', authMiddleware, async (req, res) => {
-    try {
-        const userId = req.user.id;
-        const { data: userTransactions } = await supabase.from('transactions').select('date').eq('userId', userId).order('date', { ascending: true });
-        
-        if (!userTransactions) {
-            return res.json([]);
-        }
-        
-        const months = new Set();
-        userTransactions.forEach(transaction => {
-            const parts = transaction.date.split('-');
-            if (parts.length >= 3) {
-                const monthYear = `${parts[1]}/${parts[0].substring(2)}`;
-                months.add(monthYear);
-            }
-        });
-        
-        res.json(Array.from(months).sort((a, b) => {
-            const [m1, y1] = a.split('/');
-            const [m2, y2] = b.split('/');
-            if (y1 !== y2) return y1.localeCompare(y2);
-            return m1.localeCompare(m2);
-        }));
-    } catch (error) {
-        console.error('Get months error:', error.response ? error.response.data : error.message);
-        res.status(500).json({ error: 'Failed to fetch months' });
-    }
-});
-console.log('Route registered: GET /months');
+console.log('Route registered: GET /balance/:month/:year');
 
 // Import initial data from .txt files if Supabase is empty for the default user
 const importExistingData = async () => {
@@ -421,14 +627,9 @@ const importExistingData = async () => {
     }
 };
 
-const port = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000;
+const server = app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+});
 
-if (process.env.NODE_ENV !== 'test') {
-    app.listen(port, () => {
-        console.log(`Server listening on port ${port}`);
-        console.log('--- APPLICATION STARTUP COMPLETE ---');
-        // importExistingData();
-    });
-}
-
-module.exports = { app };
+module.exports = server;

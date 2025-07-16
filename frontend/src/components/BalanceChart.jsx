@@ -14,16 +14,32 @@ import { get } from '../utils/api';
   
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-function BalanceChart(){
+function BalanceChart({ selectedRange }){
     const [history, setHistory] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
+        if (selectedRange === 'current_month') {
+            setLoading(false);
+            return;
+        };
+
         const fetchChartData = async () => {
+            setLoading(true);
+            setError(null);
             try {
                 const { data: months } = await get('/months');
-                const balancePromises = months.map(month => get(`/balance/${month}`));
+                if (!months || !months.length) {
+                    setHistory([]);
+                    setLoading(false);
+                    return;
+                }
+                const balancePromises = months.map(monthStr => {
+                    const [year, month] = monthStr.split('/');
+                    return get(`/balance/${year}/${month}`);
+                });
+
                 const balanceResponses = await Promise.all(balancePromises);
 
                 const monthlyBalances = balanceResponses.map((response, index) => ({
@@ -39,8 +55,18 @@ function BalanceChart(){
             }
         };
         fetchChartData();
-    }, []);
+    }, [selectedRange]);
 
+    if (loading) {
+        return <Spinner message="Loading balance chart..." />
+    }
+    if (error) {
+        return <p className="text-red-500">Error: {error}</p>
+    }
+    if (selectedRange === 'current_month') {
+        return <p className="text-center text-gray-400">Select "All Time" to view monthly balance chart.</p>;
+    }
+    
     // Sort history by month
     const sortedHistory = [...history].sort((a, b) => {
         const [aMonth, aYear] = a.month.split('/');
@@ -74,12 +100,6 @@ function BalanceChart(){
         },
     };
 
-    if (loading) {
-        return <Spinner message="Loading balance chart..." />
-    }
-    if (error) {
-        return <p>Error: {error}</p>
-    }
     return (
         <div className="w-full max-w-4xl mx-auto">
             <Bar options={options} data={data}/>

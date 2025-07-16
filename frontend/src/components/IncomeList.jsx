@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom'
 import Spinner from './Spinner';
 import { get, del } from '../utils/api';
+import formatDate from '../utils/formatDate';
 
 function ListIncomes() {
     const [incomes, setIncomes] = useState([]);
@@ -27,7 +28,7 @@ function ListIncomes() {
             try {
                 const { data } = await get('/transactions');
                 const incomeData = Array.isArray(data)
-                    ? data.filter(transaction => transaction.typeId === "2")
+                    ? data.filter(transaction => transaction.typeId === 2)
                     : [];
                 setIncomes(incomeData);
             } catch (err) {
@@ -108,7 +109,7 @@ function ListIncomes() {
                 <tbody>
                     {reversedIncomes.map((income) => (
                         <tr key={income.id} className="border-t border-[#31344d] hover:bg-[#2a2d44] transition-colors">
-                            <td className="py-2 px-4">{income.date}</td>
+                            <td className="py-2 px-4">{formatDate(income.date)}</td>
                             <td className="py-2 px-4">{income.category}</td>
                             <td className="text-green-400 py-2 px-4">${income.amount.toFixed(2)}</td>
                             <td className="py-2 px-4">

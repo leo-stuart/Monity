@@ -1,18 +1,28 @@
 import Spinner from "./Spinner"
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { get, del } from '../utils/api';
 
-function ExpensivePurchase() {
+function ExpensivePurchase({ selectedRange }) {
     const [expenses, setExpenses] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    const fetchExpenses = async () => {
+    const fetchExpenses = useCallback(async () => {
         setLoading(true);
+        setError(null);
         try {
-            const { data } = await get('/transactions');
-            const expenseData = Array.isArray(data) 
-                ? data.filter(transaction => transaction.typeId === "1")
+            let response;
+            if (selectedRange === "current_month") {
+                const now = new Date();
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                const year = String(now.getFullYear());
+                response = await get(`/transactions/month/${month}/${year}`);
+            } else { // 'all_time'
+                response = await get('/transactions');
+            }
+
+            const expenseData = Array.isArray(response.data) 
+                ? response.data.filter(transaction => transaction.typeId === "1")
                 : [];
             setExpenses(expenseData);
         } catch (error) {
@@ -20,18 +30,18 @@ function ExpensivePurchase() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [selectedRange]);
 
     useEffect(() => {
         fetchExpenses();
-    }, []);
+    }, [fetchExpenses]);
 
     const handleDelete = async (transactionId) => {
         if (!window.confirm("Are you sure you want to delete this expense?")) return;
 
         try {
             await del(`/transactions/${transactionId}`);
-            // Refetch expenses after deletion
+            // Refetch expenses after deletion, respecting the current filter
             fetchExpenses();
         } catch(err) {
             console.error(err);

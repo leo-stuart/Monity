@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import BalanceCard from "./BalanceCard";
 import BalanceChart from "./BalanceChart";
 import ExpenseChart from "./ExpenseChart";
 import ExpensivePurchase from "./ExpensivePurchase";
 import Savings from "./Savings";
 import { Link } from "react-router-dom";
+import DateRangeFilter from "./DateRangeFilter";
 
 function CardWrapper({ children, title, accent, isLoading = false }) {
     const [isHovered, setIsHovered] = useState(false);
@@ -30,40 +31,32 @@ function CardWrapper({ children, title, accent, isLoading = false }) {
 }
 
 function Dashboard() {
-    const [isLoading, setIsLoading] = useState(true);
-    
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setIsLoading(false);
-        }, 1000);
-        
-        return () => clearTimeout(timer);
-    }, []);
+    const [selectedRange, setSelectedRange] = useState("all_time");
 
     return (
         <div className="w-full flex flex-col gap-8 mt-2">
-            
+            <DateRangeFilter selectedRange={selectedRange} setSelectedRange={setSelectedRange} />
             <div className="flex flex-col md:flex-row gap-6">
-                <CardWrapper title="Your Balance" accent="text-[#01C38D]" isLoading={isLoading}>
-                    <BalanceCard />
+                <CardWrapper title="Your Balance" accent="text-[#01C38D]">
+                    <BalanceCard selectedRange={selectedRange} />
                 </CardWrapper>
-                <CardWrapper title="Total Expenses by Category" accent="text-[#01C38D]" isLoading={isLoading}>
-                    <ExpenseChart />
+                <CardWrapper title="Total Expenses by Category" accent="text-[#01C38D]">
+                    <ExpenseChart selectedRange={selectedRange} />
                 </CardWrapper>
-                <CardWrapper title="Savings" accent="text-[#01C38D]" isLoading={isLoading}>
-                    <Savings />
-                </CardWrapper>
-            </div>
-            
-            <div>
-                <CardWrapper title="Balance Per Month" accent="text-[#01C38D]" isLoading={isLoading}>
-                    <BalanceChart />
+                <CardWrapper title="Savings" accent="text-[#01C38D]">
+                    <Savings selectedRange={selectedRange} />
                 </CardWrapper>
             </div>
             
             <div>
-                <CardWrapper title="Most Expensive Purchases Made" accent="text-[#01C38D]" isLoading={isLoading}>
-                    <ExpensivePurchase />
+                <CardWrapper title="Balance Per Month" accent="text-[#01C38D]">
+                    <BalanceChart selectedRange={selectedRange} />
+                </CardWrapper>
+            </div>
+            
+            <div>
+                <CardWrapper title="Most Expensive Purchases Made" accent="text-[#01C38D]">
+                    <ExpensivePurchase selectedRange={selectedRange} />
                 </CardWrapper>
             </div>
             

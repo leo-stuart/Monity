@@ -5,7 +5,7 @@ import { useState, useRef, useEffect } from "react";
 export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
-  const { user, logout } = useAuth();
+  const { user, logout, isAdmin } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -98,6 +98,32 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                 <span>Categories</span>
               </NavLink>
             </nav>
+
+            {isAdmin && (
+              <>
+                <div className="mb-2">
+                  <span className="text-xs uppercase text-gray-500 font-semibold tracking-wider ml-3">Admin</span>
+                </div>
+                <nav className="flex flex-col gap-1.5 mb-6">
+                  <NavLink 
+                    to="/admin" 
+                    end 
+                    className={({isActive}) => 
+                      `flex items-center gap-2 px-3 py-2 rounded transition-colors ${
+                        isActive 
+                          ? 'bg-[#01C38D] text-[#191E29] font-semibold' 
+                          : 'text-white hover:bg-[#31344d]'
+                      }`
+                    }
+                  >
+                    <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 8v8m-3-5v5m-3-8v8M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <span>Admin Dashboard</span>
+                  </NavLink>
+                </nav>
+              </>
+            )}
 
             <div className="mb-2">
               <span className="text-xs uppercase text-gray-500 font-semibold tracking-wider ml-3">Account</span>
