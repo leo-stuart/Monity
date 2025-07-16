@@ -101,11 +101,11 @@ function Budget() {
         <div className="w-full">
             <h3 className="text-xl font-bold mb-4 text-[#01C38D]">Set a New Budget</h3>
             {error && <p className="text-red-500">{error}</p>}
-            <form onSubmit={handleSetBudget} className="flex flex-col md:flex-row gap-4 mb-6">
+            <form onSubmit={handleSetBudget} className="flex flex-col gap-4 mb-6">
                 <select 
                     value={selectedCategory} 
                     onChange={(e) => setSelectedCategory(e.target.value)}
-                    className="p-2 rounded bg-[#31344d] text-white flex-1"
+                    className="p-3 rounded bg-[#31344d] text-white w-full"
                     required
                 >
                     <option value="">Select Category</option>
@@ -118,20 +118,20 @@ function Budget() {
                     value={amount} 
                     onChange={(e) => setAmount(e.target.value)} 
                     placeholder="Amount"
-                    className="p-2 rounded bg-[#31344d] text-white"
+                    className="p-3 rounded bg-[#31344d] text-white w-full"
                     required
                 />
                 <input 
                     type="month" 
                     value={month} 
                     onChange={(e) => setMonth(e.target.value)}
-                    className="p-2 rounded bg-[#31344d] text-white"
+                    className="p-3 rounded bg-[#31344d] text-white w-full"
                     required
                 />
                 <button 
                     type="submit" 
                     disabled={isLoading}
-                    className="p-2 rounded bg-[#01C38D] text-white font-bold hover:bg-[#01A071] transition-colors"
+                    className="p-3 rounded bg-[#01C38D] text-white font-bold hover:bg-[#01A071] transition-colors w-full"
                 >
                     {isLoading ? 'Saving...' : 'Set Budget'}
                 </button>
@@ -272,55 +272,45 @@ function RecurringTransactions() {
 
     return (
         <div className="w-full">
-            <div className="flex justify-between items-center mb-4">
-                <h3 className="text-xl font-bold text-[#01C38D]">Manage Recurring Transactions</h3>
-                <button 
-                    onClick={handleProcess}
-                    disabled={isLoading}
-                    className="p-2 rounded bg-[#01C38D] text-white font-bold hover:bg-[#01A071] transition-colors"
-                >
-                    Process Now
-                </button>
-            </div>
-            {error && <p className="text-red-500 mb-4">{error}</p>}
-            
-            {/* Form */}
-            <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <input type="text" placeholder="Description" value={form.description} onChange={e => setForm({...form, description: e.target.value})} className="p-2 rounded bg-[#31344d] text-white" required />
-                <input type="number" placeholder="Amount" value={form.amount} onChange={e => setForm({...form, amount: e.target.value})} className="p-2 rounded bg-[#31344d] text-white" required />
-                <select value={form.typeId} onChange={e => setForm({...form, typeId: e.target.value, categoryId: ''})} className="p-2 rounded bg-[#31344d] text-white" required>
+            <button onClick={handleProcess} disabled={isLoading} className="mb-4 p-2 rounded bg-blue-500 text-white w-full">
+                {isLoading ? 'Processing...' : 'Process Recurring Now'}
+            </button>
+
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                <input type="text" name="description" value={form.description} onChange={e => setForm({...form, description: e.target.value})} placeholder="Description" className="p-3 rounded bg-[#31344d] text-white w-full" required />
+                <input type="number" name="amount" value={form.amount} onChange={e => setForm({...form, amount: e.target.value})} placeholder="Amount" className="p-3 rounded bg-[#31344d] text-white w-full" required />
+                <select name="typeId" value={form.typeId} onChange={e => setForm({...form, typeId: e.target.value})} className="p-3 rounded bg-[#31344d] text-white w-full" required>
                     <option value="">Select Type</option>
                     {types.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
                 </select>
-                <select value={form.categoryId} onChange={e => setForm({...form, categoryId: e.target.value})} className="p-2 rounded bg-[#31344d] text-white" required>
+                <select name="categoryId" value={form.categoryId} onChange={e => setForm({...form, categoryId: e.target.value})} className="p-3 rounded bg-[#31344d] text-white w-full" required>
                     <option value="">Select Category</option>
-                    {categories.filter(c => c.typeId == form.typeId).map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                    {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                 </select>
-                <select value={form.frequency} onChange={e => setForm({...form, frequency: e.target.value})} className="p-2 rounded bg-[#31344d] text-white" required>
+                <select name="frequency" value={form.frequency} onChange={e => setForm({...form, frequency: e.target.value})} className="p-3 rounded bg-[#31344d] text-white w-full" required>
                     <option value="daily">Daily</option>
                     <option value="weekly">Weekly</option>
                     <option value="monthly">Monthly</option>
                     <option value="yearly">Yearly</option>
                 </select>
-                <input type="date" placeholder="Start Date" value={form.startDate} onChange={e => setForm({...form, startDate: e.target.value})} className="p-2 rounded bg-[#31344d] text-white" required />
-                <input type="date" placeholder="End Date (Optional)" value={form.endDate} onChange={e => setForm({...form, endDate: e.target.value})} className="p-2 rounded bg-[#31344d] text-white" />
-                <div className="md:col-span-3 flex justify-end gap-2">
-                    <button type="submit" className="p-2 rounded bg-[#01C38D] text-white font-bold">{isEditing ? 'Update' : 'Add'}</button>
-                    {isEditing && <button type="button" onClick={resetForm} className="p-2 rounded bg-gray-500 text-white">Cancel</button>}
-                </div>
+                <input type="date" name="startDate" value={form.startDate} onChange={e => setForm({...form, startDate: e.target.value})} className="p-3 rounded bg-[#31344d] text-white w-full" required />
+                <input type="date" name="endDate" value={form.endDate} onChange={e => setForm({...form, endDate: e.target.value})} className="p-3 rounded bg-[#31344d] text-white w-full" />
+                <button type="submit" disabled={isLoading} className="p-3 rounded bg-[#01C38D] text-white font-bold hover:bg-[#01A071] transition-colors w-full">
+                    {isEditing ? 'Update' : 'Add'} Recurring
+                </button>
+                {isEditing && <button onClick={resetForm} className="p-3 rounded bg-gray-500 text-white w-full">Cancel Edit</button>}
             </form>
 
-            {/* List */}
-            <ul className="space-y-2">
+            <ul className="space-y-2 mt-6">
                 {recurring.map(item => (
-                    <li key={item.id} className="flex justify-between items-center p-3 bg-[#23263a] rounded-lg">
-                        <div>
-                            <p className="font-bold">{item.description} - ${parseFloat(item.amount).toFixed(2)} ({item.frequency})</p>
-                            <p className="text-sm text-gray-400">{item.categories.name} ({item.transaction_types.name})</p>
+                    <li key={item.id} className="flex flex-col md:flex-row justify-between items-start md:items-center p-3 bg-[#23263a] rounded-lg">
+                        <div className="flex-1 mb-2 md:mb-0">
+                            <p className="font-bold">{item.description}</p>
+                            <p className="text-sm text-gray-400">{item.categories.name} - ${parseFloat(item.amount).toFixed(2)} - {item.frequency}</p>
                         </div>
-                        <div>
-                            <button onClick={() => handleEdit(item)} className="text-yellow-500 mr-2">Edit</button>
-                            <button onClick={() => handleDelete(item.id)} className="text-red-500">Delete</button>
+                        <div className="flex gap-2">
+                            <button onClick={() => handleEdit(item)} className="p-2 rounded bg-yellow-500 text-white text-xs">Edit</button>
+                            <button onClick={() => handleDelete(item.id)} className="p-2 rounded bg-red-500 text-white text-xs">Delete</button>
                         </div>
                     </li>
                 ))}
@@ -331,17 +321,13 @@ function RecurringTransactions() {
 
 function BudgetsAndRecurring() {
     return (
-        <div className="w-full flex flex-col gap-8 mt-2">
-            <div>
-                <CardWrapper title="Manage Budgets" accent="text-[#01C38D]">
-                    <Budget />
-                </CardWrapper>
-            </div>
-            <div>
-                <CardWrapper title="Recurring Transactions" accent="text-[#01C38D]">
-                    <RecurringTransactions />
-                </CardWrapper>
-            </div>
+        <div className="flex flex-col gap-8 mt-2">
+            <CardWrapper title="Budgets" accent="text-[#01C38D]">
+                <Budget />
+            </CardWrapper>
+            <CardWrapper title="Recurring Transactions" accent="text-[#01C38D]">
+                <RecurringTransactions />
+            </CardWrapper>
         </div>
     );
 }

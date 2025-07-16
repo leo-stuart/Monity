@@ -12,7 +12,7 @@ function CardWrapper({ children, title, accent, isLoading = false }) {
     
     return (
         <div 
-            className={`flex-1 min-w-[250px] p-6 rounded-2xl shadow-lg border border-[#31344d] bg-gradient-to-br from-[#23263a] via-[#23263a]/80 to-[#31344d] flex flex-col items-center justify-center transition-all duration-300 ${isHovered ? 'shadow-xl translate-y-[-2px]' : ''}`}
+            className={`flex-1 min-w-full sm:min-w-[250px] p-4 sm:p-6 rounded-2xl shadow-lg border border-[#31344d] bg-gradient-to-br from-[#23263a] via-[#23263a]/80 to-[#31344d] flex flex-col items-center justify-center transition-all duration-300 ${isHovered ? 'shadow-xl translate-y-[-2px]' : ''}`}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
@@ -32,6 +32,7 @@ function CardWrapper({ children, title, accent, isLoading = false }) {
 
 function Dashboard() {
     const [selectedRange, setSelectedRange] = useState("all_time");
+    const [isFabMenuOpen, setIsFabMenuOpen] = useState(false);
 
     return (
         <div className="w-full flex flex-col gap-8 mt-2">
@@ -61,21 +62,28 @@ function Dashboard() {
             </div>
             
             {/* Floating action button for quick access */}
-            <div className="fixed bottom-8 right-8">
+            <div className="fixed bottom-6 right-6 md:bottom-8 md:right-8 z-50">
                 <div className="relative group">
-                    <button className="w-14 h-14 rounded-full bg-[#01C38D] flex items-center justify-center shadow-lg hover:bg-[#01A071] transition-colors">
-                        <span className="text-[#191E29] text-2xl font-bold">+</span>
+                    <button 
+                        className="w-14 h-14 rounded-full bg-[#01C38D] flex items-center justify-center shadow-lg hover:bg-[#01A071] transition-all duration-300"
+                        onClick={() => setIsFabMenuOpen(!isFabMenuOpen)}
+                        aria-haspopup="true"
+                        aria-expanded={isFabMenuOpen}
+                    >
+                        <span className={`text-[#191E29] text-3xl font-bold transition-transform duration-300 ${isFabMenuOpen ? 'rotate-45' : ''}`}>+</span>
                     </button>
                     
-                    <div className="absolute bottom-full right-0 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div 
+                        className={`absolute bottom-full right-0 mb-3 transition-all duration-300 ${isFabMenuOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}
+                    >
                         <div className="bg-[#23263a] rounded-lg shadow-lg border border-[#31344d] overflow-hidden">
-                            <Link to="/add-income" className="block px-4 py-2 text-[#01C38D] hover:bg-[#31344d] whitespace-nowrap transition-colors">
+                            <Link to="/add-income" className="block px-4 py-3 text-[#01C38D] hover:bg-[#31344d] whitespace-nowrap transition-colors">
                                 Add Income
                             </Link>
-                            <Link to="/add-expense" className="block px-4 py-2 text-[#FF6384] hover:bg-[#31344d] whitespace-nowrap transition-colors">
+                            <Link to="/add-expense" className="block px-4 py-3 text-[#FF6384] hover:bg-[#31344d] whitespace-nowrap transition-colors">
                                 Add Expense
                             </Link>
-                            <Link to="/categories" className="block px-4 py-2 text-white hover:bg-[#31344d] whitespace-nowrap transition-colors">
+                            <Link to="/categories" className="block px-4 py-3 text-white hover:bg-[#31344d] whitespace-nowrap transition-colors">
                                 Manage Categories
                             </Link>
                         </div>

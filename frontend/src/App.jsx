@@ -15,6 +15,7 @@ import Subscription from './components/Subscription'
 import { useAuth } from './context/AuthContext'
 import Spinner from './components/Spinner'
 import { useEffect, useState } from 'react'
+import TopBar from './components/TopBar';
 
 // Protected route component
 const ProtectedRoute = ({ children }) => {
@@ -79,12 +80,13 @@ function App() {
 // Main layout for protected pages
 const MainLayout = ({ children, isMobileMenuOpen, setIsMobileMenuOpen }) => (
   <div className="flex flex-col min-h-screen bg-[#191E29]">
+    <TopBar isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen} />
     <div className="flex flex-1">
       <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-[#01C38D] text-[#191E29] p-2 z-50 rounded">
         Skip to main content
       </a>
       <Sidebar isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen} />
-      <main id="main-content" className={`flex-1 p-4 md:p-6 pt-4 md:pt-2 md:ml-64 overflow-y-auto transition-all duration-300 ${isMobileMenuOpen ? 'ml-64' : 'ml-0'}`} aria-live="polite">
+      <main id="main-content" className={`flex-1 p-4 md:p-6 pt-20 md:pt-6 md:ml-64 overflow-y-auto transition-all duration-300 ${isMobileMenuOpen ? 'ml-64 md:ml-0' : 'ml-0'}`} aria-live="polite">
         {children}
       </main>
     </div>

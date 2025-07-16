@@ -48,21 +48,21 @@ function AdminDashboard() {
   }
 
   return (
-    <div className="text-white">
-      <h1 className="text-3xl font-bold mb-8">Admin Dashboard</h1>
+    <div className="text-white p-4 md:p-0">
+      <h1 className="text-2xl md:text-3xl font-bold mb-6 md:mb-8">Admin Dashboard</h1>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div className="bg-gradient-to-br from-[#23263a] to-[#31344d] p-6 rounded-2xl shadow-lg border border-[#31344d]">
-          <h2 className="text-lg font-semibold text-gray-400 mb-2">Total Users</h2>
-          <p className="text-4xl font-bold text-[#01C38D]">{stats.userCount}</p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+        <div className="bg-gradient-to-br from-[#23263a] to-[#31344d] p-4 md:p-6 rounded-2xl shadow-lg border border-[#31344d]">
+          <h2 className="text-md md:text-lg font-semibold text-gray-400 mb-2">Total Users</h2>
+          <p className="text-3xl md:text-4xl font-bold text-[#01C38D]">{stats.userCount}</p>
         </div>
-        <div className="bg-gradient-to-br from-[#23263a] to-[#31344d] p-6 rounded-2xl shadow-lg border border-[#31344d]">
-          <h2 className="text-lg font-semibold text-gray-400 mb-2">Total Transactions</h2>
-          <p className="text-4xl font-bold text-[#36A2EB]">{stats.transactionCount}</p>
+        <div className="bg-gradient-to-br from-[#23263a] to-[#31344d] p-4 md:p-6 rounded-2xl shadow-lg border border-[#31344d]">
+          <h2 className="text-md md:text-lg font-semibold text-gray-400 mb-2">Total Transactions</h2>
+          <p className="text-3xl md:text-4xl font-bold text-[#36A2EB]">{stats.transactionCount}</p>
         </div>
-        <div className="bg-gradient-to-br from-[#23263a] to-[#31344d] p-6 rounded-2xl shadow-lg border border-[#31344d]">
-          <h2 className="text-lg font-semibold text-gray-400 mb-2">Total Volume</h2>
-          <p className="text-4xl font-bold text-[#FF6384]">${stats.totalVolume.toFixed(2)}</p>
+        <div className="bg-gradient-to-br from-[#23263a] to-[#31344d] p-4 md:p-6 rounded-2xl shadow-lg border border-[#31344d]">
+          <h2 className="text-md md:text-lg font-semibold text-gray-400 mb-2">Total Volume</h2>
+          <p className="text-3xl md:text-4xl font-bold text-[#FF6384]">${stats.totalVolume.toFixed(2)}</p>
         </div>
       </div>
     </div>

@@ -35,7 +35,9 @@ function AddIncome({ onAdd }) {
             await post('/add-income', { category, amount, date });
             
             setSuccess('Income added!');
-            setCategory(''); setAmount(''); setDate('');
+            setCategory('');
+            setAmount('');
+            setDate('');
             if (onAdd) onAdd();
         } catch (err) {
             setError(err.response?.data?.message || 'Failed to add income');
@@ -45,12 +47,11 @@ function AddIncome({ onAdd }) {
     };
 
     return (
-        <div className="bg-[#23263a] rounded-xl shadow-lg w-full max-w-2xl mx-auto mt-10 p-8 md:p-12">
+        <div className="bg-[#23263a] p-4 md:p-6 rounded-xl shadow-lg">
             <h2 className="text-2xl font-bold mb-6 text-[#01C38D]">Add Income</h2>
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                 <select
-                    className="bg-[#191E29] border border-[#31344d] text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#01C38D] focus:outline-none placeholder-gray-400"
-                    placeholder="Category"
+                    className="w-full bg-[#191E29] border border-[#31344d] text-white rounded-lg p-3 focus:ring-2 focus:ring-[#01C38D] focus:outline-none placeholder-gray-400"
                     value={category}
                     onChange={e => setCategory(e.target.value)}
                     required>
@@ -61,7 +62,7 @@ function AddIncome({ onAdd }) {
                 </select>
                 <input
                     type="number"
-                    className="bg-[#191E29] border border-[#31344d] text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#01C38D] focus:outline-none placeholder-gray-400"
+                    className="w-full bg-[#191E29] border border-[#31344d] text-white rounded-lg p-3 focus:ring-2 focus:ring-[#01C38D] focus:outline-none placeholder-gray-400"
                     placeholder="Amount"
                     value={amount}
                     onChange={e => setAmount(e.target.value)}
@@ -69,7 +70,7 @@ function AddIncome({ onAdd }) {
                 />
                 <input
                     type="date"
-                    className="bg-[#191E29] border border-[#31344d] text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#01C38D] focus:outline-none placeholder-gray-400"
+                    className="w-full bg-[#191E29] border border-[#31344d] text-white rounded-lg p-3 focus:ring-2 focus:ring-[#01C38D] focus:outline-none placeholder-gray-400"
                     placeholder="Date"
                     value={date}
                     onChange={e => setDate(e.target.value)}
@@ -77,13 +78,13 @@ function AddIncome({ onAdd }) {
                 />
                 <button
                     type="submit"
-                    className="bg-gradient-to-r from-green-400 via-green-500 to-green-600 text-white font-bold py-2 rounded-lg shadow hover:from-green-500 hover:to-green-700 transition-colors disabled:opacity-60 mt-2"
+                    className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white font-bold py-3 rounded-lg shadow-lg hover:from-green-600 hover:to-green-700 transition-all disabled:opacity-60 mt-2"
                     disabled={loading}
                 >
                     {loading ? 'Adding...' : 'Add Income'}
                 </button>
-                {error && <div className="text-red-400 text-sm mt-2">{error}</div>}
-                {success && <div className="text-green-400 text-sm mt-2">{success}</div>}
+                {error && <div className="text-red-400 text-center text-sm mt-2">{error}</div>}
+                {success && <div className="text-green-400 text-center text-sm mt-2">{success}</div>}
             </form>
         </div>
     );

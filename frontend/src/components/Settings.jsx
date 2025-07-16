@@ -52,7 +52,7 @@ function Settings() {
     // };
 
     return (
-        <div className="bg-[#23263a] p-6 rounded-xl shadow-lg">
+        <div className="bg-[#23263a] p-4 md:p-6 rounded-xl shadow-lg">
             <h2 className="text-2xl font-bold text-[#01C38D] mb-6">Settings</h2>
             
             {/* Password Change Section */}
@@ -68,7 +68,7 @@ function Settings() {
                             id="currentPassword"
                             value={currentPassword}
                             onChange={(e) => setCurrentPassword(e.target.value)}
-                            className="w-full bg-[#191E29] border border-[#31344d] text-white rounded-lg p-2.5 focus:ring-[#01C38D] focus:border-[#01C38D]"
+                            className="w-full bg-[#191E29] border border-[#31344d] text-white rounded-lg p-3 focus:ring-[#01C38D] focus:border-[#01C38D]"
                             required
                         />
                     </div>
@@ -79,7 +79,7 @@ function Settings() {
                             id="newPassword"
                             value={newPassword}
                             onChange={(e) => setNewPassword(e.target.value)}
-                            className="w-full bg-[#191E29] border border-[#31344d] text-white rounded-lg p-2.5 focus:ring-[#01C38D] focus:border-[#01C38D]"
+                            className="w-full bg-[#191E29] border border-[#31344d] text-white rounded-lg p-3 focus:ring-[#01C38D] focus:border-[#01C38D]"
                             required
                         />
                     </div>
@@ -90,13 +90,13 @@ function Settings() {
                             id="confirmNewPassword"
                             value={confirmNewPassword}
                             onChange={(e) => setConfirmNewPassword(e.target.value)}
-                            className="w-full bg-[#191E29] border border-[#31344d] text-white rounded-lg p-2.5 focus:ring-[#01C38D] focus:border-[#01C38D]"
+                            className="w-full bg-[#191E29] border border-[#31344d] text-white rounded-lg p-3 focus:ring-[#01C38D] focus:border-[#01C38D]"
                             required
                         />
                     </div>
                     <button
                         type="submit"
-                        className="w-full bg-gradient-to-r from-[#01C38D] to-[#01C38D]/80 text-white py-2.5 rounded-lg hover:from-[#01C38D]/90 hover:to-[#01C38D]/70 transition-all disabled:opacity-50"
+                        className="w-full bg-gradient-to-r from-[#01C38D] to-[#01C38D]/80 text-white py-3 rounded-lg hover:from-[#01C38D]/90 hover:to-[#01C38D]/70 transition-all disabled:opacity-50"
                         disabled={loading}
                     >
                         {loading ? 'Changing Password...' : 'Change Password'}

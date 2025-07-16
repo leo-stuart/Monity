@@ -38,13 +38,13 @@ function Signup() {
     };
 
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center bg-[#191E29]">
-            <div className="mb-8">
-                <h1 className="text-4xl font-bold text-[#01C38D]">Monity</h1>
-                <p className="text-center text-gray-400 mt-2">Track your finances with ease</p>
+        <div className="min-h-screen flex flex-col items-center justify-center bg-[#191E29] p-4">
+            <div className="mb-8 text-center">
+                <h1 className="text-5xl md:text-6xl font-bold text-[#01C38D]">Monity</h1>
+                <p className="text-gray-400 mt-2 text-lg">Track your finances with ease</p>
             </div>
-            <div className="bg-[#23263a] p-8 rounded-xl shadow-lg w-full max-w-md">
-                <h2 className="text-2xl font-bold text-[#01C38D] mb-6 text-center">Create Account</h2>
+            <div className="bg-[#23263a] p-6 md:p-8 rounded-xl shadow-lg w-full max-w-md">
+                <h2 className="text-3xl font-bold text-[#01C38D] mb-6 text-center">Create Account</h2>
                 {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
