@@ -196,11 +196,18 @@ app.get('/balance/:year/:month', authMiddleware, async (req, res) => {
         const userId = req.user.id;
         const { year, month } = req.params;
 
+        // Calculate start and end dates for the given month
+        const startDate = `${year}-${month.padStart(2, '0')}-01`;
+        const nextMonth = parseInt(month, 10) === 12 ? 1 : parseInt(month, 10) + 1;
+        const nextYear = parseInt(month, 10) === 12 ? parseInt(year, 10) + 1 : parseInt(year, 10);
+        const endDate = `${nextYear}-${String(nextMonth).padStart(2, '0')}-01`;
+
         const { data, error } = await req.supabase
             .from('transactions')
             .select('amount, typeId')
             .eq('userId', userId)
-            .eq('date', `${year}-${month}-01`);
+            .gte('date', startDate)
+            .lt('date', endDate);
 
         if (error) {
             console.error('Error fetching balance:', error.message);
@@ -252,24 +259,21 @@ app.get('/transactions', authMiddleware, async (req, res) => {
 });
 
 // Add expense, income, or savings (generic transaction adder)
-const addTransaction = async (req, res, typeId, successMessage) => {
+const addTransaction = async (req, res, typeId, successMessage, body) => {
     try {
-        const { description, amount, category, date } = req.body;
+        const { description, amount, category, date } = body || req.body;
         const userId = req.user.id;
         
         if (!description || !amount || !category || !date) {
             return res.status(400).json({ message: 'Description, amount, category, and date are required' });
         }
-
-        const [day, month, yearShort] = date.split('/');
-        const formattedDate = `20${yearShort}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
         
         const newTransaction = {
             userId,
             description,
             amount: parseFloat(amount),
             category,
-            date: formattedDate, 
+            date: date, 
             typeId,
             createdAt: new Date().toISOString()
         };
@@ -291,11 +295,13 @@ const addTransaction = async (req, res, typeId, successMessage) => {
     }
 };
 
-app.post('/add-expense', authMiddleware, (req, res) => addTransaction(req, res, "1", "Expense added!"));
+app.post('/add-expense', authMiddleware, (req, res) => addTransaction(req, res, 1, "Expense added!"));
 console.log('Route registered: POST /add-expense');
-app.post('/add-income', authMiddleware, (req, res) => {
-    if (!req.body.description && req.body.category) req.body.description = req.body.category;
-    addTransaction(req, res, "2", "Income added!");
+app.post('/add-income', authMiddleware, async (req, res) => {
+    // Assuming typeId for 'income' is 2
+    const { category, amount, date } = req.body;
+    const description = `Income - ${category}`; // Construct description
+    await addTransaction(req, res, 2, 'Income added', { description, category, amount, date });
 });
 console.log('Route registered: POST /add-income');
 app.post('/add-savings', authMiddleware, (req, res) => addTransaction(req, res, "3", "Savings transaction added!"));

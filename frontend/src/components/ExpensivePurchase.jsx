@@ -1,6 +1,7 @@
 import Spinner from "./Spinner"
 import { useState, useEffect, useCallback } from 'react';
 import { get, del } from '../utils/api';
+import formatDate from "../utils/formatDate";
 
 function ExpensivePurchase({ selectedRange }) {
     const [expenses, setExpenses] = useState([]);
@@ -22,7 +23,7 @@ function ExpensivePurchase({ selectedRange }) {
             }
 
             const expenseData = Array.isArray(response.data) 
-                ? response.data.filter(transaction => transaction.typeId === "1")
+                ? response.data.filter(transaction => transaction.typeId === 1)
                 : [];
             setExpenses(expenseData);
         } catch (error) {
@@ -79,7 +80,7 @@ function ExpensivePurchase({ selectedRange }) {
                 <tbody>
                     {topExpenses.map((expense) => (
                         <tr key={expense.id} className="border-t border-[#31344d] hover:bg-[#2a2d44] transition-colors">
-                            <td className="py-2 px-4">{expense.date}</td>
+                            <td className="py-2 px-4">{formatDate(expense.date)}</td>
                             <td className="py-2 px-4">{expense.category}</td>
                             <td className="py-2 px-4">{expense.description}</td>
                             <td className="text-red-400 py-2 px-4">${expense.amount.toFixed(2)}</td>

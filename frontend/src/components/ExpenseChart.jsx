@@ -32,7 +32,7 @@ function ExpenseChart({ selectedRange }) {
                 }
                 
                 const expenseData = Array.isArray(response.data) 
-                    ? response.data.filter(transaction => transaction.typeId === "1")
+                    ? response.data.filter(transaction => transaction.typeId === 1)
                     : [];
                 setExpenses(expenseData);
             } catch (error) {

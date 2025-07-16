@@ -69,12 +69,16 @@ function BalanceChart({ selectedRange }){
     
     // Sort history by month
     const sortedHistory = [...history].sort((a, b) => {
-        const [aMonth, aYear] = a.month.split('/');
-        const [bMonth, bYear] = b.month.split('/');
+        const [aYear, aMonth] = a.month.split('/');
+        const [bYear, bMonth] = b.month.split('/');
         return (aYear - bYear) || (aMonth - bMonth);
     });
 
-    const labels = sortedHistory.map(item => item.month);
+    const labels = sortedHistory.map(item => {
+        const [year, month] = item.month.split('/');
+        const monthName = new Date(year, month - 1, 1).toLocaleString('default', { month: 'long' });
+        return `${monthName} ${year}`;
+    });
     const balances = sortedHistory.map(item => parseFloat(item.balance));
 
     const data = {

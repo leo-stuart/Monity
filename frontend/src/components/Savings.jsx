@@ -27,7 +27,7 @@ function Savings({ selectedRange }) {
                     return;
                 }
 
-                const savingsTransactions = response.data.filter(t => t.typeId === "3");
+                const savingsTransactions = response.data.filter(t => t.typeId === 3);
                 
                 const total = savingsTransactions.reduce((acc, transaction) => {
                     const amount = parseFloat(transaction.amount);
