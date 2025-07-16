@@ -25,7 +25,7 @@ describe('AddIncome', () => {
     await screen.findByText('Salary');
     await user.selectOptions(screen.getByRole('combobox'), 'Salary');
     await user.type(screen.getByPlaceholderText('Amount'), '1000');
-    await user.type(screen.getByPlaceholderText('Date (DD/MM/YY)'), '01/01/2024');
+    await user.type(screen.getByPlaceholderText('Date'), '2024-01-01');
     
     const submitButton = screen.getByRole('button', { name: /add income/i });
     await user.click(submitButton);
@@ -33,7 +33,7 @@ describe('AddIncome', () => {
     expect(postMock).toHaveBeenCalledWith('/add-income', {
       category: 'Salary',
       amount: '1000',
-      date: '01/01/2024',
+      date: '2024-01-01',
     });
   });
 }); 

@@ -19,8 +19,8 @@ describe('ExpenseList', () => {
 
   it('renders a list of expenses', async () => {
     const expenses = [
-      { id: 1, date: '01/01/2024', category: 'Food', description: 'Lunch', amount: 15.00, typeId: '1' },
-      { id: 2, date: '01/01/2024', category: 'Transport', description: 'Train', amount: 5.00, typeId: '1' },
+      { id: 1, date: '2024-01-01', category: 'Food', description: 'Lunch', amount: 15.00, typeId: 1 },
+      { id: 2, date: '2024-01-01', category: 'Transport', description: 'Train', amount: 5.00, typeId: 1 },
     ];
     api.get.mockResolvedValue({ data: expenses });
     render(
@@ -28,7 +28,10 @@ describe('ExpenseList', () => {
         <ExpenseList />
       </MemoryRouter>
     );
-    expect(await screen.findByText('Food')).toBeInTheDocument();
-    expect(await screen.findByText('Transport')).toBeInTheDocument();
+    const foodElements = await screen.findAllByText('Food');
+    expect(foodElements.length).toBeGreaterThan(0);
+
+    const transportElements = await screen.findAllByText('Transport');
+    expect(transportElements.length).toBeGreaterThan(0);
   });
 }); 

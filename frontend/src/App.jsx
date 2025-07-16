@@ -12,10 +12,12 @@ import Settings from './components/Settings'
 import AdminDashboard from './components/AdminDashboard'
 import BudgetsAndRecurring from './components/BudgetsAndRecurring'
 import Subscription from './components/Subscription'
+import Premium from './components/Premium'
 import { useAuth } from './context/AuthContext'
 import Spinner from './components/Spinner'
 import { useEffect, useState } from 'react'
 import TopBar from './components/TopBar';
+import { isPremium } from './utils/premium'
 
 // Protected route component
 const ProtectedRoute = ({ children }) => {
@@ -30,6 +32,20 @@ const ProtectedRoute = ({ children }) => {
   }
   return children;
 };
+
+// Premium route component
+const PremiumRoute = ({ children }) => {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return <Spinner />;
+  }
+
+  if (!user || !isPremium(user)) {
+    return <Navigate to="/subscription" replace />;
+  }
+  return children;
+}
 
 // Admin route component
 const AdminRoute = ({ children }) => {
@@ -67,6 +83,9 @@ function App() {
       <Route path="/settings" element={<ProtectedRoute><MainLayout isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen}><Settings /></MainLayout></ProtectedRoute>} />
       <Route path="/budgets" element={<ProtectedRoute><MainLayout isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen}><BudgetsAndRecurring /></MainLayout></ProtectedRoute>} />
       <Route path="/subscription" element={<ProtectedRoute><MainLayout isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen}><Subscription /></MainLayout></ProtectedRoute>} />
+
+      {/* Premium route */}
+      <Route path="/premium" element={<PremiumRoute><MainLayout isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen}><Premium /></MainLayout></PremiumRoute>} />
 
       {/* Admin route */}
       <Route path="/admin" element={<AdminRoute><MainLayout isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen}><AdminDashboard /></MainLayout></AdminRoute>} />

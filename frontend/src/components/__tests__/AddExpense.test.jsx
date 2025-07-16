@@ -25,7 +25,7 @@ describe('AddExpense', () => {
     await user.type(screen.getByPlaceholderText('Description'), 'Test Expense');
     await user.type(screen.getByPlaceholderText('Amount'), '100');
     await user.selectOptions(screen.getByRole('combobox'), 'Food');
-    await user.type(screen.getByPlaceholderText('Date (DD/MM/YY)'), '01/01/2024');
+    await user.type(screen.getByPlaceholderText('Date'), '2024-01-01');
     
     const submitButton = screen.getByRole('button', { name: /add expense/i });
     await user.click(submitButton);
@@ -34,7 +34,7 @@ describe('AddExpense', () => {
       description: 'Test Expense',
       amount: '100',
       category: 'Food',
-      date: '01/01/2024',
+      date: '2024-01-01',
     });
   });
 }); 

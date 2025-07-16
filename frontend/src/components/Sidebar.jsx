@@ -1,11 +1,13 @@
 import { NavLink, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { isPremium } from "../utils/premium";
 import { useState, useRef, useEffect } from "react";
 
 export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const { user, logout, isAdmin } = useAuth();
+  const premiumUser = isPremium(user);
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -106,6 +108,24 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18.5A6.5 6.5 0 1012 5.5a6.5 6.5 0 000 13z" />
                 </svg>
                 <span>Budgets</span>
+              </NavLink>
+              <NavLink 
+                to={premiumUser ? "/premium" : "/subscription"}
+                className={({isActive}) => 
+                  `flex items-center gap-2 px-3 py-2 rounded transition-colors ${
+                    isActive 
+                      ? 'bg-yellow-400 text-black font-semibold' 
+                      : premiumUser 
+                        ? 'text-yellow-400 hover:bg-yellow-500 hover:text-black' 
+                        : 'text-yellow-400 hover:bg-yellow-500 hover:text-black'
+                  }`
+                }
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.293 2.293a1 1 0 010 1.414L13 12l2.293 2.293a1 1 0 01-1.414 1.414L12 13.414l-2.293 2.293a1 1 0 01-1.414-1.414L10.586 12 8.293 9.707a1 1 0 011.414-1.414L12 10.586l2.293-2.293a1 1 0 011.414 0z" />
+                </svg>
+                <span>{premiumUser ? "Premium" : "Go Premium"}</span>
               </NavLink>
             </nav>
 
