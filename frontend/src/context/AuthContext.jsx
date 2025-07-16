@@ -13,18 +13,10 @@ export function AuthProvider({ children }) {
     const [isAdmin, setIsAdmin] = useState(false);
 
     useEffect(() => {
-        const getSession = async () => {
-            const { data: { session } } = await supabase.auth.getSession();
-            setUser(session?.user ?? null);
-            setIsAdmin(session?.user?.user_metadata?.role === 'admin');
-            setLoading(false);
-        };
-
-        getSession();
-
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
             setUser(session?.user ?? null);
             setIsAdmin(session?.user?.user_metadata?.role === 'admin');
+            setLoading(false);
         });
 
         return () => {
