@@ -1,13 +1,25 @@
-import { useState } from 'react';
-import { post } from '../utils/api';
+import { useState, useEffect } from 'react';
+import { post, get, remove } from '../utils/api';
+import { FaArrowTrendUp, FaArrowTrendDown } from 'react-icons/fa6';
 
 function AddCategory() {
     const [categoryName, setCategoryName] = useState('');
     const [categoryType, setCategoryType] = useState('expense');
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const [categories, setCategories] = useState([]);
 
-    
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const { data } = await get('/categories');
+                setCategories(data);
+            } catch (err) {
+                setError('Failed to fetch categories');
+            }
+        };
+        fetchCategories();
+    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -23,8 +35,24 @@ function AddCategory() {
             setCategoryName('');
             setError('');
             setCategoryType('expense');
+            // Refresh categories list
+            const { data } = await get('/categories');
+            setCategories(data);
         } catch (err) {
             setError('Failed to add category');
+            setSuccess('');
+        }
+    };
+
+    const handleDelete = async (id) => {
+        try {
+            await remove(`/categories/${id}`);
+            setSuccess('Category deleted successfully!');
+            // Refresh categories list
+            const { data } = await get('/categories');
+            setCategories(data);
+        } catch (err) {
+            setError('Failed to delete category');
             setSuccess('');
         }
     };
@@ -65,6 +93,29 @@ function AddCategory() {
                     Add Category
                 </button>
             </form>
+            <div className="mt-8">
+                <h3 className="text-xl font-bold text-white mb-4">Your Categories</h3>
+                <ul className="space-y-2">
+                    {categories.map(category => (
+                        <li key={category.id} className="flex justify-between items-center bg-[#191E29] p-3 rounded-lg">
+                            <div className="flex items-center">
+                                {category.typeId === 1 ? (
+                                    <FaArrowTrendDown className="text-red-500 mr-3" />
+                                ) : (
+                                    <FaArrowTrendUp className="text-green-500 mr-3" />
+                                )}
+                                <span className="text-white">{category.name}</span>
+                            </div>
+                            <button
+                                onClick={() => handleDelete(category.id)}
+                                className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 transition-colors"
+                            >
+                                Delete
+                            </button>
+                        </li>
+                    ))}
+                </ul>
+            </div>
         </div>
     );
 }

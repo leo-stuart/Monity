@@ -97,6 +97,22 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                 </svg>
                 <span>Categories</span>
               </NavLink>
+              <NavLink 
+                to="/budgets" 
+                className={({isActive}) => 
+                  `flex items-center gap-2 px-3 py-2 rounded transition-colors ${
+                    isActive 
+                      ? 'bg-[#01C38D] text-[#191E29] font-semibold' 
+                      : 'text-white hover:bg-[#31344d]'
+                  }`
+                }
+              >
+                <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v.01" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18.5A6.5 6.5 0 1012 5.5a6.5 6.5 0 000 13z" />
+                </svg>
+                <span>Budgets</span>
+              </NavLink>
             </nav>
 
             {isAdmin && (

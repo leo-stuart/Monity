@@ -62,4 +62,41 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 -- Trigger to call the function when a new user is created
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
-  FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user(); 
+  FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user();
+
+-- Create budgets table
+CREATE TABLE "budgets" (
+  "id" UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  "userId" UUID REFERENCES auth.users("id"),
+  "categoryId" UUID REFERENCES "categories"("id"),
+  "amount" NUMERIC NOT NULL,
+  "month" DATE NOT NULL,
+  UNIQUE("userId", "categoryId", "month")
+);
+
+ALTER TABLE "budgets" ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow individual access to budgets" ON "budgets" FOR SELECT USING (auth.uid() = "userId");
+CREATE POLICY "Allow individual insert to budgets" ON "budgets" FOR INSERT WITH CHECK (auth.uid() = "userId");
+CREATE POLICY "Allow individual update to budgets" ON "budgets" FOR UPDATE USING (auth.uid() = "userId");
+CREATE POLICY "Allow individual delete to budgets" ON "budgets" FOR DELETE USING (auth.uid() = "userId");
+
+-- Create recurring_transactions table
+CREATE TABLE "recurring_transactions" (
+    "id" UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    "userId" UUID REFERENCES auth.users("id"),
+    "description" TEXT,
+    "amount" NUMERIC NOT NULL,
+    "typeId" INTEGER REFERENCES "transaction_types"("id"),
+    "categoryId" UUID REFERENCES "categories"("id"),
+    "frequency" TEXT NOT NULL, -- e.g., 'daily', 'weekly', 'monthly', 'yearly'
+    "startDate" DATE NOT NULL,
+    "endDate" DATE,
+    "lastProcessedDate" DATE,
+    "createdAt" TIMESTAMPTZ DEFAULT now()
+);
+
+ALTER TABLE "recurring_transactions" ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow individual access to recurring_transactions" ON "recurring_transactions" FOR SELECT USING (auth.uid() = "userId");
+CREATE POLICY "Allow individual insert to recurring_transactions" ON "recurring_transactions" FOR INSERT WITH CHECK (auth.uid() = "userId");
+CREATE POLICY "Allow individual update to recurring_transactions" ON "recurring_transactions" FOR UPDATE USING (auth.uid() = "userId");
+CREATE POLICY "Allow individual delete to recurring_transactions" ON "recurring_transactions" FOR DELETE USING (auth.uid() = "userId"); 

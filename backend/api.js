@@ -4,6 +4,8 @@ const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
 const { createClient } = require('@supabase/supabase-js');
+const multer = require('multer');
+const Papa = require('papaparse');
 
 // Load environment variables
 require('dotenv').config();
@@ -103,8 +105,16 @@ console.log('Route registered: POST /login');
 // Get categories
 app.get('/categories', authMiddleware, async (req, res) => {
     try {
-        // TODO: Add user-specific logic if categories are tied to users.
-        const { data: categories } = await req.supabase.from('categories').select('*');
+        const userId = req.user.id;
+        const { data: categories, error } = await req.supabase
+            .from('categories')
+            .select('*')
+            .eq('userId', userId);
+        
+        if (error) {
+            console.error('Get categories error:', error.message);
+            return res.status(500).json({ error: 'Failed to fetch categories' });
+        }
         res.json(categories || []);
     } catch (error) {
         console.error('Get categories error:', error.response ? error.response.data : error.message);
@@ -150,8 +160,25 @@ console.log('Route registered: POST /categories');
 // Delete a category
 app.delete('/categories/:id', authMiddleware, async (req, res) => {
     try {
-        // TODO: Add user-specific logic for deletion if categories are tied to users.
-        await req.supabase.from('categories').delete().eq('id', req.params.id);
+        const userId = req.user.id;
+        const categoryId = req.params.id;
+
+        const { data, error } = await req.supabase
+            .from('categories')
+            .delete()
+            .eq('id', categoryId)
+            .eq('userId', userId)
+            .select();
+
+        if (error) {
+            console.error('Delete category error:', error.message);
+            return res.status(500).json({ error: 'Failed to delete category' });
+        }
+
+        if (!data || data.length === 0) {
+            return res.status(404).json({ error: 'Category not found or you do not have permission to delete it.' });
+        }
+
         res.json({ message: 'Category deleted successfully' });
     } catch (error) {
         console.error('Delete category error:', error.response ? error.response.data : error.message);
@@ -159,6 +186,260 @@ app.delete('/categories/:id', authMiddleware, async (req, res) => {
     }
 });
 console.log('Route registered: DELETE /categories/:id');
+
+// Get budgets for the logged-in user
+app.get('/budgets', authMiddleware, async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const { data, error } = await req.supabase
+            .from('budgets')
+            .select(`
+                *,
+                categories (
+                    name
+                )
+            `)
+            .eq('userId', userId);
+
+        if (error) {
+            console.error('Get budgets error:', error.message);
+            return res.status(500).json({ error: 'Failed to fetch budgets' });
+        }
+        res.json(data || []);
+    } catch (error) {
+        console.error('Get budgets error:', error.message);
+        res.status(500).json({ error: 'Failed to fetch budgets' });
+    }
+});
+console.log('Route registered: GET /budgets');
+
+// Add or update a budget
+app.post('/budgets', authMiddleware, async (req, res) => {
+    try {
+        const { categoryId, amount, month } = req.body;
+        const userId = req.user.id;
+
+        if (!categoryId || !amount || !month) {
+            return res.status(400).json({ message: 'Category, amount, and month are required' });
+        }
+        
+        // Use upsert to either insert a new budget or update an existing one
+        const { data, error } = await req.supabase
+            .from('budgets')
+            .upsert({
+                userId,
+                categoryId,
+                amount,
+                month,
+            }, {
+                onConflict: 'userId,categoryId,month'
+            })
+            .select();
+
+        if (error) {
+            console.error('Upsert budget error:', error.message);
+            return res.status(500).json({ error: 'Failed to save budget' });
+        }
+        
+        res.status(201).json(data[0]);
+    } catch (error) {
+        console.error('Upsert budget error:', error.message);
+        res.status(500).json({ error: 'Failed to save budget' });
+    }
+});
+console.log('Route registered: POST /budgets');
+
+
+// Delete a budget
+app.delete('/budgets/:id', authMiddleware, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const userId = req.user.id;
+
+        const { error } = await req.supabase
+            .from('budgets')
+            .delete()
+            .eq('id', id)
+            .eq('userId', userId);
+
+        if (error) {
+            console.error('Delete budget error:', error.message);
+            return res.status(500).json({ error: 'Failed to delete budget' });
+        }
+        
+        res.json({ message: 'Budget deleted successfully' });
+    } catch (error) {
+        console.error('Delete budget error:', error.message);
+        res.status(500).json({ error: 'Failed to delete budget' });
+    }
+});
+console.log('Route registered: DELETE /budgets/:id');
+
+
+// --- Recurring Transactions Endpoints ---
+
+// Get all recurring transactions for the logged-in user
+app.get('/recurring-transactions', authMiddleware, async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const { data, error } = await req.supabase
+            .from('recurring_transactions')
+            .select(`
+                *,
+                categories (name),
+                transaction_types (name)
+            `)
+            .eq('userId', userId);
+        
+        if (error) throw error;
+        res.json(data || []);
+    } catch (error) {
+        console.error('Get recurring transactions error:', error.message);
+        res.status(500).json({ error: 'Failed to fetch recurring transactions' });
+    }
+});
+console.log('Route registered: GET /recurring-transactions');
+
+// Add a new recurring transaction
+app.post('/recurring-transactions', authMiddleware, async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const { description, amount, typeId, categoryId, frequency, startDate, endDate } = req.body;
+
+        if (!description || !amount || !typeId || !categoryId || !frequency || !startDate) {
+            return res.status(400).json({ message: 'Missing required fields' });
+        }
+
+        const { data, error } = await req.supabase
+            .from('recurring_transactions')
+            .insert([{ userId, description, amount, typeId, categoryId, frequency, startDate, endDate }])
+            .select();
+        
+        if (error) throw error;
+        res.status(201).json(data[0]);
+    } catch (error) {
+        console.error('Add recurring transaction error:', error.message);
+        res.status(500).json({ error: 'Failed to add recurring transaction' });
+    }
+});
+console.log('Route registered: POST /recurring-transactions');
+
+// Update a recurring transaction
+app.put('/recurring-transactions/:id', authMiddleware, async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const { id } = req.params;
+        const { description, amount, typeId, categoryId, frequency, startDate, endDate } = req.body;
+
+        const { data, error } = await req.supabase
+            .from('recurring_transactions')
+            .update({ description, amount, typeId, categoryId, frequency, startDate, endDate })
+            .eq('id', id)
+            .eq('userId', userId)
+            .select();
+        
+        if (error) throw error;
+        res.json(data[0]);
+    } catch (error) {
+        console.error('Update recurring transaction error:', error.message);
+        res.status(500).json({ error: 'Failed to update recurring transaction' });
+    }
+});
+console.log('Route registered: PUT /recurring-transactions/:id');
+
+// Delete a recurring transaction
+app.delete('/recurring-transactions/:id', authMiddleware, async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const { id } = req.params;
+
+        const { error } = await req.supabase
+            .from('recurring_transactions')
+            .delete()
+            .eq('id', id)
+            .eq('userId', userId);
+            
+        if (error) throw error;
+        res.json({ message: 'Recurring transaction deleted' });
+    } catch (error) {
+        console.error('Delete recurring transaction error:', error.message);
+        res.status(500).json({ error: 'Failed to delete recurring transaction' });
+    }
+});
+console.log('Route registered: DELETE /recurring-transactions/:id');
+
+// Process recurring transactions
+app.post('/recurring-transactions/process', authMiddleware, async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const { data: recurring, error: fetchError } = await req.supabase
+            .from('recurring_transactions')
+            .select('*')
+            .eq('userId', userId);
+
+        if (fetchError) throw fetchError;
+
+        const newTransactions = [];
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        for (const r of recurring) {
+            let lastProcessed = r.lastProcessedDate ? new Date(r.lastProcessedDate) : new Date(r.startDate);
+            let nextDueDate = new Date(lastProcessed);
+
+            while (true) {
+                if (r.frequency === 'daily') {
+                    nextDueDate.setDate(nextDueDate.getDate() + 1);
+                } else if (r.frequency === 'weekly') {
+                    nextDueDate.setDate(nextDueDate.getDate() + 7);
+                } else if (r.frequency === 'monthly') {
+                    nextDueDate.setMonth(nextDueDate.getMonth() + 1);
+                } else if (r.frequency === 'yearly') {
+                    nextDueDate.setFullYear(nextDueDate.getFullYear() + 1);
+                } else {
+                    break; // Invalid frequency
+                }
+
+                if (nextDueDate > today) {
+                    break; // Future transaction, stop processing
+                }
+                
+                if (r.endDate && nextDueDate > new Date(r.endDate)) {
+                    break; // Past the end date
+                }
+                
+                newTransactions.push({
+                    description: r.description,
+                    amount: r.amount,
+                    category: r.categoryId,
+                    date: nextDueDate.toISOString().split('T')[0],
+                    typeId: r.typeId,
+                    userId: r.userId,
+                });
+                
+                r.lastProcessedDate = nextDueDate.toISOString().split('T')[0];
+            }
+        }
+        
+        if (newTransactions.length > 0) {
+            const { error: insertError } = await req.supabase.from('transactions').insert(newTransactions);
+            if (insertError) throw insertError;
+
+            for (const r of recurring) {
+                if(r.lastProcessedDate) {
+                    await req.supabase.from('recurring_transactions').update({ lastProcessedDate: r.lastProcessedDate }).eq('id', r.id);
+                }
+            }
+        }
+
+        res.json({ message: `Processed ${newTransactions.length} new transactions.` });
+    } catch (error) {
+        console.error('Process recurring transactions error:', error.message);
+        res.status(500).json({ error: 'Failed to process recurring transactions' });
+    }
+});
+console.log('Route registered: POST /recurring-transactions/process');
+
 
 // Get months
 app.get('/months', authMiddleware, async (req, res) => {
@@ -544,94 +825,6 @@ app.get('/balance/:month/:year', authMiddleware, async (req, res) => {
     }
 });
 console.log('Route registered: GET /balance/:month/:year');
-
-// Import initial data from .txt files if Supabase is empty for the default user
-const importExistingData = async () => {
-    try {
-        console.log('Checking if data needs to be imported to Supabase...');
-        
-        // Get the first user (assuming it's the default/admin user for legacy data)
-        // This needs a reliable way to identify the "default" user in Supabase.
-        // For now, let's assume we fetch the first user by creation date or a specific email.
-        // This part is tricky without a defined "default" user ID for legacy data.
-        // Let's assume process.env.DEFAULT_USER_ID_FOR_IMPORT exists or use first created user.
-        
-        let defaultUserId = process.env.DEFAULT_USER_ID_FOR_IMPORT;
-        if (!defaultUserId) {
-            const { data: users } = await supabase.from('users').select('id').order('created_at', { ascending: true }).limit(1);
-            if (users && users.length > 0) {
-                defaultUserId = users[0].id;
-            } else {
-                console.log('No users in Supabase to assign legacy data to. Skipping import.');
-                return;
-            }
-        }
-        
-        const { data: existingTransactions } = await supabase.from('transactions').select('id').eq('userId', defaultUserId).limit(1);
-
-        if (existingTransactions && existingTransactions.length > 0) {
-            console.log('Transactions already exist in Supabase for the default user, skipping import.');
-            return;
-        }
-        
-        console.log(`Importing legacy data from .txt files for user ID: ${defaultUserId}...`);
-        const transactionsToImport = [];
-
-        const expensesFilePath = process.env.EXPENSES_FILE_PATH || path.join(__dirname, 'expenses.txt');
-        const incomesFilePath = process.env.INCOMES_FILE_PATH || path.join(__dirname, 'incomes.txt');
-
-        if (fs.existsSync(expensesFilePath)) {
-            const expensesData = fs.readFileSync(expensesFilePath, 'utf8');
-            expensesData.split('\n').filter(line => line.trim()).forEach(line => {
-                const parts = line.split(',');
-                if (parts.length >= 4) {
-                    const [description, amount, category, dateStr] = parts.map(p => p.trim());
-                    const [d, m, yShort] = dateStr.split('/');
-                    const formattedDate = `20${yShort}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
-                    transactionsToImport.push({
-                        id: uuidv4(), userId: defaultUserId, description, 
-                        amount: parseFloat(amount), category, date: formattedDate,
-                        typeId: "1", createdAt: new Date().toISOString()
-                    });
-                }
-            });
-        }
-        
-        if (fs.existsSync(incomesFilePath)) {
-            const incomesData = fs.readFileSync(incomesFilePath, 'utf8');
-            incomesData.split('\n').filter(line => line.trim()).forEach(line => {
-                const parts = line.split(',');
-                if (parts.length >= 3) {
-                    const [category, amount, dateStr] = parts.map(p => p.trim());
-                    const [d, m, yShort] = dateStr.split('/');
-                    const formattedDate = `20${yShort}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
-                    let typeId = "2"; // Default Income
-                    if (category === "Make Investments" || category === "Withdraw Investments") typeId = "3"; // Savings
-                    transactionsToImport.push({
-                        id: uuidv4(), userId: defaultUserId, description: category, // Income used category as desc
-                        amount: parseFloat(amount), category, date: formattedDate,
-                        typeId, createdAt: new Date().toISOString()
-                    });
-                }
-            });
-        }
-
-        if (transactionsToImport.length > 0) {
-            // Supabase REST API can accept an array of objects to insert multiple rows
-            const { data, error } = await supabase.from('transactions').insert(transactionsToImport);
-            if (error) {
-                console.error('Error bulk inserting legacy data to Supabase:', error.response ? error.response.data : error);
-            } else {
-                console.log(`✅ Successfully imported ${data ? data.length : 0} legacy transactions to Supabase.`);
-            }
-        } else {
-            console.log('No legacy data found in .txt files to import.');
-        }
-        
-    } catch (error) {
-        console.error('Error during Supabase legacy data import process:', error.response ? error.response.data : error.message);
-    }
-};
 
 const PORT = process.env.PORT || 3000;
 const server = app.listen(PORT, '0.0.0.0', () => {

@@ -10,6 +10,7 @@ import Signup from './components/Signup'
 import AddCategory from './components/AddCategory'
 import Settings from './components/Settings'
 import AdminDashboard from './components/AdminDashboard'
+import BudgetsAndRecurring from './components/BudgetsAndRecurring'
 import { useAuth } from './context/AuthContext'
 import Spinner from './components/Spinner'
 import { useEffect, useState } from 'react'
@@ -62,6 +63,7 @@ function App() {
       <Route path="/add-income" element={<ProtectedRoute><MainLayout isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen}><AddIncome /></MainLayout></ProtectedRoute>} />
       <Route path="/categories" element={<ProtectedRoute><MainLayout isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen}><AddCategory /></MainLayout></ProtectedRoute>} />
       <Route path="/settings" element={<ProtectedRoute><MainLayout isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen}><Settings /></MainLayout></ProtectedRoute>} />
+      <Route path="/budgets" element={<ProtectedRoute><MainLayout isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen}><BudgetsAndRecurring /></MainLayout></ProtectedRoute>} />
 
       {/* Admin route */}
       <Route path="/admin" element={<AdminRoute><MainLayout isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen}><AdminDashboard /></MainLayout></AdminRoute>} />
