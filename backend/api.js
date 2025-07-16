@@ -76,6 +76,24 @@ app.post('/signup', async (req, res) => {
         return res.status(400).json({ error: error.message });
     }
 
+    // After successful signup, create default investment categories for the new user
+    if (data.user) {
+        const userId = data.user.id;
+        const defaultCategories = [
+            { name: 'Make Investments', typeId: 3, userId: userId },
+            { name: 'Withdraw Investments', typeId: 3, userId: userId }
+        ];
+
+        const { error: insertError } = await supabase
+            .from('categories')
+            .insert(defaultCategories);
+
+        if (insertError) {
+            // Log the error, but don't block the signup process
+            console.error('Failed to create default categories for user:', userId, insertError.message);
+        }
+    }
+
     res.status(201).json({ user: data.user, session: data.session });
 });
 console.log('Route registered: POST /signup');
@@ -667,7 +685,7 @@ app.get('/balance/all', authMiddleware, async (req, res) => {
         // Fetch all transactions for the user
         const { data: transactions, error } = await req.supabase
             .from('transactions')
-            .select('amount, typeId')
+            .select('amount, typeId, category')
             .eq('userId', userId);
 
         if (error) {
@@ -681,6 +699,13 @@ app.get('/balance/all', authMiddleware, async (req, res) => {
                 return acc - transaction.amount;
             } else if (transaction.typeId === 2) { // Income
                 return acc + transaction.amount;
+            } else if (transaction.typeId === 3) { // Savings
+                // "Make Investments" is a debit, "Withdraw Investments" is a credit
+                if (transaction.category === "Make Investments") {
+                    return acc - transaction.amount;
+                } else if (transaction.category === "Withdraw Investments") {
+                    return acc + transaction.amount;
+                }
             }
             return acc;
         }, 0);

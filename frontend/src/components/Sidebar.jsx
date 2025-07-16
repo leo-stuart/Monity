@@ -161,6 +161,21 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                 </svg>
                 <span>Settings</span>
               </NavLink>
+              <NavLink 
+                to="/subscription"
+                className={({isActive}) => 
+                  `flex items-center gap-2 px-3 py-2 rounded transition-colors ${
+                    isActive 
+                      ? 'bg-[#01C38D] text-[#191E29] font-semibold' 
+                      : 'text-white hover:bg-[#31344d]'
+                  }`
+                }
+              >
+                <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                </svg>
+                <span>Subscription</span>
+              </NavLink>
             </nav>
           </div>
 

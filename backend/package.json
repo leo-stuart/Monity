@@ -5,7 +5,9 @@
   "main": "api.js",
   "scripts": {
     "test": "jest",
-    "start": "node api.js"
+    "start": "node api.js",
+    "migrate": "node migration-script.js",
+    "migrate:categories": "node add-investment-categories.js"
   },
   "engines": {
     "node": "20.x"
@@ -15,7 +17,7 @@
   "license": "ISC",
   "dependencies": {
     "@supabase/supabase-js": "^2.51.0",
-    "axios": "^1.9.0",
+    "axios": "^1.7.2",
     "cors": "^2.8.5",
     "debug": "^4.4.1",
     "dotenv": "^17.2.0",

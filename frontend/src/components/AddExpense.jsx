@@ -25,7 +25,7 @@ function AddExpense({ onAdd }) {
     }, []);
 
     const expenseCategories = categories
-    .filter(category => category.typeId === 1 || category.name === "Make Investments")
+    .filter(category => category.typeId === 1 || category.typeId === 3)
 
     const handleSubmit = async (e) => {
         e.preventDefault();

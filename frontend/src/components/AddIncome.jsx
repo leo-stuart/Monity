@@ -24,7 +24,7 @@ function AddIncome({ onAdd }) {
     }, []);
 
     const incomeCategories = categories
-    .filter(category => category.typeId === 2 || category.name === "Withdraw Investments")
+    .filter(category => category.typeId === 2 || category.typeId === 3)
 
     const handleSubmit = async (e) => {
         e.preventDefault();
