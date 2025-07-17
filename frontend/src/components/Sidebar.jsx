@@ -38,17 +38,16 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
             <Link to="/" className="flex items-center gap-2 mb-6" onClick={() => setIsMobileMenuOpen(false)}>
               <span className="text-2xl font-bold text-[#01C38D]">Monity</span>
             </Link>
-            
+
             <nav className="flex flex-col gap-1.5 mb-4">
               <span className="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">{t('sidebar.main_navigation')}</span>
-              <NavLink 
-                to="/" 
-                end 
-                className={({isActive}) => 
-                  `flex items-center gap-2 px-3 py-2 rounded transition-colors ${
-                    isActive 
-                      ? 'bg-[#01C38D] text-[#191E29] font-semibold' 
-                      : 'text-white hover:bg-[#31344d]'
+              <NavLink
+                to="/"
+                end
+                className={({ isActive }) =>
+                  `flex items-center gap-2 px-3 py-2 rounded transition-colors ${isActive
+                    ? 'bg-[#01C38D] text-[#191E29] font-semibold'
+                    : 'text-white hover:bg-[#31344d]'
                   }`
                 }
                 onClick={() => setIsMobileMenuOpen(false)}
@@ -58,13 +57,12 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                 </svg>
                 <span>{t('sidebar.dashboard')}</span>
               </NavLink>
-              <NavLink 
-                to="/transactions" 
-                className={({isActive}) => 
-                  `flex items-center gap-2 px-3 py-2 rounded transition-colors ${
-                    isActive 
-                      ? 'bg-[#01C38D] text-[#191E29] font-semibold' 
-                      : 'text-white hover:bg-[#31344d]'
+              <NavLink
+                to="/transactions"
+                className={({ isActive }) =>
+                  `flex items-center gap-2 px-3 py-2 rounded transition-colors ${isActive
+                    ? 'bg-[#01C38D] text-[#191E29] font-semibold'
+                    : 'text-white hover:bg-[#31344d]'
                   }`
                 }
                 onClick={() => setIsMobileMenuOpen(false)}
@@ -74,13 +72,12 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                 </svg>
                 <span>{t('sidebar.transactions')}</span>
               </NavLink>
-              <NavLink 
-                to="/categories" 
-                className={({isActive}) => 
-                  `flex items-center gap-2 px-3 py-2 rounded transition-colors ${
-                    isActive 
-                      ? 'bg-[#01C38D] text-[#191E29] font-semibold' 
-                      : 'text-white hover:bg-[#31344d]'
+              <NavLink
+                to="/categories"
+                className={({ isActive }) =>
+                  `flex items-center gap-2 px-3 py-2 rounded transition-colors ${isActive
+                    ? 'bg-[#01C38D] text-[#191E29] font-semibold'
+                    : 'text-white hover:bg-[#31344d]'
                   }`
                 }
                 onClick={() => setIsMobileMenuOpen(false)}
@@ -90,13 +87,12 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                 </svg>
                 <span>{t('sidebar.categories')}</span>
               </NavLink>
-              <NavLink 
-                to="/budgets" 
-                className={({isActive}) => 
-                  `flex items-center gap-2 px-3 py-2 rounded transition-colors ${
-                    isActive 
-                      ? 'bg-[#01C38D] text-[#191E29] font-semibold' 
-                      : 'text-white hover:bg-[#31344d]'
+              <NavLink
+                to="/budgets"
+                className={({ isActive }) =>
+                  `flex items-center gap-2 px-3 py-2 rounded transition-colors ${isActive
+                    ? 'bg-[#01C38D] text-[#191E29] font-semibold'
+                    : 'text-white hover:bg-[#31344d]'
                   }`
                 }
                 onClick={() => setIsMobileMenuOpen(false)}
@@ -108,13 +104,12 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
               </NavLink>
 
               {!premiumUser && (
-                <NavLink 
+                <NavLink
                   to="/subscription"
-                  className={({isActive}) => 
-                    `flex items-center gap-2 px-3 py-2 rounded transition-colors ${
-                      isActive 
-                        ? 'bg-yellow-400 text-black font-semibold' 
-                        : 'text-yellow-400 hover:bg-yellow-500 hover:text-black'
+                  className={({ isActive }) =>
+                    `flex items-center gap-2 px-3 py-2 rounded transition-colors ${isActive
+                      ? 'bg-yellow-400 text-black font-semibold'
+                      : 'text-yellow-400 hover:bg-yellow-500 hover:text-black'
                     }`
                   }
                   onClick={() => setIsMobileMenuOpen(false)}
@@ -125,19 +120,35 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                   <span>{t('sidebar.go_premium')}</span>
                 </NavLink>
               )}
+              {premiumUser && (
+                <NavLink
+                  to="/premium"
+                  className={({ isActive }) =>
+                    `flex items-center gap-2 px-3 py-2 rounded transition-colors ${isActive
+                      ? 'bg-yellow-400 text-black font-semibold'
+                      : 'text-yellow-400 hover:bg-yellow-500 hover:text-black'
+                    }`
+                  }
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.293 2.293a1 1 0 010 1.414L13 12l2.293 2.293a1 1 0 01-1.414 1.414L12 13.414l-2.293 2.293a1 1 0 01-1.414-1.414L10.586 12 8.293 9.707a1 1 0 011.414-1.414L12 10.586l2.293-2.293a1 1 0 011.414 0z" />
+                  </svg>
+                  <span>{t('sidebar.premium')}</span>
+                </NavLink>
+              )}
             </nav>
 
             {isAdmin && (
               <nav className="flex flex-col gap-1.5 mb-4">
                 <span className="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">{t('sidebar.admin')}</span>
-                <NavLink 
-                  to="/admin" 
-                  end 
-                  className={({isActive}) => 
-                    `flex items-center gap-2 px-3 py-2 rounded transition-colors ${
-                      isActive 
-                        ? 'bg-[#01C38D] text-[#191E29] font-semibold' 
-                        : 'text-white hover:bg-[#31344d]'
+                <NavLink
+                  to="/admin"
+                  end
+                  className={({ isActive }) =>
+                    `flex items-center gap-2 px-3 py-2 rounded transition-colors ${isActive
+                      ? 'bg-[#01C38D] text-[#191E29] font-semibold'
+                      : 'text-white hover:bg-[#31344d]'
                     }`
                   }
                   onClick={() => setIsMobileMenuOpen(false)}
@@ -152,31 +163,12 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
 
             <nav className="flex flex-col gap-1.5">
               <span className="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">{t('sidebar.account')}</span>
-              {premiumUser && (
-                <NavLink
-                  to="/premium"
-                  className={({ isActive }) =>
-                    `flex items-center gap-2 px-3 py-2 rounded transition-colors ${
-                      isActive
-                        ? 'bg-yellow-400 text-black font-semibold'
-                        : 'text-yellow-400 hover:bg-yellow-500 hover:text-black'
-                    }`
-                  }
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.293 2.293a1 1 0 010 1.414L13 12l2.293 2.293a1 1 0 01-1.414 1.414L12 13.414l-2.293 2.293a1 1 0 01-1.414-1.414L10.586 12 8.293 9.707a1 1 0 011.414-1.414L12 10.586l2.293-2.293a1 1 0 011.414 0z" />
-                  </svg>
-                  <span>{t('sidebar.premium')}</span>
-                </NavLink>
-              )}
-              <NavLink 
-                to="/settings" 
-                className={({isActive}) => 
-                  `flex items-center gap-2 px-3 py-2 rounded transition-colors ${
-                    isActive 
-                      ? 'bg-[#01C38D] text-[#191E29] font-semibold' 
-                      : 'text-white hover:bg-[#31344d]'
+              <NavLink
+                to="/settings"
+                className={({ isActive }) =>
+                  `flex items-center gap-2 px-3 py-2 rounded transition-colors ${isActive
+                    ? 'bg-[#01C38D] text-[#191E29] font-semibold'
+                    : 'text-white hover:bg-[#31344d]'
                   }`
                 }
                 onClick={() => setIsMobileMenuOpen(false)}
@@ -187,13 +179,12 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                 </svg>
                 <span>{t('sidebar.settings')}</span>
               </NavLink>
-              <NavLink 
+              <NavLink
                 to="/subscription"
-                className={({isActive}) => 
-                  `flex items-center gap-2 px-3 py-2 rounded transition-colors ${
-                    isActive 
-                      ? 'bg-[#01C38D] text-[#191E29] font-semibold' 
-                      : 'text-white hover:bg-[#31344d]'
+                className={({ isActive }) =>
+                  `flex items-center gap-2 px-3 py-2 rounded transition-colors ${isActive
+                    ? 'bg-[#01C38D] text-[#191E29] font-semibold'
+                    : 'text-white hover:bg-[#31344d]'
                   }`
                 }
                 onClick={() => setIsMobileMenuOpen(false)}
@@ -257,7 +248,7 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
 
       {/* Backdrop for mobile menu */}
       {isMobileMenuOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/50 z-30 md:hidden"
           onClick={() => setIsMobileMenuOpen(false)}
         ></div>
