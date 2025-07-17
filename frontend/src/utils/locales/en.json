@@ -112,6 +112,7 @@
   "settings.passwords_do_not_match": "New passwords do not match",
   "settings.failed_to_change_password": "Failed to change password",
   "settings.password_changed_successfully": "Password changed successfully!",
+  "settings.language_selection": "Change Language",
   
   "premium.title": "Premium Features",
   "premium.description": "Welcome to the exclusive area for premium members. Here you will find advanced tools and features to take your financial management to the next level.",

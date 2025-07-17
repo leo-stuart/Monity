@@ -5,7 +5,6 @@ import ExpenseChart from "./ExpenseChart";
 import ExpensivePurchase from "./ExpensivePurchase";
 import Savings from "./Savings";
 import { Link } from "react-router-dom";
-import DateRangeFilter from "./DateRangeFilter";
 import { useTranslation } from "react-i18next";
 
 function CardWrapper({ children, title, accent, isLoading = false }) {
@@ -33,33 +32,31 @@ function CardWrapper({ children, title, accent, isLoading = false }) {
 
 function Dashboard() {
     const { t } = useTranslation();
-    const [selectedRange, setSelectedRange] = useState("all_time");
     const [isFabMenuOpen, setIsFabMenuOpen] = useState(false);
 
     return (
         <div className="w-full flex flex-col gap-8 mt-2">
-            <DateRangeFilter selectedRange={selectedRange} setSelectedRange={setSelectedRange} />
             <div className="flex flex-col md:flex-row gap-6">
                 <CardWrapper title={t('dashboard.balance_card_title')} accent="text-[#01C38D]">
-                    <BalanceCard selectedRange={selectedRange} />
+                    <BalanceCard selectedRange="all_time" />
                 </CardWrapper>
                 <CardWrapper title={t('dashboard.expense_chart_title')} accent="text-[#01C38D]">
-                    <ExpenseChart selectedRange={selectedRange} />
+                    <ExpenseChart selectedRange="all_time" />
                 </CardWrapper>
                 <CardWrapper title={t('dashboard.savings_card_title')} accent="text-[#01C38D]">
-                    <Savings selectedRange={selectedRange} />
+                    <Savings selectedRange="all_time" />
                 </CardWrapper>
             </div>
             
             <div>
                 <CardWrapper title={t('dashboard.balance_per_month_title')} accent="text-[#01C38D]">
-                    <BalanceChart selectedRange={selectedRange} />
+                    <BalanceChart selectedRange="all_time" />
                 </CardWrapper>
             </div>
             
             <div>
                 <CardWrapper title={t('dashboard.expensive_purchases_title')} accent="text-[#01C38D]">
-                    <ExpensivePurchase selectedRange={selectedRange} />
+                    <ExpensivePurchase selectedRange="all_time" />
                 </CardWrapper>
             </div>
             

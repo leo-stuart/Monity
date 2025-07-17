@@ -112,6 +112,7 @@
   "settings.passwords_do_not_match": "As novas senhas não coincidem",
   "settings.failed_to_change_password": "Falha ao alterar a senha",
   "settings.password_changed_successfully": "Senha alterada com sucesso!",
+  "settings.language_selection": "Alterar Idioma",
 
   "premium.title": "Recursos Premium",
   "premium.description": "Bem-vindo à área exclusiva para membros premium. Aqui você encontrará ferramentas e recursos avançados para levar sua gestão financeira para o próximo nível.",

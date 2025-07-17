@@ -3,7 +3,7 @@ import Spinner from './Spinner';
 import { get } from '../utils/api';
 import { useTranslation } from 'react-i18next';
 
-function Savings({ selectedRange }) {
+function Savings() {
     const { t } = useTranslation();
     const [totalSavings, setTotalSavings] = useState(0);
     const [loading, setLoading] = useState(true);
@@ -14,22 +14,14 @@ function Savings({ selectedRange }) {
             setLoading(true);
             setError(null);
             try {
-                let response;
-                if (selectedRange === "current_month") {
-                    const now = new Date();
-                    const month = String(now.getMonth() + 1).padStart(2, '0');
-                    const year = now.getFullYear();
-                    response = await get(`/transactions/month/${month}/${year}`);
-                } else { // 'all_time'
-                    response = await get('/transactions');
-                }
+                const response = await get('/transactions');
 
-                if (!Array.isArray(response.data)) {
+                if (!Array.isArray(response)) {
                     setTotalSavings(0);
                     return;
                 }
 
-                const savingsTransactions = response.data.filter(t => t.typeId === 3);
+                const savingsTransactions = response.filter(t => t.typeId === 3);
                 
                 const total = savingsTransactions.reduce((acc, transaction) => {
                     const amount = parseFloat(transaction.amount);
@@ -50,7 +42,7 @@ function Savings({ selectedRange }) {
             }
         };
         fetchSavings();
-    }, [selectedRange]);
+    }, []);
 
     // Handle loading and error states
     if (loading) {

@@ -4,7 +4,7 @@ import { get, del } from '../utils/api';
 import formatDate from "../utils/formatDate";
 import { useTranslation } from "react-i18next";
 
-function ExpensivePurchase({ selectedRange }) {
+function ExpensivePurchase() {
     const { t } = useTranslation();
     const [expenses, setExpenses] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -14,15 +14,7 @@ function ExpensivePurchase({ selectedRange }) {
         setLoading(true);
         setError(null);
         try {
-            let response;
-            if (selectedRange === "current_month") {
-                const now = new Date();
-                const month = String(now.getMonth() + 1).padStart(2, '0');
-                const year = String(now.getFullYear());
-                response = await get(`/transactions/month/${month}/${year}`);
-            } else { // 'all_time'
-                response = await get('/transactions');
-            }
+            const response = await get('/transactions');
 
             const expenseData = Array.isArray(response.data) 
                 ? response.data.filter(transaction => transaction.typeId === 1)
@@ -33,7 +25,7 @@ function ExpensivePurchase({ selectedRange }) {
         } finally {
             setLoading(false);
         }
-    }, [selectedRange]);
+    }, []);
 
     useEffect(() => {
         fetchExpenses();

@@ -12,7 +12,7 @@ import { useTranslation } from "react-i18next";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-function ExpenseChart({ selectedRange }) {
+function ExpenseChart() {
     const { t } = useTranslation();
     const [expenses, setExpenses] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -23,15 +23,7 @@ function ExpenseChart({ selectedRange }) {
             setLoading(true);
             setError(null);
             try {
-                let response;
-                if (selectedRange === "current_month") {
-                    const now = new Date();
-                    const month = String(now.getMonth() + 1).padStart(2, '0');
-                    const year = now.getFullYear();
-                    response = await get(`/transactions/month/${month}/${year}`);
-                } else { // 'all_time'
-                    response = await get('/transactions');
-                }
+                const response = await get('/transactions');
                 
                 const expenseData = Array.isArray(response.data) 
                     ? response.data.filter(transaction => transaction.typeId === 1)
@@ -45,7 +37,7 @@ function ExpenseChart({ selectedRange }) {
         };
         
         fetchExpenses();
-    }, [selectedRange]);
+    }, []);
 
     if(loading){
         return <Spinner message={t('expenseChart.loading')} />
