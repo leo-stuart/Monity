@@ -36,8 +36,7 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
         <div className="flex flex-col h-full">
           <div>
             <Link to="/" className="flex items-center gap-2 mb-6" onClick={() => setIsMobileMenuOpen(false)}>
-              <img src="/monity-logo.png" alt="Monity Logo" className="w-8 h-8" />
-              <span className="text-2xl font-bold text-white">Monity</span>
+              <span className="text-2xl font-bold text-[#01C38D]">Monity</span>
             </Link>
             
             <nav className="flex flex-col gap-1.5 mb-4">
