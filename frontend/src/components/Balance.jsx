@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { get } from '../utils/api';
+import { useTranslation } from 'react-i18next';
 
 function Balance() {
+    const { t } = useTranslation();
     const [monthReq, setMonthReq] = useState('')
     const [message, setMessage] = useState(null)
     const [error, setError] = useState(null)
@@ -14,7 +16,7 @@ function Balance() {
 
         e.preventDefault()
         if (!monthReq) {
-            setError('Please fill in all fields correctly.')
+            setError(t('balance.fillFieldsError'))
             return
         }
 
@@ -50,12 +52,12 @@ function Balance() {
     return (
         <>
             <form onSubmit={HandleSubmit}>
-                <label>Month [MM/YY]<input type="text" pattern="\d{2}/\d{2}" value={monthReq} onChange={(e) => setMonthReq(e.target.value)} /></label>
+                <label>{t('balance.monthLabel')}<input type="text" pattern="\d{2}/\d{2}" value={monthReq} onChange={(e) => setMonthReq(e.target.value)} /></label>
                 <button type='submit' disabled={loading}>
-                    {loading ? 'Requesting...' : 'Request Balance'}
+                    {loading ? t('balance.requesting') : t('balance.requestBalance')}
                 </button>
             </form>
-            {message && <h2>Balance in requested month: ${message}</h2>}
+            {message && <h2>{t('balance.balanceInMonth', { message })}</h2>}
             {error && <p style={{ color: 'red'}}>{error}</p>}
         </>
     )

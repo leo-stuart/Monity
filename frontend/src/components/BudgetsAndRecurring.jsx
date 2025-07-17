@@ -12,6 +12,7 @@ import {
     getTransactionTypes 
 } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 function CardWrapper({ children, title, accent }) {
     return (
@@ -25,6 +26,7 @@ function CardWrapper({ children, title, accent }) {
 }
 
 function Budget() {
+    const { t } = useTranslation();
     const { user } = useAuth();
     const [budgets, setBudgets] = useState([]);
     const [categories, setCategories] = useState([]);
@@ -47,12 +49,12 @@ function Budget() {
             // Filter for expense categories, assuming typeId for Expense is 1
             setCategories(categoriesData.filter(c => c.typeId === 1)); 
         } catch (err) {
-            setError('Failed to fetch data.');
+            setError(t('budgets.fetch_error'));
             console.error(err);
         } finally {
             setIsLoading(false);
         }
-    }, [user]);
+    }, [user, t]);
 
     useEffect(() => {
         fetchBudgetsAndCategories();
@@ -61,7 +63,7 @@ function Budget() {
     const handleSetBudget = async (e) => {
         e.preventDefault();
         if (!selectedCategory || !amount || !month) {
-            setError('Please fill all fields.');
+            setError(t('budgets.fill_all_fields'));
             return;
         }
         setIsLoading(true);
@@ -73,7 +75,7 @@ function Budget() {
             setSelectedCategory('');
             fetchBudgetsAndCategories(); // Refresh list
         } catch (err) {
-            setError('Failed to set budget.');
+            setError(t('budgets.set_budget_error'));
             console.error(err);
         } finally {
             setIsLoading(false);
@@ -86,7 +88,7 @@ function Budget() {
             await deleteBudget(budgetId);
             fetchBudgetsAndCategories(); // Refresh list
         } catch (err) {
-            setError('Failed to delete budget.');
+            setError(t('budgets.delete_budget_error'));
             console.error(err);
         } finally {
             setIsLoading(false);
@@ -94,12 +96,12 @@ function Budget() {
     };
 
     if (!user) {
-        return <p>Please log in to manage budgets.</p>;
+        return <p>{t('budgets.login_prompt')}</p>;
     }
 
     return (
         <div className="w-full">
-            <h3 className="text-xl font-bold mb-4 text-[#01C38D]">Set a New Budget</h3>
+            <h3 className="text-xl font-bold mb-4 text-[#01C38D]">{t('budgets.set_new_budget')}</h3>
             {error && <p className="text-red-500">{error}</p>}
             <form onSubmit={handleSetBudget} className="flex flex-col gap-4 mb-6">
                 <select 
@@ -108,7 +110,7 @@ function Budget() {
                     className="p-3 rounded bg-[#31344d] text-white w-full"
                     required
                 >
-                    <option value="">Select Category</option>
+                    <option value="">{t('budgets.select_category')}</option>
                     {categories.map(cat => (
                         <option key={cat.id} value={cat.id}>{cat.name}</option>
                     ))}
@@ -117,7 +119,7 @@ function Budget() {
                     type="number" 
                     value={amount} 
                     onChange={(e) => setAmount(e.target.value)} 
-                    placeholder="Amount"
+                    placeholder={t('budgets.amount_placeholder')}
                     className="p-3 rounded bg-[#31344d] text-white w-full"
                     required
                 />
@@ -133,11 +135,11 @@ function Budget() {
                     disabled={isLoading}
                     className="p-3 rounded bg-[#01C38D] text-white font-bold hover:bg-[#01A071] transition-colors w-full"
                 >
-                    {isLoading ? 'Saving...' : 'Set Budget'}
+                    {isLoading ? t('budgets.saving') : t('budgets.set_budget_button')}
                 </button>
             </form>
 
-            <h3 className="text-xl font-bold mb-4 text-[#01C38D]">Your Budgets</h3>
+            <h3 className="text-xl font-bold mb-4 text-[#01C38D]">{t('budgets.your_budgets')}</h3>
             {isLoading && budgets.length === 0 ? (
                  <div className="w-full h-40 flex justify-center items-center">
                     <div className="w-12 h-12 rounded-full border-4 border-[#31344d] border-t-[#01C38D] animate-spin"></div>
@@ -165,6 +167,7 @@ function Budget() {
 }
 
 function RecurringTransactions() {
+    const { t } = useTranslation();
     const { user } = useAuth();
     const [recurring, setRecurring] = useState([]);
     const [categories, setCategories] = useState([]);
@@ -195,11 +198,11 @@ function RecurringTransactions() {
             setCategories(catData);
             setTypes(typeData);
         } catch (err) {
-            setError('Failed to fetch data.');
+            setError(t('recurring.fetch_error'));
         } finally {
             setIsLoading(false);
         }
-    }, [user]);
+    }, [user, t]);
 
     useEffect(() => {
         fetchData();
@@ -209,10 +212,10 @@ function RecurringTransactions() {
         setIsLoading(true);
         try {
             await processRecurringTransactions();
-            alert('Processing complete!');
+            alert(t('recurring.processing_complete'));
             fetchData(); // Refresh data
         } catch (err) {
-            setError('Failed to process transactions.');
+            setError(t('recurring.processing_error'));
         } finally {
             setIsLoading(false);
         }
@@ -230,7 +233,7 @@ function RecurringTransactions() {
             resetForm();
             fetchData();
         } catch (err) {
-            setError('Failed to save recurring transaction.');
+            setError(t('recurring.save_error'));
         } finally {
             setIsLoading(false);
         }
@@ -251,7 +254,7 @@ function RecurringTransactions() {
             await deleteRecurringTransaction(id);
             fetchData();
         } catch (err) {
-            setError('Failed to delete transaction.');
+            setError(t('recurring.delete_error'));
         } finally {
             setIsLoading(false);
         }
@@ -270,62 +273,58 @@ function RecurringTransactions() {
         });
     };
 
+    if (isLoading && recurring.length === 0) {
+        return (
+            <div className="w-full h-40 flex justify-center items-center">
+                <div className="w-12 h-12 rounded-full border-4 border-[#31344d] border-t-[#01C38D] animate-spin"></div>
+            </div>
+        );
+    }
+
     return (
         <div className="w-full">
             <button onClick={handleProcess} disabled={isLoading} className="mb-4 p-2 rounded bg-blue-500 text-white w-full">
-                {isLoading ? 'Processing...' : 'Process Recurring Now'}
+                {isLoading ? t('recurring.processing') : t('recurring.process_now')}
             </button>
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                <input type="text" name="description" value={form.description} onChange={e => setForm({...form, description: e.target.value})} placeholder="Description" className="p-3 rounded bg-[#31344d] text-white w-full" required />
-                <input type="number" name="amount" value={form.amount} onChange={e => setForm({...form, amount: e.target.value})} placeholder="Amount" className="p-3 rounded bg-[#31344d] text-white w-full" required />
+                <input type="text" name="description" value={form.description} onChange={e => setForm({...form, description: e.target.value})} placeholder={t('recurring.description_placeholder')} className="p-3 rounded bg-[#31344d] text-white w-full" required />
+                <input type="number" name="amount" value={form.amount} onChange={e => setForm({...form, amount: e.target.value})} placeholder={t('recurring.amount_placeholder')} className="p-3 rounded bg-[#31344d] text-white w-full" required />
                 <select name="typeId" value={form.typeId} onChange={e => setForm({...form, typeId: e.target.value})} className="p-3 rounded bg-[#31344d] text-white w-full" required>
-                    <option value="">Select Type</option>
+                    <option value="">{t('recurring.select_type')}</option>
                     {types.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
                 </select>
                 <select name="categoryId" value={form.categoryId} onChange={e => setForm({...form, categoryId: e.target.value})} className="p-3 rounded bg-[#31344d] text-white w-full" required>
-                    <option value="">Select Category</option>
+                    <option value="">{t('recurring.select_category')}</option>
                     {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                 </select>
                 <select name="frequency" value={form.frequency} onChange={e => setForm({...form, frequency: e.target.value})} className="p-3 rounded bg-[#31344d] text-white w-full" required>
-                    <option value="daily">Daily</option>
-                    <option value="weekly">Weekly</option>
-                    <option value="monthly">Monthly</option>
-                    <option value="yearly">Yearly</option>
+                    <option value="daily">{t('recurring.daily')}</option>
+                    <option value="weekly">{t('recurring.weekly')}</option>
+                    <option value="monthly">{t('recurring.monthly')}</option>
+                    <option value="yearly">{t('recurring.yearly')}</option>
                 </select>
                 <input type="date" name="startDate" value={form.startDate} onChange={e => setForm({...form, startDate: e.target.value})} className="p-3 rounded bg-[#31344d] text-white w-full" required />
                 <input type="date" name="endDate" value={form.endDate} onChange={e => setForm({...form, endDate: e.target.value})} className="p-3 rounded bg-[#31344d] text-white w-full" />
-                <button type="submit" disabled={isLoading} className="p-3 rounded bg-[#01C38D] text-white font-bold hover:bg-[#01A071] transition-colors w-full">
-                    {isEditing ? 'Update' : 'Add'} Recurring
+                <button type="submit" disabled={isLoading} className="p-3 rounded bg-green-500 text-white">
+                    {isEditing ? t('recurring.update_button') : t('recurring.add_button')}
                 </button>
-                {isEditing && <button onClick={resetForm} className="p-3 rounded bg-gray-500 text-white w-full">Cancel Edit</button>}
+                {isEditing && <button onClick={resetForm} className="p-3 rounded bg-gray-500 text-white">{t('recurring.cancel_button')}</button>}
             </form>
-
-            <ul className="space-y-2 mt-6">
-                {recurring.map(item => (
-                    <li key={item.id} className="flex flex-col md:flex-row justify-between items-start md:items-center p-3 bg-[#23263a] rounded-lg">
-                        <div className="flex-1 mb-2 md:mb-0">
-                            <p className="font-bold">{item.description}</p>
-                            <p className="text-sm text-gray-400">{item.categories.name} - ${parseFloat(item.amount).toFixed(2)} - {item.frequency}</p>
-                        </div>
-                        <div className="flex gap-2">
-                            <button onClick={() => handleEdit(item)} className="p-2 rounded bg-yellow-500 text-white text-xs">Edit</button>
-                            <button onClick={() => handleDelete(item.id)} className="p-2 rounded bg-red-500 text-white text-xs">Delete</button>
-                        </div>
-                    </li>
-                ))}
-            </ul>
+            
+            {error && <p className="text-red-500">{error}</p>}
         </div>
     );
 }
 
 function BudgetsAndRecurring() {
+    const { t } = useTranslation();
     return (
-        <div className="flex flex-col gap-8 mt-2">
-            <CardWrapper title="Budgets" accent="text-[#01C38D]">
+        <div className="flex flex-col md:flex-row gap-8">
+            <CardWrapper title={t('budgets.card_title')} accent="text-[#01C38D]">
                 <Budget />
             </CardWrapper>
-            <CardWrapper title="Recurring Transactions" accent="text-[#01C38D]">
+            <CardWrapper title={t('recurring.card_title')} accent="text-[#01C38D]">
                 <RecurringTransactions />
             </CardWrapper>
         </div>

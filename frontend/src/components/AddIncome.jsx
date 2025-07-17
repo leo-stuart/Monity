@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { get, post } from '../utils/api';
+import { useTranslation } from 'react-i18next';
 
 function AddIncome({ onAdd }) {
+    const { t } = useTranslation();
     const [categories, setCategories] = useState([]);
     const [category, setCategory] = useState('');
     const [amount, setAmount] = useState('');
@@ -17,11 +19,11 @@ function AddIncome({ onAdd }) {
                 setCategories(data);
             } catch (err) {
                 console.error('Error fetching categories:', err);
-                setError('Failed to load categories');
+                setError(t('add_income.failed_load_categories'));
             }
         };
         fetchCategories();
-    }, []);
+    }, [t]);
 
     const incomeCategories = categories
     .filter(category => category.typeId === 2 || category.typeId === 3)
@@ -34,13 +36,13 @@ function AddIncome({ onAdd }) {
         try {
             await post('/add-income', { category, amount, date });
             
-            setSuccess('Income added!');
+            setSuccess(t('add_income.success'));
             setCategory('');
             setAmount('');
             setDate('');
             if (onAdd) onAdd();
         } catch (err) {
-            setError(err.response?.data?.message || 'Failed to add income');
+            setError(err.response?.data?.message || t('add_income.failed'));
         } finally {
             setLoading(false);
         }
@@ -48,14 +50,14 @@ function AddIncome({ onAdd }) {
 
     return (
         <div className="bg-[#23263a] p-4 md:p-6 rounded-xl shadow-lg">
-            <h2 className="text-2xl font-bold mb-6 text-[#01C38D]">Add Income</h2>
+            <h2 className="text-2xl font-bold mb-6 text-[#01C38D]">{t('add_income.title')}</h2>
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                 <select
                     className="w-full bg-[#191E29] border border-[#31344d] text-white rounded-lg p-3 focus:ring-2 focus:ring-[#01C38D] focus:outline-none placeholder-gray-400"
                     value={category}
                     onChange={e => setCategory(e.target.value)}
                     required>
-                        <option value="">Select a category</option>
+                        <option value="">{t('add_income.select_category')}</option>
                         {incomeCategories.map((cat, index) => (
                             <option key={index} value={cat.name}>{cat.name}</option>
                         ))}
@@ -63,7 +65,7 @@ function AddIncome({ onAdd }) {
                 <input
                     type="number"
                     className="w-full bg-[#191E29] border border-[#31344d] text-white rounded-lg p-3 focus:ring-2 focus:ring-[#01C38D] focus:outline-none placeholder-gray-400"
-                    placeholder="Amount"
+                    placeholder={t('add_income.amount')}
                     value={amount}
                     onChange={e => setAmount(e.target.value)}
                     required
@@ -71,7 +73,7 @@ function AddIncome({ onAdd }) {
                 <input
                     type="date"
                     className="w-full bg-[#191E29] border border-[#31344d] text-white rounded-lg p-3 focus:ring-2 focus:ring-[#01C38D] focus:outline-none placeholder-gray-400"
-                    placeholder="Date"
+                    placeholder={t('add_income.date')}
                     value={date}
                     onChange={e => setDate(e.target.value)}
                     required
@@ -81,7 +83,7 @@ function AddIncome({ onAdd }) {
                     className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white font-bold py-3 rounded-lg shadow-lg hover:from-green-600 hover:to-green-700 transition-all disabled:opacity-60 mt-2"
                     disabled={loading}
                 >
-                    {loading ? 'Adding...' : 'Add Income'}
+                    {loading ? t('add_income.adding') : t('add_income.add_income')}
                 </button>
                 {error && <div className="text-red-400 text-center text-sm mt-2">{error}</div>}
                 {success && <div className="text-green-400 text-center text-sm mt-2">{success}</div>}

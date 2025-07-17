@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import Spinner from "./Spinner";
 import { get } from "../utils/api";
+import { useTranslation } from "react-i18next";
 
 function BalanceCard({ selectedRange }) {
+    const { t } = useTranslation();
     const [balance, setBalance] = useState(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -24,17 +26,17 @@ function BalanceCard({ selectedRange }) {
                 setBalance(response.data.balance || 0);
             } catch (err) {
                 console.error("Error fetching balance:", err);
-                setError("Failed to fetch balance.");
+                setError(t('balanceCard.fetchError'));
             } finally {
                 setLoading(false);
             }
         };
 
         fetchBalance();
-    }, [selectedRange]);
+    }, [selectedRange, t]);
 
     if (loading) {
-        return <Spinner message="Loading balance..." />;
+        return <Spinner message={t('balanceCard.loading')} />;
     }
     if (error) {
         return <p className="text-red-500">{error}</p>;

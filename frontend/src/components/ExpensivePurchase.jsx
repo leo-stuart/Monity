@@ -2,8 +2,10 @@ import Spinner from "./Spinner"
 import { useState, useEffect, useCallback } from 'react';
 import { get, del } from '../utils/api';
 import formatDate from "../utils/formatDate";
+import { useTranslation } from "react-i18next";
 
 function ExpensivePurchase({ selectedRange }) {
+    const { t } = useTranslation();
     const [expenses, setExpenses] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -38,7 +40,7 @@ function ExpensivePurchase({ selectedRange }) {
     }, [fetchExpenses]);
 
     const handleDelete = async (transactionId) => {
-        if (!window.confirm("Are you sure you want to delete this expense?")) return;
+        if (!window.confirm(t('expensive_purchase.confirm_delete'))) return;
 
         try {
             await del(`/transactions/${transactionId}`);
@@ -46,15 +48,15 @@ function ExpensivePurchase({ selectedRange }) {
             fetchExpenses();
         } catch(err) {
             console.error(err);
-            alert("Could not delete - please try again.");
+            alert(t('expensive_purchase.delete_error'));
         }
     }
 
     if (loading) {
-        return <Spinner message="Loading the most expensive purchases ..." />
+        return <Spinner message={t('expensive_purchase.loading')} />
     }
     if (error) {
-        return <p>Error: {error}</p>
+        return <p>{t('expensive_purchase.error')}: {error}</p>
     }
 
     const topExpenses = expenses
@@ -62,7 +64,7 @@ function ExpensivePurchase({ selectedRange }) {
         .slice(0, 5)
 
     if (topExpenses.length === 0) {
-        return <p className="text-white text-center py-4">No expenses found.</p>;
+        return <p className="text-white text-center py-4">{t('expensive_purchase.no_expenses')}</p>;
     }
 
     return (
@@ -72,11 +74,11 @@ function ExpensivePurchase({ selectedRange }) {
                 <table className="w-full text-left bg-transparent text-white rounded-lg">
                     <thead>
                         <tr className="bg-transparent text-[#FF6384]">
-                            <th className="py-3 px-4">Date</th>
-                            <th className="py-3 px-4">Category</th>
-                            <th className="py-3 px-4">Description</th>
-                            <th className="py-3 px-4 text-right">Amount</th>
-                            <th className="py-3 px-4 text-center">Actions</th>
+                            <th className="py-3 px-4">{t('expensive_purchase.date')}</th>
+                            <th className="py-3 px-4">{t('expensive_purchase.category')}</th>
+                            <th className="py-3 px-4">{t('expensive_purchase.description')}</th>
+                            <th className="py-3 px-4 text-right">{t('expensive_purchase.amount')}</th>
+                            <th className="py-3 px-4 text-center">{t('expensive_purchase.actions')}</th>
                         </tr>
                     </thead>
                     <tbody>

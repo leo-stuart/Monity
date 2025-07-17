@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import Spinner from './Spinner';
 import { get } from '../utils/api';
+import { useTranslation } from 'react-i18next';
 
 function Savings({ selectedRange }) {
+    const { t } = useTranslation();
     const [totalSavings, setTotalSavings] = useState(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -52,10 +54,10 @@ function Savings({ selectedRange }) {
 
     // Handle loading and error states
     if (loading) {
-        return <Spinner message="Loading savings..." />;
+        return <Spinner message={t('savings.loading')} />;
     }
     if (error) {
-        return <p className="text-red-500">Error: {error}</p>;
+        return <p className="text-red-500">{t('savings.error')}: {error}</p>;
     }
 
     return (

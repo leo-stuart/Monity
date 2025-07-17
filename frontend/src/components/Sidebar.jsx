@@ -2,8 +2,10 @@ import { NavLink, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { isPremium } from "../utils/premium";
 import { useState, useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
+  const { t } = useTranslation();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const { user, logout, isAdmin } = useAuth();
@@ -40,7 +42,7 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
             </div>
 
             <div className="mb-2">
-              <span className="text-xs uppercase text-gray-500 font-semibold tracking-wider ml-3">Main Navigation</span>
+              <span className="text-xs uppercase text-gray-500 font-semibold tracking-wider ml-3">{t('sidebar.main_navigation')}</span>
             </div>
             <nav className="flex flex-col gap-1.5 mb-6">
               <NavLink 
@@ -58,7 +60,7 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                 <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                 </svg>
-                <span>Dashboard</span>
+                <span>{t('sidebar.dashboard')}</span>
               </NavLink>
               <NavLink 
                 to="/transactions" 
@@ -74,7 +76,7 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                 <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                 </svg>
-                <span>Transactions</span>
+                <span>{t('sidebar.transactions')}</span>
               </NavLink>
               <NavLink 
                 to="/categories" 
@@ -90,7 +92,7 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                 <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                 </svg>
-                <span>Categories</span>
+                <span>{t('sidebar.categories')}</span>
               </NavLink>
               <NavLink 
                 to="/budgets" 
@@ -107,7 +109,7 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v.01" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18.5A6.5 6.5 0 1012 5.5a6.5 6.5 0 000 13z" />
                 </svg>
-                <span>Budgets</span>
+                <span>{t('sidebar.budgets')}</span>
               </NavLink>
               <NavLink 
                 to={premiumUser ? "/premium" : "/subscription"}
@@ -125,14 +127,14 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                 <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.293 2.293a1 1 0 010 1.414L13 12l2.293 2.293a1 1 0 01-1.414 1.414L12 13.414l-2.293 2.293a1 1 0 01-1.414-1.414L10.586 12 8.293 9.707a1 1 0 011.414-1.414L12 10.586l2.293-2.293a1 1 0 011.414 0z" />
                 </svg>
-                <span>{premiumUser ? "Premium" : "Go Premium"}</span>
+                <span>{premiumUser ? t('sidebar.premium') : t('sidebar.go_premium')}</span>
               </NavLink>
             </nav>
 
             {isAdmin && (
               <>
                 <div className="mb-2">
-                  <span className="text-xs uppercase text-gray-500 font-semibold tracking-wider ml-3">Admin</span>
+                  <span className="text-xs uppercase text-gray-500 font-semibold tracking-wider ml-3">{t('sidebar.admin')}</span>
                 </div>
                 <nav className="flex flex-col gap-1.5 mb-6">
                   <NavLink 
@@ -150,14 +152,14 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                     <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 8v8m-3-5v5m-3-8v8M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
-                    <span>Admin Dashboard</span>
+                    <span>{t('sidebar.admin_dashboard')}</span>
                   </NavLink>
                 </nav>
               </>
             )}
 
             <div className="mb-2">
-              <span className="text-xs uppercase text-gray-500 font-semibold tracking-wider ml-3">Account</span>
+              <span className="text-xs uppercase text-gray-500 font-semibold tracking-wider ml-3">{t('sidebar.account')}</span>
             </div>
             <nav className="flex flex-col gap-1.5">
               <NavLink 
@@ -175,7 +177,7 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
-                <span>Settings</span>
+                <span>{t('sidebar.settings')}</span>
               </NavLink>
               <NavLink 
                 to="/subscription"
@@ -189,9 +191,9 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                 </svg>
-                <span>Subscription</span>
+                <span>{t('sidebar.subscription')}</span>
               </NavLink>
             </nav>
           </div>
@@ -207,14 +209,14 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                 </span>
               </div>
               <span className="text-white font-medium">
-                {user?.user_metadata?.name || 'User'}
+                {user?.user_metadata?.name || t('sidebar.user')}
               </span>
             </button>
 
             {isDropdownOpen && (
               <div className="absolute left-0 bottom-full mb-2 w-full bg-[#23263a] border border-[#31344d] rounded-md shadow-lg z-10">
                 <div className="p-3 border-b border-[#31344d]">
-                  <p className="text-white font-medium">{user?.user_metadata?.name || 'User'}</p>
+                  <p className="text-white font-medium">{user?.user_metadata?.name || t('sidebar.user')}</p>
                   <p className="text-gray-400 text-sm truncate">{user?.email || 'user@example.com'}</p>
                 </div>
                 <ul>
@@ -227,7 +229,7 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                         setIsMobileMenuOpen(false);
                       }}
                     >
-                      Settings
+                      {t('sidebar.settings')}
                     </Link>
                   </li>
                   <li>
@@ -235,7 +237,7 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                       onClick={handleLogout}
                       className="block w-full text-left px-4 py-2 text-red-400 hover:bg-[#31344d] transition-colors"
                     >
-                      Logout
+                      {t('sidebar.logout')}
                     </button>
                   </li>
                 </ul>
@@ -248,7 +250,7 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
       {/* Backdrop for mobile menu */}
       {isMobileMenuOpen && (
         <div 
-          className="md:hidden fixed inset-0 bg-black bg-opacity-50 z-30"
+          className="fixed inset-0 bg-black/50 z-30 md:hidden"
           onClick={() => setIsMobileMenuOpen(false)}
         ></div>
       )}

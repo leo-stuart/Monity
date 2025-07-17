@@ -11,10 +11,12 @@ import {
   } from "chart.js";
 import Spinner from './Spinner';
 import { get } from '../utils/api';
+import { useTranslation } from 'react-i18next';
   
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 function BalanceChart({ selectedRange }){
+    const { t } = useTranslation();
     const [history, setHistory] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -55,16 +57,16 @@ function BalanceChart({ selectedRange }){
             }
         };
         fetchChartData();
-    }, [selectedRange]);
+    }, [selectedRange, t]);
 
     if (loading) {
-        return <Spinner message="Loading balance chart..." />
+        return <Spinner message={t('balanceChart.loading')} />
     }
     if (error) {
-        return <p className="text-red-500">Error: {error}</p>
+        return <p className="text-red-500">{t('balanceChart.error', { error })}</p>
     }
     if (selectedRange === 'current_month') {
-        return <p className="text-center text-gray-400">Select "All Time" to view monthly balance chart.</p>;
+        return <p className="text-center text-gray-400">{t('balanceChart.allTimeMessage')}</p>;
     }
     
     // Sort history by month
@@ -85,7 +87,7 @@ function BalanceChart({ selectedRange }){
         labels: labels,
         datasets: [
             {
-                label: 'Monthly Balance',
+                label: t('balanceChart.monthlyBalance'),
                 data: balances,
                 backgroundColor: 'rgba(75, 192, 192, 0.5)',
                 borderColor: 'rgba(75, 192, 192, 1)',
@@ -100,7 +102,7 @@ function BalanceChart({ selectedRange }){
         responsive: true,
         plugins: {
             legend: { position: 'top' },
-            title: { display: true, text: 'Monthly Balance Overview' },
+            title: { display: true, text: t('balanceChart.title') },
         },
     };
 

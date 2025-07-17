@@ -6,7 +6,6 @@ import ExpensivePurchase from "./ExpensivePurchase";
 import Savings from "./Savings";
 import { Link } from "react-router-dom";
 import DateRangeFilter from "./DateRangeFilter";
-import { useTranslation } from "react-i18next";
 
 function CardWrapper({ children, title, accent, isLoading = false }) {
     const [isHovered, setIsHovered] = useState(false);
@@ -32,7 +31,6 @@ function CardWrapper({ children, title, accent, isLoading = false }) {
 }
 
 function Dashboard() {
-    const { t } = useTranslation();
     const [selectedRange, setSelectedRange] = useState("all_time");
     const [isFabMenuOpen, setIsFabMenuOpen] = useState(false);
 
@@ -40,25 +38,25 @@ function Dashboard() {
         <div className="w-full flex flex-col gap-8 mt-2">
             <DateRangeFilter selectedRange={selectedRange} setSelectedRange={setSelectedRange} />
             <div className="flex flex-col md:flex-row gap-6">
-                <CardWrapper title={t('dashboard.balance_card_title')} accent="text-[#01C38D]">
+                <CardWrapper title="Your Balance" accent="text-[#01C38D]">
                     <BalanceCard selectedRange={selectedRange} />
                 </CardWrapper>
-                <CardWrapper title={t('dashboard.expense_chart_title')} accent="text-[#01C38D]">
+                <CardWrapper title="Total Expenses by Category" accent="text-[#01C38D]">
                     <ExpenseChart selectedRange={selectedRange} />
                 </CardWrapper>
-                <CardWrapper title={t('dashboard.savings_card_title')} accent="text-[#01C38D]">
+                <CardWrapper title="Savings" accent="text-[#01C38D]">
                     <Savings selectedRange={selectedRange} />
                 </CardWrapper>
             </div>
             
             <div>
-                <CardWrapper title={t('dashboard.balance_per_month_title')} accent="text-[#01C38D]">
+                <CardWrapper title="Balance Per Month" accent="text-[#01C38D]">
                     <BalanceChart selectedRange={selectedRange} />
                 </CardWrapper>
             </div>
             
             <div>
-                <CardWrapper title={t('dashboard.expensive_purchases_title')} accent="text-[#01C38D]">
+                <CardWrapper title="Most Expensive Purchases Made" accent="text-[#01C38D]">
                     <ExpensivePurchase selectedRange={selectedRange} />
                 </CardWrapper>
             </div>
@@ -80,13 +78,13 @@ function Dashboard() {
                     >
                         <div className="bg-[#23263a] rounded-lg shadow-lg border border-[#31344d] overflow-hidden">
                             <Link to="/add-income" className="block px-4 py-3 text-[#01C38D] hover:bg-[#31344d] whitespace-nowrap transition-colors">
-                                {t('dashboard.fab_add_income')}
+                                Add Income
                             </Link>
                             <Link to="/add-expense" className="block px-4 py-3 text-[#FF6384] hover:bg-[#31344d] whitespace-nowrap transition-colors">
-                                {t('dashboard.fab_add_expense')}
+                                Add Expense
                             </Link>
                             <Link to="/categories" className="block px-4 py-3 text-white hover:bg-[#31344d] whitespace-nowrap transition-colors">
-                                {t('dashboard.fab_manage_categories')}
+                                Manage Categories
                             </Link>
                         </div>
                     </div>

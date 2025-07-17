@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { checkSubscription } from '../utils/subscription';
+import { useTranslation } from 'react-i18next';
 
 const Subscription = () => {
+  const { t } = useTranslation();
   const [subscription, setSubscription] = useState(null);
 
   useEffect(() => {
@@ -14,16 +16,16 @@ const Subscription = () => {
   }, []);
 
   if (subscription === null) {
-    return <div className="text-white">Loading...</div>;
+    return <div className="text-white">{t('subscription.loading')}</div>;
   }
 
   return (
     <div className="bg-[#23263a] p-4 md:p-6 rounded-xl shadow-lg text-white">
-      <h2 className="text-xl md:text-2xl font-bold mb-4">Subscription</h2>
-      <p className="text-md md:text-lg">Your current plan: <strong className="capitalize text-[#01C38D]">{subscription}</strong></p>
+      <h2 className="text-xl md:text-2xl font-bold mb-4">{t('subscription.title')}</h2>
+      <p className="text-md md:text-lg">{t('subscription.current_plan')}: <strong className="capitalize text-[#01C38D]">{subscription}</strong></p>
       {subscription === 'free' && (
         <button className="mt-6 w-full md:w-auto bg-gradient-to-r from-[#01C38D] to-[#01C38D]/80 text-white font-bold py-3 px-6 rounded-lg hover:from-[#01C38D]/90 hover:to-[#01C38D]/70 transition-all">
-          Upgrade to Premium
+          {t('subscription.upgrade_button')}
         </button>
       )}
     </div>

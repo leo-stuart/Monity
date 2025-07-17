@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import apiClient from '../utils/api';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from './LanguageSwitcher';
 
 function Settings() {
+    const { t } = useTranslation();
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmNewPassword, setConfirmNewPassword] = useState('');
@@ -16,7 +19,7 @@ function Settings() {
         setSuccess('');
         
         if (newPassword !== confirmNewPassword) {
-            setError('New passwords do not match');
+            setError(t('settings.passwords_do_not_match'));
             setLoading(false);
             return;
         }
@@ -30,39 +33,36 @@ function Settings() {
             const data = response.data;
             
             if (response.status !== 200) {
-                throw new Error(data.message || 'Failed to change password');
+                throw new Error(data.message || t('settings.failed_to_change_password'));
             }
 
-            setSuccess('Password changed successfully!');
+            setSuccess(t('settings.password_changed_successfully'));
             setCurrentPassword('');
             setNewPassword('');
             setConfirmNewPassword('');
         } catch (err) {
-            setError(err.message || 'Failed to change password');
+            setError(err.message || t('settings.failed_to_change_password'));
         } finally {
             setLoading(false);
         }
     };
 
-    // const handleDeleteAccount = () => {
-    //     if (window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
-    //         // Implement the delete account functionality
-    //         console.log('Delete account functionality not implemented yet');
-    //     }
-    // };
-
     return (
         <div className="bg-[#23263a] p-4 md:p-6 rounded-xl shadow-lg">
-            <h2 className="text-2xl font-bold text-[#01C38D] mb-6">Settings</h2>
-            
+            <h2 className="text-2xl font-bold text-[#01C38D] mb-6">{t('settings.title')}</h2>
+            {/* Language Toggle */}
+            <div className="flex flex-col items-center mb-8">
+                <h3 className="text-xl font-semibold text-white mb-4">{t('settings.language_selection', 'Change Language')}</h3>
+                <LanguageSwitcher />
+            </div>
             {/* Password Change Section */}
             <div className="mb-8">
-                <h3 className="text-xl font-semibold text-white mb-4">Change Password</h3>
+                <h3 className="text-xl font-semibold text-white mb-4">{t('settings.change_password')}</h3>
                 {error && <p className="text-red-500 mb-4">{error}</p>}
                 {success && <p className="text-green-500 mb-4">{success}</p>}
                 <form onSubmit={handlePasswordChange} className="space-y-4">
                     <div>
-                        <label htmlFor="currentPassword" className="block text-white mb-2">Current Password</label>
+                        <label htmlFor="currentPassword" className="block text-white mb-2">{t('settings.current_password')}</label>
                         <input
                             type="password"
                             id="currentPassword"
@@ -73,7 +73,7 @@ function Settings() {
                         />
                     </div>
                     <div>
-                        <label htmlFor="newPassword" className="block text-white mb-2">New Password</label>
+                        <label htmlFor="newPassword" className="block text-white mb-2">{t('settings.new_password')}</label>
                         <input
                             type="password"
                             id="newPassword"
@@ -84,7 +84,7 @@ function Settings() {
                         />
                     </div>
                     <div>
-                        <label htmlFor="confirmNewPassword" className="block text-white mb-2">Confirm New Password</label>
+                        <label htmlFor="confirmNewPassword" className="block text-white mb-2">{t('settings.confirm_new_password')}</label>
                         <input
                             type="password"
                             id="confirmNewPassword"
@@ -99,23 +99,10 @@ function Settings() {
                         className="w-full bg-gradient-to-r from-[#01C38D] to-[#01C38D]/80 text-white py-3 rounded-lg hover:from-[#01C38D]/90 hover:to-[#01C38D]/70 transition-all disabled:opacity-50"
                         disabled={loading}
                     >
-                        {loading ? 'Changing Password...' : 'Change Password'}
+                        {loading ? t('settings.changing_password') : t('settings.change_password_button')}
                     </button>
                 </form>
             </div>
-
-            {/* Account Settings Section
-            <div>
-                <h3 className="text-xl font-semibold text-white mb-4">Account Settings</h3>
-                <div className="space-y-4">
-                    <button
-                        onClick={handleDeleteAccount}
-                        className="w-full bg-gradient-to-r from-red-500 to-red-600 text-white py-2.5 rounded-lg hover:from-red-600 hover:to-red-700 transition-all"
-                    >
-                        Delete Account
-                    </button>
-                </div>
-            </div> */}
         </div>
     );
 }

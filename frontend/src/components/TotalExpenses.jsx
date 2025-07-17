@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import apiClient from '../utils/api';
+import { useTranslation } from 'react-i18next';
 
 function TotalExpenses() {
+    const { t } = useTranslation();
     const [monthReq, setMonthReq] = useState('')
     const [total, setTotal] = useState(null)
     const [error, setError] = useState(null)
@@ -14,7 +16,7 @@ function TotalExpenses() {
 
         e.preventDefault()
         if (!monthReq) {
-            setError('Please fill in all fields correctly.')
+            setError(t('totalExpenses.fillFieldsError'))
             return
         }
 
@@ -54,12 +56,12 @@ function TotalExpenses() {
     return (
         <>
             <form onSubmit={HandleSubmit}>
-                <label>Month [MM/YY]<input type="text" pattern="\d{2}/\d{2}" value={monthReq} onChange={(e) => setMonthReq(e.target.value)} /></label>
+                <label>{t('totalExpenses.monthLabel')}<input type="text" pattern="\d{2}/\d{2}" value={monthReq} onChange={(e) => setMonthReq(e.target.value)} /></label>
                 <button type='submit' disabled={loading}>
-                    {loading ? 'Requesting...' : 'Request Total Expenses'}
+                    {loading ? t('totalExpenses.requesting') : t('totalExpenses.requestTotal')}
                 </button>
             </form>
-            {total && <h2>Total expenses: ${total}</h2>}
+            {total && <h2>{t('totalExpenses.totalExpenses', { total })}</h2>}
             {error && <p style={{ color: 'red'}}>{error}</p>}
         </>
     )

@@ -1,11 +1,14 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 const Premium = () => {
+  const { t } = useTranslation();
+
   return (
     <div className="p-8">
-      <h1 className="text-4xl font-bold text-yellow-400 mb-4">Premium Features</h1>
+      <h1 className="text-4xl font-bold text-yellow-400 mb-4">{t('premium.title')}</h1>
       <p className="text-lg text-gray-300">
-        Welcome to the exclusive area for premium members. Here you will find advanced tools and features to take your financial management to the next level.
+        {t('premium.description')}
       </p>
       {/* Add premium feature components here */}
     </div>

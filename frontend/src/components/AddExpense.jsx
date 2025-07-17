@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { get, post } from '../utils/api';
+import { useTranslation } from 'react-i18next';
 
 function AddExpense({ onAdd }) {
+    const { t } = useTranslation();
     const [categories, setCategories] = useState([]);
     const [description, setDescription] = useState('');
     const [amount, setAmount] = useState('');
@@ -18,11 +20,11 @@ function AddExpense({ onAdd }) {
                 setCategories(data);
             } catch (err) {
                 console.error('Error fetching categories:', err);
-                setError('Failed to load categories');
+                setError(t('add_expense.failed_load_categories'));
             }
         };
         fetchCategories();
-    }, []);
+    }, [t]);
 
     const expenseCategories = categories
     .filter(category => category.typeId === 1 || category.typeId === 3)
@@ -35,14 +37,14 @@ function AddExpense({ onAdd }) {
         try {
             await post('/add-expense', { description, amount, category, date });
             
-            setSuccess('Expense added!');
+            setSuccess(t('add_expense.success'));
             setDescription('');
             setAmount('');
             setCategory('');
             setDate('');
             if (onAdd) onAdd();
         } catch (err) {
-            setError(err.response?.data?.message || 'Failed to add expense');
+            setError(err.response?.data?.message || t('add_expense.failed'));
         } finally {
             setLoading(false);
         }
@@ -50,11 +52,11 @@ function AddExpense({ onAdd }) {
 
     return (
         <div className="bg-[#23263a] p-4 md:p-6 rounded-xl shadow-lg">
-            <h2 className="text-2xl font-bold mb-6 text-[#FF6384]">Add Expense</h2>
+            <h2 className="text-2xl font-bold mb-6 text-[#FF6384]">{t('add_expense.title')}</h2>
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                 <input
                     className="w-full bg-[#191E29] border border-[#31344d] text-white rounded-lg p-3 focus:ring-2 focus:ring-[#FF6384] focus:outline-none placeholder-gray-400"
-                    placeholder="Description"
+                    placeholder={t('add_expense.description')}
                     value={description}
                     onChange={e => setDescription(e.target.value)}
                     required
@@ -62,7 +64,7 @@ function AddExpense({ onAdd }) {
                 <input
                     type="number"
                     className="w-full bg-[#191E29] border border-[#31344d] text-white rounded-lg p-3 focus:ring-2 focus:ring-[#FF6384] focus:outline-none placeholder-gray-400"
-                    placeholder="Amount"
+                    placeholder={t('add_expense.amount')}
                     value={amount}
                     onChange={e => setAmount(e.target.value)}
                     required
@@ -72,7 +74,7 @@ function AddExpense({ onAdd }) {
                     value={category}
                     onChange={e => setCategory(e.target.value)}
                     required>
-                        <option value="">Select a category</option>
+                        <option value="">{t('add_expense.select_category')}</option>
                     {expenseCategories.map((cat, index) => (
                         <option key={index} value={cat.name}>{cat.name}</option>
                     ))}
@@ -80,7 +82,7 @@ function AddExpense({ onAdd }) {
                 <input
                     type="date"
                     className="w-full bg-[#191E29] border border-[#31344d] text-white rounded-lg p-3 focus:ring-2 focus:ring-[#FF6384] focus:outline-none placeholder-gray-400"
-                    placeholder="Date"
+                    placeholder={t('add_expense.date')}
                     value={date}
                     onChange={e => setDate(e.target.value)}
                     required
@@ -90,7 +92,7 @@ function AddExpense({ onAdd }) {
                     className="w-full bg-gradient-to-r from-red-500 to-red-600 text-white font-bold py-3 rounded-lg shadow-lg hover:from-red-600 hover:to-red-700 transition-all disabled:opacity-60 mt-2"
                     disabled={loading}
                 >
-                    {loading ? 'Adding...' : 'Add Expense'}
+                    {loading ? t('add_expense.adding') : t('add_expense.add_expense')}
                 </button>
                 {error && <div className="text-red-400 text-center text-sm mt-2">{error}</div>}
                 {success && <div className="text-green-400 text-center text-sm mt-2">{success}</div>}

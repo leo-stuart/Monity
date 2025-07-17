@@ -8,10 +8,12 @@ import {
     Legend,
 } from 'chart.js';
 import { get } from '../utils/api';
+import { useTranslation } from "react-i18next";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 function ExpenseChart({ selectedRange }) {
+    const { t } = useTranslation();
     const [expenses, setExpenses] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -46,13 +48,13 @@ function ExpenseChart({ selectedRange }) {
     }, [selectedRange]);
 
     if(loading){
-        return <Spinner message="Loading expenses chart..." />
+        return <Spinner message={t('expenseChart.loading')} />
     }
     if(error){
-        return <p>Error: {error}</p>
+        return <p>{t('expenseChart.error', { error })}</p>
     }
     if(!expenses.length){
-        return <p>No expenses found.</p>
+        return <p>{t('expenseChart.noExpenses')}</p>
     }
 
     // Calculate totals by category
@@ -79,7 +81,7 @@ function ExpenseChart({ selectedRange }) {
     const chartLabels = top5.map(([cat]) => cat);
     const chartDataValues = top5.map(([, amount]) => amount);
     if (othersTotal > 0) {
-        chartLabels.push('Others');
+        chartLabels.push(t('expenseChart.others'));
         chartDataValues.push(othersTotal);
     }
 
