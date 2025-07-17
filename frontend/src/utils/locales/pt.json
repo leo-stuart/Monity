@@ -116,6 +116,7 @@
 
   "premium.title": "Recursos Premium",
   "premium.description": "Bem-vindo à área exclusiva para membros premium. Aqui você encontrará ferramentas e recursos avançados para levar sua gestão financeira para o próximo nível.",
+  "premium.projections_title": "Projeções Financeiras",
 
   "topbar.toggle_menu": "Alternar menu",
   "topbar.user": "Usuário",
@@ -186,6 +187,7 @@
   "subscription.title": "Assinatura",
   "subscription.current_plan": "Seu plano atual",
   "subscription.upgrade_button": "Atualizar para Premium",
+  "subscription.upgrading": "Atualizando...",
 
   "admin_dashboard.fetch_error": "Falha ao buscar estatísticas do administrador.",
   "admin_dashboard.loading": "Carregando painel do administrador...",

@@ -58,6 +58,30 @@ const authMiddleware = async (req, res, next) => {
     next();
 };
 
+const premiumAuthMiddleware = async (req, res, next) => {
+    try {
+        const { data: profile, error } = await req.supabase
+            .from('profiles')
+            .select('subscription_tier')
+            .eq('id', req.user.id)
+            .single();
+
+        if (error || !profile) {
+            console.error('Error fetching profile or profile not found:', error?.message);
+            return res.status(404).json({ error: 'User profile not found.' });
+        }
+
+        if (profile.subscription_tier !== 'premium') {
+            return res.status(403).json({ error: 'Forbidden: Premium subscription required.' });
+        }
+
+        next();
+    } catch (err) {
+        console.error('Error in premiumAuthMiddleware:', err.message);
+        res.status(500).json({ error: 'Internal server error.' });
+    }
+};
+
 // Signup route
 app.post('/signup', async (req, res) => {
     const { email, password, name } = req.body; // Add name
@@ -719,7 +743,112 @@ app.get('/balance/all', authMiddleware, async (req, res) => {
 console.log('Route registered: GET /balance/all');
 
 
-// Get user count (admin-only)
+app.get('/projections', authMiddleware, premiumAuthMiddleware, async (req, res) => {
+    try {
+        const userId = req.user.id;
+        console.log(`[PROJECTIONS] Starting for user: ${userId}`);
+
+        const { data: transactions, error: transError } = await req.supabase
+            .from('transactions')
+            .select('amount, date, typeId, category')
+            .eq('userId', userId)
+            .order('date', { ascending: true });
+
+        if (transError) {
+            console.error('[PROJECTIONS] Supabase transaction fetch error:', transError.message);
+            throw transError;
+        }
+
+        console.log(`[PROJECTIONS] Fetched ${transactions.length} transactions.`);
+
+        if (transactions.length < 2) {
+            console.warn('[PROJECTIONS] Not enough transaction data.');
+            return res.status(400).json({ error: 'Not enough transaction data to generate projections.' });
+        }
+
+        const dailyNetFlow = transactions.reduce((acc, t) => {
+            const date = t.date;
+            let amount = 0;
+            if (t.typeId === 1) { // Expense
+                amount = -t.amount;
+            } else if (t.typeId === 2) { // Income
+                amount = t.amount;
+            } else if (t.typeId === 3) { // Savings
+                if (t.category === "Make Investments") {
+                    amount = -t.amount;
+                } else if (t.category === "Withdraw Investments") {
+                    amount = t.amount;
+                }
+            }
+            acc[date] = (acc[date] || 0) + amount;
+            return acc;
+        }, {});
+        console.log('[PROJECTIONS] Calculated dailyNetFlow:', dailyNetFlow);
+
+        const days = Object.keys(dailyNetFlow).length;
+        if (days === 0) {
+            console.warn('[PROJECTIONS] No days with transactions found, cannot calculate average daily net.');
+            return res.status(400).json({ error: 'Cannot calculate projections with no transaction days.' });
+        }
+        const totalNetFlow = Object.values(dailyNetFlow).reduce((sum, flow) => sum + flow, 0);
+        const averageDailyNet = totalNetFlow / days;
+        console.log(`[PROJECTIONS] Days: ${days}, Total Net Flow: ${totalNetFlow}, Average Daily Net: ${averageDailyNet}`);
+        
+        const currentBalance = transactions.reduce((acc, transaction) => {
+            if (transaction.typeId === 1) { // Expense
+                return acc - transaction.amount;
+            } else if (transaction.typeId === 2) { // Income
+                return acc + transaction.amount;
+            } else if (transaction.typeId === 3) { // Savings
+                if (transaction.category === "Make Investments") {
+                    return acc - transaction.amount;
+                } else if (transaction.category === "Withdraw Investments") {
+                    return acc + transaction.amount;
+                }
+            }
+            return acc;
+        }, 0);
+        console.log(`[PROJECTIONS] Calculated currentBalance: ${currentBalance}`);
+
+        let projectedBalance = currentBalance;
+        const projections = [];
+        for (let i = 1; i <= 90; i++) {
+            projectedBalance += averageDailyNet;
+            projections.push({
+                date: new Date(Date.now() + i * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                balance: projectedBalance.toFixed(2)
+            });
+        }
+        console.log('[PROJECTIONS] Generated projections successfully.');
+        
+        res.json(projections);
+    } catch (error) {
+        console.error('Error in /projections:', error.message);
+        res.status(500).json({ error: 'Failed to generate financial projections.' });
+    }
+});
+
+app.get('/subscription-tier', authMiddleware, async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const { data, error } = await req.supabase
+            .from('profiles')
+            .select('subscription_tier')
+            .eq('id', userId)
+            .single();
+
+        if (error) {
+            throw error;
+        }
+
+        res.json({ subscription_tier: data.subscription_tier });
+    } catch (error) {
+        console.error('Error fetching subscription tier:', error.message);
+        res.status(500).json({ error: 'Failed to fetch subscription tier.' });
+    }
+});
+
+// Get user count (admin only)
 app.get('/users/count', authMiddleware, async (req, res) => {
     if (req.user.role !== 'admin') {
         return res.status(403).json({ error: 'Forbidden: Admins only' });

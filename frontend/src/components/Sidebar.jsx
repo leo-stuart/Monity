@@ -8,8 +8,8 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
   const { t } = useTranslation();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
-  const { user, logout, isAdmin } = useAuth();
-  const premiumUser = isPremium(user);
+  const { user, logout, isAdmin, subscriptionTier } = useAuth();
+  const premiumUser = subscriptionTier === 'premium';
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -32,19 +32,16 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
 
   return (
     <>
-      <aside 
-        className={`bg-gradient-to-b from-[#191E29] via-[#23263a] to-[#31344d] h-screen w-64 flex-col p-6 shadow-lg fixed top-0 left-0 z-40 overflow-y-auto transition-transform duration-300 ease-in-out md:translate-x-0 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}
-      >
-        <div className="flex flex-col gap-2 justify-between h-full">
+      <aside className={`fixed top-0 left-0 h-full bg-[#1e2230] text-white w-64 p-4 z-40 transform transition-transform duration-300 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}>
+        <div className="flex flex-col h-full">
           <div>
-            <div className="mb-6 flex items-center gap-2 mt-4">
-              <span className="text-3xl font-extrabold text-[#01C38D] tracking-tight">Monity</span>
-            </div>
-
-            <div className="mb-2">
-              <span className="text-xs uppercase text-gray-500 font-semibold tracking-wider ml-3">{t('sidebar.main_navigation')}</span>
-            </div>
-            <nav className="flex flex-col gap-1.5 mb-6">
+            <Link to="/" className="flex items-center gap-2 mb-6" onClick={() => setIsMobileMenuOpen(false)}>
+              <img src="/monity-logo.png" alt="Monity Logo" className="w-8 h-8" />
+              <span className="text-2xl font-bold text-white">Monity</span>
+            </Link>
+            
+            <nav className="flex flex-col gap-1.5 mb-4">
+              <span className="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">{t('sidebar.main_navigation')}</span>
               <NavLink 
                 to="/" 
                 end 
@@ -58,7 +55,7 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
                 </svg>
                 <span>{t('sidebar.dashboard')}</span>
               </NavLink>
@@ -106,62 +103,74 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v.01" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18.5A6.5 6.5 0 1012 5.5a6.5 6.5 0 000 13z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5h2m-2 2h2m-2 2h2" />
                 </svg>
                 <span>{t('sidebar.budgets')}</span>
               </NavLink>
-              <NavLink 
-                to={premiumUser ? "/premium" : "/subscription"}
-                className={({isActive}) => 
-                  `flex items-center gap-2 px-3 py-2 rounded transition-colors ${
-                    isActive 
-                      ? 'bg-yellow-400 text-black font-semibold' 
-                      : premiumUser 
-                        ? 'text-yellow-400 hover:bg-yellow-500 hover:text-black' 
+
+              {!premiumUser && (
+                <NavLink 
+                  to="/subscription"
+                  className={({isActive}) => 
+                    `flex items-center gap-2 px-3 py-2 rounded transition-colors ${
+                      isActive 
+                        ? 'bg-yellow-400 text-black font-semibold' 
                         : 'text-yellow-400 hover:bg-yellow-500 hover:text-black'
-                  }`
-                }
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.293 2.293a1 1 0 010 1.414L13 12l2.293 2.293a1 1 0 01-1.414 1.414L12 13.414l-2.293 2.293a1 1 0 01-1.414-1.414L10.586 12 8.293 9.707a1 1 0 011.414-1.414L12 10.586l2.293-2.293a1 1 0 011.414 0z" />
-                </svg>
-                <span>{premiumUser ? t('sidebar.premium') : t('sidebar.go_premium')}</span>
-              </NavLink>
+                    }`
+                  }
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.293 2.293a1 1 0 010 1.414L13 12l2.293 2.293a1 1 0 01-1.414 1.414L12 13.414l-2.293 2.293a1 1 0 01-1.414-1.414L10.586 12 8.293 9.707a1 1 0 011.414-1.414L12 10.586l2.293-2.293a1 1 0 011.414 0z" />
+                  </svg>
+                  <span>{t('sidebar.go_premium')}</span>
+                </NavLink>
+              )}
             </nav>
 
             {isAdmin && (
-              <>
-                <div className="mb-2">
-                  <span className="text-xs uppercase text-gray-500 font-semibold tracking-wider ml-3">{t('sidebar.admin')}</span>
-                </div>
-                <nav className="flex flex-col gap-1.5 mb-6">
-                  <NavLink 
-                    to="/admin" 
-                    end 
-                    className={({isActive}) => 
-                      `flex items-center gap-2 px-3 py-2 rounded transition-colors ${
-                        isActive 
-                          ? 'bg-[#01C38D] text-[#191E29] font-semibold' 
-                          : 'text-white hover:bg-[#31344d]'
-                      }`
-                    }
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 8v8m-3-5v5m-3-8v8M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    <span>{t('sidebar.admin_dashboard')}</span>
-                  </NavLink>
-                </nav>
-              </>
+              <nav className="flex flex-col gap-1.5 mb-4">
+                <span className="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">{t('sidebar.admin')}</span>
+                <NavLink 
+                  to="/admin" 
+                  end 
+                  className={({isActive}) => 
+                    `flex items-center gap-2 px-3 py-2 rounded transition-colors ${
+                      isActive 
+                        ? 'bg-[#01C38D] text-[#191E29] font-semibold' 
+                        : 'text-white hover:bg-[#31344d]'
+                    }`
+                  }
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  <span>{t('sidebar.admin_dashboard')}</span>
+                </NavLink>
+              </nav>
             )}
 
-            <div className="mb-2">
-              <span className="text-xs uppercase text-gray-500 font-semibold tracking-wider ml-3">{t('sidebar.account')}</span>
-            </div>
             <nav className="flex flex-col gap-1.5">
+              <span className="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">{t('sidebar.account')}</span>
+              {premiumUser && (
+                <NavLink
+                  to="/premium"
+                  className={({ isActive }) =>
+                    `flex items-center gap-2 px-3 py-2 rounded transition-colors ${
+                      isActive
+                        ? 'bg-yellow-400 text-black font-semibold'
+                        : 'text-yellow-400 hover:bg-yellow-500 hover:text-black'
+                    }`
+                  }
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.293 2.293a1 1 0 010 1.414L13 12l2.293 2.293a1 1 0 01-1.414 1.414L12 13.414l-2.293 2.293a1 1 0 01-1.414-1.414L10.586 12 8.293 9.707a1 1 0 011.414-1.414L12 10.586l2.293-2.293a1 1 0 011.414 0z" />
+                  </svg>
+                  <span>{t('sidebar.premium')}</span>
+                </NavLink>
+              )}
               <NavLink 
                 to="/settings" 
                 className={({isActive}) => 

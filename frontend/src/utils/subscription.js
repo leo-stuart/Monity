@@ -1,10 +1,16 @@
+import { get } from './api';
+
 /**
  * Checks the subscription status of the current user.
  * 
- * @returns {Promise<string>} A promise that resolves with the user's subscription tier ('free' or 'paid').
+ * @returns {Promise<string>} A promise that resolves with the user's subscription tier.
  */
 export const checkSubscription = async () => {
-  // This is a mock implementation.
-  // In a real application, you would fetch the user's subscription status from your backend.
-  return Promise.resolve('free');
+  try {
+    const response = await get('/subscription-tier');
+    return response.data.subscription_tier || 'free';
+  } catch (error) {
+    console.error('Failed to fetch subscription status:', error);
+    return 'free';
+  }
 }; 

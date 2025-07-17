@@ -116,6 +116,7 @@
   
   "premium.title": "Premium Features",
   "premium.description": "Welcome to the exclusive area for premium members. Here you will find advanced tools and features to take your financial management to the next level.",
+  "premium.projections_title": "Financial Projections",
 
   "topbar.toggle_menu": "Toggle menu",
   "topbar.user": "User",
@@ -186,6 +187,7 @@
   "subscription.title": "Subscription",
   "subscription.current_plan": "Your current plan",
   "subscription.upgrade_button": "Upgrade to Premium",
+  "subscription.upgrading": "Upgrading...",
 
   "admin_dashboard.fetch_error": "Failed to fetch admin statistics.",
   "admin_dashboard.loading": "Loading admin dashboard...",
