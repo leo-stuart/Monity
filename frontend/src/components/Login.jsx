@@ -22,7 +22,7 @@ function Login() {
             await login(email, password);
             navigate('/');
         } catch (err) {
-            setError(err.message || t('login.invalid_credentials'));
+            setError(err.message || t('loginPage.invalid_credentials'));
         } finally {
             setLoading(false);
         }
@@ -33,16 +33,16 @@ function Login() {
             {/* Monity Logo */}
             <div className="mb-8 text-center">
                 <h1 className="text-5xl md:text-6xl font-bold text-[#01C38D]">Monity</h1>
-                <p className="text-gray-400 mt-2 text-lg">{t('login.slogan')}</p>
+                <p className="text-gray-400 mt-2 text-lg">{t('loginPage.slogan')}</p>
             </div>
 
             {/* Login Card */}
             <div className="bg-[#23263a] p-6 md:p-8 rounded-xl shadow-lg w-full max-w-md">
-                <h2 className="text-3xl font-bold text-[#01C38D] mb-6 text-center">{t('login.welcome')}</h2>
+                <h2 className="text-3xl font-bold text-[#01C38D] mb-6 text-center">{t('loginPage.welcome')}</h2>
                 {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                        <label htmlFor="email" className="block text-white mb-2">{t('login.email')}</label>
+                        <label htmlFor="email" className="block text-white mb-2">{t('loginPage.email')}</label>
                         <input
                             type="email"
                             id="email"
@@ -54,7 +54,7 @@ function Login() {
                         />
                     </div>
                     <div>
-                        <label htmlFor="password" className="block text-white mb-2">{t('login.password')}</label>
+                        <label htmlFor="password" className="block text-white mb-2">{t('loginPage.password')}</label>
                         <input
                             type="password"
                             id="password"
@@ -70,13 +70,13 @@ function Login() {
                         className="w-full bg-gradient-to-r from-[#01C38D] to-[#01C38D]/80 text-white py-2.5 rounded-lg hover:from-[#01C38D]/90 hover:to-[#01C38D]/70 transition-all disabled:opacity-50"
                         disabled={loading}
                     >
-                        {loading ? t('login.logging_in') : t('login')}
+                        {loading ? t('loginPage.logging_in') : t('common.login')}
                     </button>
                 </form>
                 <p className="mt-4 text-center text-white">
-                    {t('login.no_account')}{' '}
+                    {t('loginPage.no_account')}{' '}
                     <Link to="/signup" className="text-[#01C38D] hover:underline">
-                        {t('login.signup')}
+                        {t('loginPage.signup')}
                     </Link>
                 </p>
             </div>

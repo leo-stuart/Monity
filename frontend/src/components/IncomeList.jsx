@@ -14,14 +14,14 @@ function ListIncomes() {
     const [date, setDate] = useState('');
 
     const handleDelete = async (transactionId) => {
-        if (!window.confirm(t('income_list.confirm_delete'))) return;
+        if (!window.confirm(t('incomeList.confirm_delete'))) return;
 
         try {
             await del(`/transactions/${transactionId}`);
             setIncomes(prev => prev.filter(income => income.id !== transactionId));
         } catch(err) {
             console.error(err);
-            alert(t('income_list.delete_error'));
+            alert(t('incomeList.delete_error'));
         }
     }
 
@@ -58,27 +58,27 @@ function ListIncomes() {
     const reversedIncomes = [...filtered].reverse();
 
     if (loading) {
-        return <Spinner message={t('income_list.loading')} />
+        return <Spinner message={t('incomeList.loading')} />
     }
     if (error) {
-        return <p>{t('income_list.error')}: {error}</p>
+        return <p>{t('incomeList.error')}: {error}</p>
     }
     if (!filtered.length) {
         return (
             <div className="bg-[#23263a] p-4 rounded-xl shadow-lg ring-2 ring-green-400/50">
                 <div className='flex flex-col md:flex-row items-center justify-between gap-4 mb-4'>
-                    <h3 className="text-lg font-bold text-white">{t('income_list.total_incomes')}: <span className="text-[#01C38D]">${sum.toFixed(2)}</span></h3>
+                    <h3 className="text-lg font-bold text-white">{t('incomeList.total_incomes')}: <span className="text-[#01C38D]">${sum.toFixed(2)}</span></h3>
                     <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
-                        <input type="text" value={category} onChange={(e) => setCategory(e.target.value)} className="bg-[#191E29] border border-[#31344d] text-white text-sm rounded-lg focus:ring-[#01C38D] focus:border-[#01C38D] block w-full p-2.5 placeholder-gray-400" placeholder={t('income_list.filter_category_placeholder')} />
-                        <input type="text" value={date} onChange={(e) => setDate(e.target.value)} className="bg-[#191E29] border border-[#31344d] text-white text-sm rounded-lg focus:ring-[#01C38D] focus:border-[#01C38D] block w-full p-2.5 placeholder-gray-400" placeholder={t('income_list.filter_date_placeholder')} />
+                        <input type="text" value={category} onChange={(e) => setCategory(e.target.value)} className="bg-[#191E29] border border-[#31344d] text-white text-sm rounded-lg focus:ring-[#01C38D] focus:border-[#01C38D] block w-full p-2.5 placeholder-gray-400" placeholder={t('incomeList.filter_category_placeholder')} />
+                        <input type="text" value={date} onChange={(e) => setDate(e.target.value)} className="bg-[#191E29] border border-[#31344d] text-white text-sm rounded-lg focus:ring-[#01C38D] focus:border-[#01C38D] block w-full p-2.5 placeholder-gray-400" placeholder={t('incomeList.filter_date_placeholder')} />
                     </div>
                     <Link
                         to="/add-income"
                         className="w-full md:w-auto text-center text-white bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 shadow-lg shadow-green-500/50 font-medium rounded-lg text-sm px-5 py-2.5 transition-all">
-                        {t('income_list.add_income_button')}
+                        {t('incomeList.add_income_button')}
                     </Link>
                 </div>
-                <p className="text-white text-center py-4">{t('income_list.no_incomes_found')}</p>
+                <p className="text-white text-center py-4">{t('incomeList.no_incomes_found')}</p>
             </div>
         )
     }
@@ -87,15 +87,15 @@ function ListIncomes() {
         <div className="bg-[#23263a] p-4 rounded-xl shadow-lg ring-2 ring-green-400/50">
             {/* Header */}
             <div className='flex flex-col md:flex-row items-center justify-between gap-4 mb-4'>
-                <h3 className="text-lg font-bold text-white">{t('income_list.total_incomes')}: <span className="text-[#01C38D]">${sum.toFixed(2)}</span></h3>
+                <h3 className="text-lg font-bold text-white">{t('incomeList.total_incomes')}: <span className="text-[#01C38D]">${sum.toFixed(2)}</span></h3>
                 <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
-                    <input type="text" value={category} onChange={(e) => setCategory(e.target.value)} className="bg-[#191E29] border border-[#31344d] text-white text-sm rounded-lg focus:ring-[#01C38D] focus:border-[#01C38D] block w-full p-2.5 placeholder-gray-400" placeholder={t('income_list.filter_category_placeholder')} />
-                    <input type="text" value={date} onChange={(e) => setDate(e.target.value)} className="bg-[#191E29] border border-[#31344d] text-white text-sm rounded-lg focus:ring-[#01C38D] focus:border-[#01C38D] block w-full p-2.5 placeholder-gray-400" placeholder={t('income_list.filter_date_placeholder')} />
+                    <input type="text" value={category} onChange={(e) => setCategory(e.target.value)} className="bg-[#191E29] border border-[#31344d] text-white text-sm rounded-lg focus:ring-[#01C38D] focus:border-[#01C38D] block w-full p-2.5 placeholder-gray-400" placeholder={t('incomeList.filter_category_placeholder')} />
+                    <input type="text" value={date} onChange={(e) => setDate(e.target.value)} className="bg-[#191E29] border border-[#31344d] text-white text-sm rounded-lg focus:ring-[#01C38D] focus:border-[#01C38D] block w-full p-2.5 placeholder-gray-400" placeholder={t('incomeList.filter_date_placeholder')} />
                 </div>
                 <Link
                     to="/add-income"
                     className="w-full md:w-auto text-center text-white bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 shadow-lg shadow-green-500/50 font-medium rounded-lg text-sm px-5 py-2.5 transition-all">
-                    {t('income_list.add_income_button')}
+                    {t('incomeList.add_income_button')}
                 </Link>
             </div>
 
@@ -104,11 +104,11 @@ function ListIncomes() {
                 <table className="w-full text-left bg-[#23263a] text-white rounded-lg overflow-hidden">
                     <thead>
                         <tr className="bg-[#191E29] text-[#01C38D]">
-                            <th className="py-3 px-4">{t('income_list.date_header')}</th>
-                            <th className="py-3 px-4">{t('income_list.category_header')}</th>
-                            <th className="py-3 px-4">{t('income_list.description_header')}</th>
-                            <th className="py-3 px-4 text-right">{t('income_list.amount_header')}</th>
-                            <th className="py-3 px-4 text-center">{t('income_list.actions_header')}</th>
+                            <th className="py-3 px-4">{t('incomeList.date_header')}</th>
+                            <th className="py-3 px-4">{t('incomeList.category_header')}</th>
+                            <th className="py-3 px-4">{t('incomeList.description_header')}</th>
+                            <th className="py-3 px-4 text-right">{t('incomeList.amount_header')}</th>
+                            <th className="py-3 px-4 text-center">{t('incomeList.actions_header')}</th>
                         </tr>
                     </thead>
                     <tbody>

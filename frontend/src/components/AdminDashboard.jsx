@@ -31,7 +31,7 @@ function AdminDashboard() {
 
         setStats({ userCount, transactionCount, totalVolume });
       } catch (err) {
-        setError(t('admin_dashboard.fetch_error'));
+        setError(t('adminDashboard.fetch_error'));
         console.error(err);
       } finally {
         setLoading(false);
@@ -42,7 +42,7 @@ function AdminDashboard() {
   }, [t]);
 
   if (loading) {
-    return <Spinner message={t('admin_dashboard.loading')} />;
+    return <Spinner message={t('adminDashboard.loading')} />;
   }
 
   if (error) {
@@ -51,19 +51,19 @@ function AdminDashboard() {
 
   return (
     <div className="text-white p-4 md:p-0">
-      <h1 className="text-2xl md:text-3xl font-bold mb-6 md:mb-8">{t('admin_dashboard.title')}</h1>
+      <h1 className="text-2xl md:text-3xl font-bold mb-6 md:mb-8">{t('adminDashboard.title')}</h1>
       
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
         <div className="bg-gradient-to-br from-[#23263a] to-[#31344d] p-4 md:p-6 rounded-2xl shadow-lg border border-[#31344d]">
-          <h2 className="text-md md:text-lg font-semibold text-gray-400 mb-2">{t('admin_dashboard.total_users')}</h2>
+          <h2 className="text-md md:text-lg font-semibold text-gray-400 mb-2">{t('adminDashboard.total_users')}</h2>
           <p className="text-3xl md:text-4xl font-bold text-[#01C38D]">{stats.userCount}</p>
         </div>
         <div className="bg-gradient-to-br from-[#23263a] to-[#31344d] p-4 md:p-6 rounded-2xl shadow-lg border border-[#31344d]">
-          <h2 className="text-md md:text-lg font-semibold text-gray-400 mb-2">{t('admin_dashboard.total_transactions')}</h2>
+          <h2 className="text-md md:text-lg font-semibold text-gray-400 mb-2">{t('adminDashboard.total_transactions')}</h2>
           <p className="text-3xl md:text-4xl font-bold text-[#36A2EB]">{stats.transactionCount}</p>
         </div>
         <div className="bg-gradient-to-br from-[#23263a] to-[#31344d] p-4 md:p-6 rounded-2xl shadow-lg border border-[#31344d]">
-          <h2 className="text-md md:text-lg font-semibold text-gray-400 mb-2">{t('admin_dashboard.total_volume')}</h2>
+          <h2 className="text-md md:text-lg font-semibold text-gray-400 mb-2">{t('adminDashboard.total_volume')}</h2>
           <p className="text-3xl md:text-4xl font-bold text-[#FF6384]">${stats.totalVolume.toFixed(2)}</p>
         </div>
       </div>

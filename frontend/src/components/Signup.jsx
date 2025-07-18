@@ -21,7 +21,7 @@ function Signup() {
         setError('');
         
         if (password !== confirmPassword) {
-            setError(t('signup.passwords_no_match'));
+            setError(t('signupPage.passwords_no_match'));
             setLoading(false);
             return;
         }
@@ -33,7 +33,7 @@ function Signup() {
             }
             navigate('/');
         } catch (err) {
-            setError(err.message || t('signup.failed'));
+            setError(err.message || t('signupPage.failed'));
         } finally {
             setLoading(false);
         }
@@ -43,14 +43,14 @@ function Signup() {
         <div className="min-h-screen flex flex-col items-center justify-center bg-[#191E29] p-4">
             <div className="mb-8 text-center">
                 <h1 className="text-5xl md:text-6xl font-bold text-[#01C38D]">Monity</h1>
-                <p className="text-gray-400 mt-2 text-lg">{t('signup.slogan')}</p>
+                <p className="text-gray-400 mt-2 text-lg">{t('signupPage.slogan')}</p>
             </div>
             <div className="bg-[#23263a] p-6 md:p-8 rounded-xl shadow-lg w-full max-w-md">
-                <h2 className="text-3xl font-bold text-[#01C38D] mb-6 text-center">{t('signup.create_account')}</h2>
+                <h2 className="text-3xl font-bold text-[#01C38D] mb-6 text-center">{t('signupPage.create_account')}</h2>
                 {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                        <label htmlFor="name" className="block text-white mb-2">{t('signup.name')}</label>
+                        <label htmlFor="name" className="block text-white mb-2">{t('signupPage.name')}</label>
                         <input
                             type="text"
                             id="name"
@@ -61,7 +61,7 @@ function Signup() {
                         />
                     </div>
                     <div>
-                        <label htmlFor="email" className="block text-white mb-2">{t('signup.email')}</label>
+                        <label htmlFor="email" className="block text-white mb-2">{t('signupPage.email')}</label>
                         <input
                             type="email"
                             id="email"
@@ -72,7 +72,7 @@ function Signup() {
                         />
                     </div>
                     <div>
-                        <label htmlFor="password" className="block text-white mb-2">{t('signup.password')}</label>
+                        <label htmlFor="password" className="block text-white mb-2">{t('signupPage.password')}</label>
                         <input
                             type="password"
                             id="password"
@@ -83,7 +83,7 @@ function Signup() {
                         />
                     </div>
                     <div>
-                        <label htmlFor="confirmPassword" className="block text-white mb-2">{t('signup.confirm_password')}</label>
+                        <label htmlFor="confirmPassword" className="block text-white mb-2">{t('signupPage.confirm_password')}</label>
                         <input
                             type="password"
                             id="confirmPassword"
@@ -98,13 +98,13 @@ function Signup() {
                         className="w-full bg-gradient-to-r from-[#01C38D] to-[#01C38D]/80 text-white py-2.5 rounded-lg hover:from-[#01C38D]/90 hover:to-[#01C38D]/70 transition-all disabled:opacity-50"
                         disabled={loading}
                     >
-                        {loading ? t('signup.creating') : t('signup.signup')}
+                        {loading ? t('signupPage.creating') : t('signupPage.signup')}
                     </button>
                 </form>
                 <p className="mt-4 text-center text-white">
-                    {t('signup.already_account')}{' '}
+                    {t('signupPage.already_account')}{' '}
                     <Link to="/login" className="text-[#01C38D] hover:underline">
-                        {t('signup.login')}
+                        {t('signupPage.login')}
                     </Link>
                 </p>
             </div>

@@ -19,7 +19,7 @@ function Settings() {
         setSuccess('');
         
         if (newPassword !== confirmNewPassword) {
-            setError(t('settings.passwords_do_not_match'));
+            setError(t('settingsPage.passwords_do_not_match'));
             setLoading(false);
             return;
         }
@@ -33,15 +33,15 @@ function Settings() {
             const data = response.data;
             
             if (response.status !== 200) {
-                throw new Error(data.message || t('settings.failed_to_change_password'));
+                throw new Error(data.message || t('settingsPage.failed_to_change_password'));
             }
 
-            setSuccess(t('settings.password_changed_successfully'));
+            setSuccess(t('settingsPage.password_changed_successfully'));
             setCurrentPassword('');
             setNewPassword('');
             setConfirmNewPassword('');
         } catch (err) {
-            setError(err.message || t('settings.failed_to_change_password'));
+            setError(err.message || t('settingsPage.failed_to_change_password'));
         } finally {
             setLoading(false);
         }
@@ -49,20 +49,20 @@ function Settings() {
 
     return (
         <div className="bg-[#23263a] p-4 md:p-6 rounded-xl shadow-lg">
-            <h2 className="text-2xl font-bold text-[#01C38D] mb-6">{t('settings.title')}</h2>
+            <h2 className="text-2xl font-bold text-[#01C38D] mb-6">{t('settingsPage.title')}</h2>
             {/* Language Toggle */}
             <div className="flex flex-col items-center mb-8">
-                <h3 className="text-xl font-semibold text-white mb-4">{t('settings.language_selection', 'Change Language')}</h3>
+                <h3 className="text-xl font-semibold text-white mb-4">{t('settingsPage.language_selection', 'Change Language')}</h3>
                 <LanguageSwitcher />
             </div>
             {/* Password Change Section */}
             <div className="mb-8">
-                <h3 className="text-xl font-semibold text-white mb-4">{t('settings.change_password')}</h3>
+                <h3 className="text-xl font-semibold text-white mb-4">{t('settingsPage.change_password')}</h3>
                 {error && <p className="text-red-500 mb-4">{error}</p>}
                 {success && <p className="text-green-500 mb-4">{success}</p>}
                 <form onSubmit={handlePasswordChange} className="space-y-4">
                     <div>
-                        <label htmlFor="currentPassword" className="block text-white mb-2">{t('settings.current_password')}</label>
+                        <label htmlFor="currentPassword" className="block text-white mb-2">{t('settingsPage.current_password')}</label>
                         <input
                             type="password"
                             id="currentPassword"
@@ -73,7 +73,7 @@ function Settings() {
                         />
                     </div>
                     <div>
-                        <label htmlFor="newPassword" className="block text-white mb-2">{t('settings.new_password')}</label>
+                        <label htmlFor="newPassword" className="block text-white mb-2">{t('settingsPage.new_password')}</label>
                         <input
                             type="password"
                             id="newPassword"
@@ -84,7 +84,7 @@ function Settings() {
                         />
                     </div>
                     <div>
-                        <label htmlFor="confirmNewPassword" className="block text-white mb-2">{t('settings.confirm_new_password')}</label>
+                        <label htmlFor="confirmNewPassword" className="block text-white mb-2">{t('settingsPage.confirm_new_password')}</label>
                         <input
                             type="password"
                             id="confirmNewPassword"
@@ -99,7 +99,7 @@ function Settings() {
                         className="w-full bg-gradient-to-r from-[#01C38D] to-[#01C38D]/80 text-white py-3 rounded-lg hover:from-[#01C38D]/90 hover:to-[#01C38D]/70 transition-all disabled:opacity-50"
                         disabled={loading}
                     >
-                        {loading ? t('settings.changing_password') : t('settings.change_password_button')}
+                        {loading ? t('settingsPage.changing_password') : t('settingsPage.change_password_button')}
                     </button>
                 </form>
             </div>

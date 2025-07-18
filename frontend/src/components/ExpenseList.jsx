@@ -14,14 +14,14 @@ function ListExpenses() {
     const [date, setDate] = useState('');
 
     const handleDelete = async (transactionId) => {
-        if (!window.confirm(t('expense_list.confirm_delete'))) return
+        if (!window.confirm(t('expenseList.confirm_delete'))) return
 
         try {
             await del(`/transactions/${transactionId}`);
             setExpenses(prev => prev.filter(expense => expense.id !== transactionId))
         } catch(err) {
             console.error(err)
-            alert(t('expense_list.delete_failed'))
+            alert(t('expenseList.delete_failed'))
         }
     }
 
@@ -60,41 +60,41 @@ function ListExpenses() {
         return (
             <div className="bg-[#23263a] border-1 p-4 rounded-xl shadow-lg shadow-red-400 ring-2 ring-red-400/50">
                 <div className='flex flex-col md:flex-row items-center justify-between gap-6 mb-4'>
-                    <h3 className="text-lg font-bold text-[#FF6384]">{t('expense_list.total_expenses')}: <span className="text-white">${sum.toFixed(2)}</span></h3>
+                    <h3 className="text-lg font-bold text-[#FF6384]">{t('expenseList.total_expenses')}: <span className="text-white">${sum.toFixed(2)}</span></h3>
                     <div className="flex gap-2">
-                        <input type="text" value={category} onChange={(e) => setCategory(e.target.value)} className="bg-[#191E29] border border-[#31344d] text-white text-sm rounded-lg focus:ring-[#FF6384] focus:border-[#FF6384] block w-full p-2.5 placeholder-gray-400" placeholder={t('expense_list.placeholder_category')} />
-                        <input type="text" value={date} onChange={(e) => setDate(e.target.value)} className="bg-[#191E29] border border-[#31344d] text-white text-sm rounded-lg focus:ring-[#FF6384] focus:border-[#FF6384] block w-full p-2.5 placeholder-gray-400" placeholder={t('expense_list.placeholder_date')} />
+                        <input type="text" value={category} onChange={(e) => setCategory(e.target.value)} className="bg-[#191E29] border border-[#31344d] text-white text-sm rounded-lg focus:ring-[#FF6384] focus:border-[#FF6384] block w-full p-2.5 placeholder-gray-400" placeholder={t('expenseList.placeholder_category')} />
+                        <input type="text" value={date} onChange={(e) => setDate(e.target.value)} className="bg-[#191E29] border border-[#31344d] text-white text-sm rounded-lg focus:ring-[#FF6384] focus:border-[#FF6384] block w-full p-2.5 placeholder-gray-400" placeholder={t('expenseList.placeholder_date')} />
                     </div>
                     <Link
                         to="/add-expense"
                         className="inline-block text-white hover:text-[#23263a] bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-red-300 shadow-lg shadow-red-500/50 dark:shadow-red-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 focus:outline-none focus:ring-0 focus:shadow-none transition-colors">
-                        {t('expense_list.add_expense')}
+                        {t('expenseList.add_expense')}
                     </Link>
                 </div>
-                <p>{t('expense_list.no_expenses')}</p>
+                <p>{t('expenseList.no_expenses')}</p>
             </div>
         )
     }
     if (loading) {
-        return <Spinner message={t('expense_list.loading')} />
+        return <Spinner message={t('expenseList.loading')} />
     }
     if (error) {
-        return <p>{t('expense_list.error')}: {error}</p>
+        return <p>{t('expenseList.error')}: {error}</p>
     }
 
     return (
         <div className="bg-[#23263a] p-4 rounded-xl shadow-lg ring-2 ring-red-400/50">
             {/* Header */}
             <div className='flex flex-col md:flex-row items-center justify-between gap-4 mb-4'>
-                <h3 className="text-lg font-bold text-white">{t('expense_list.total_expenses')}: <span className="text-[#FF6384]">${sum.toFixed(2)}</span></h3>
+                <h3 className="text-lg font-bold text-white">{t('expenseList.total_expenses')}: <span className="text-[#FF6384]">${sum.toFixed(2)}</span></h3>
                 <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
-                    <input type="text" value={category} onChange={(e) => setCategory(e.target.value)} className="bg-[#191E29] border border-[#31344d] text-white text-sm rounded-lg focus:ring-[#FF6384] focus:border-[#FF6384] block w-full p-2.5 placeholder-gray-400" placeholder={t('expense_list.filter_category')} />
-                    <input type="text" value={date} onChange={(e) => setDate(e.target.value)} className="bg-[#191E29] border border-[#31344d] text-white text-sm rounded-lg focus:ring-[#FF6384] focus:border-[#FF6384] block w-full p-2.5 placeholder-gray-400" placeholder={t('expense_list.filter_date')} />
+                    <input type="text" value={category} onChange={(e) => setCategory(e.target.value)} className="bg-[#191E29] border border-[#31344d] text-white text-sm rounded-lg focus:ring-[#FF6384] focus:border-[#FF6384] block w-full p-2.5 placeholder-gray-400" placeholder={t('expenseList.filter_category')} />
+                    <input type="text" value={date} onChange={(e) => setDate(e.target.value)} className="bg-[#191E29] border border-[#31344d] text-white text-sm rounded-lg focus:ring-[#FF6384] focus:border-[#FF6384] block w-full p-2.5 placeholder-gray-400" placeholder={t('expenseList.filter_date')} />
                 </div>
                 <Link
                     to="/add-expense"
                     className="w-full md:w-auto text-center text-white bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 shadow-lg shadow-red-500/50 font-medium rounded-lg text-sm px-5 py-2.5 transition-all">
-                    {t('expense_list.add_expense')}
+                    {t('expenseList.add_expense')}
                 </Link>
             </div>
 
@@ -103,11 +103,11 @@ function ListExpenses() {
                 <table className="w-full text-left bg-[#23263a] text-white rounded-lg overflow-hidden">
                     <thead>
                         <tr className="bg-[#191E29] text-[#FF6384]">
-                            <th className="py-3 px-4">{t('expense_list.date')}</th>
-                            <th className="py-3 px-4">{t('expense_list.category')}</th>
-                            <th className="py-3 px-4">{t('expense_list.description')}</th>
-                            <th className="py-3 px-4 text-right">{t('expense_list.amount')}</th>
-                            <th className="py-3 px-4 text-center">{t('expense_list.actions')}</th>
+                            <th className="py-3 px-4">{t('expenseList.date')}</th>
+                            <th className="py-3 px-4">{t('expenseList.category')}</th>
+                            <th className="py-3 px-4">{t('expenseList.description')}</th>
+                            <th className="py-3 px-4 text-right">{t('expenseList.amount')}</th>
+                            <th className="py-3 px-4 text-center">{t('expenseList.actions')}</th>
                         </tr>
                     </thead>
                     <tbody>

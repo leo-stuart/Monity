@@ -6,6 +6,10 @@ const fs = require('fs');
 const { createClient } = require('@supabase/supabase-js');
 const multer = require('multer');
 const Papa = require('papaparse');
+const { getDeepSpendingAnalysis, detectRecurringSubscriptions, detectDuplicateTransactions } = require('./deep-spending-analysis');
+const { getExpenseForecast } = require('./predictive-analytics');
+const netWorth = require('./net-worth');
+const { getFinancialHealthScore } = require('./financial-health');
 
 // Load environment variables
 require('dotenv').config();
@@ -81,6 +85,157 @@ const premiumAuthMiddleware = async (req, res, next) => {
         res.status(500).json({ error: 'Internal server error.' });
     }
 };
+
+app.get('/premium/deep-spending-analysis', authMiddleware, premiumAuthMiddleware, async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const analysis = await getDeepSpendingAnalysis(req.supabase, userId);
+        res.json(analysis);
+    } catch (error) {
+        console.error('Deep spending analysis error:', error.message);
+        res.status(500).json({ error: 'Failed to generate deep spending analysis' });
+    }
+});
+
+app.get('/premium/detect-subscriptions', authMiddleware, premiumAuthMiddleware, async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const subscriptions = await detectRecurringSubscriptions(req.supabase, userId);
+        res.json(subscriptions);
+    } catch (error) {
+        console.error('Subscription detection error:', error.message);
+        res.status(500).json({ error: 'Failed to detect subscriptions' });
+    }
+});
+
+app.get('/premium/detect-duplicates', authMiddleware, premiumAuthMiddleware, async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const duplicates = await detectDuplicateTransactions(req.supabase, userId);
+        res.json(duplicates);
+    } catch (error) {
+        console.error('Duplicate detection error:', error.message);
+        res.status(500).json({ error: 'Failed to detect duplicates' });
+    }
+});
+
+app.get('/premium/financial-health-score', authMiddleware, premiumAuthMiddleware, async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const score = await getFinancialHealthScore(req.supabase, userId);
+        res.json(score);
+    } catch (error) {
+        console.error('Financial health score error:', error.message);
+        res.status(500).json({ error: 'Failed to generate financial health score' });
+    }
+});
+
+app.get('/premium/expense-forecast', authMiddleware, premiumAuthMiddleware, async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const forecast = await getExpenseForecast(req.supabase, userId);
+        res.json(forecast);
+    } catch (error) {
+        console.error('Expense forecast error:', error.message);
+        res.status(500).json({ error: 'Failed to generate expense forecast' });
+    }
+});
+
+// Net Worth Routes
+app.get('/net-worth', authMiddleware, async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const result = await netWorth.getNetWorth(req.supabase, userId);
+        res.json(result);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.get('/net-worth/assets', authMiddleware, async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const assets = await netWorth.getAssets(req.supabase, userId);
+        res.json(assets);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.post('/net-worth/assets', authMiddleware, async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const { name, type, value } = req.body;
+        const result = await netWorth.addAsset(req.supabase, userId, name, type, value);
+        res.json(result);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.put('/net-worth/assets/:id', authMiddleware, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { name, type, value } = req.body;
+        const result = await netWorth.updateAsset(req.supabase, id, name, type, value);
+        res.json(result);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.delete('/net-worth/assets/:id', authMiddleware, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const result = await netWorth.deleteAsset(req.supabase, id);
+        res.json(result);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.get('/net-worth/liabilities', authMiddleware, async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const liabilities = await netWorth.getLiabilities(req.supabase, userId);
+        res.json(liabilities);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.post('/net-worth/liabilities', authMiddleware, async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const { name, type, amount } = req.body;
+        const result = await netWorth.addLiability(req.supabase, userId, name, type, amount);
+        res.json(result);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.put('/net-worth/liabilities/:id', authMiddleware, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { name, type, amount } = req.body;
+        const result = await netWorth.updateLiability(req.supabase, id, name, type, amount);
+        res.json(result);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.delete('/net-worth/liabilities/:id', authMiddleware, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const result = await netWorth.deleteLiability(req.supabase, id);
+        res.json(result);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 
 // Signup route
 app.post('/signup', async (req, res) => {

@@ -37,25 +37,25 @@ function Dashboard() {
     return (
         <div className="w-full flex flex-col gap-8 mt-2">
             <div className="flex flex-col md:flex-row gap-6">
-                <CardWrapper title={t('dashboard.balance_card_title')} accent="text-[#01C38D]">
+                <CardWrapper title={t('dashboardPage.balance_card_title')} accent="text-[#01C38D]">
                     <BalanceCard selectedRange="all_time" />
                 </CardWrapper>
-                <CardWrapper title={t('dashboard.expense_chart_title')} accent="text-[#01C38D]">
+                <CardWrapper title={t('dashboardPage.expense_chart_title')} accent="text-[#01C38D]">
                     <ExpenseChart selectedRange="all_time" />
                 </CardWrapper>
-                <CardWrapper title={t('dashboard.savings_card_title')} accent="text-[#01C38D]">
+                <CardWrapper title={t('dashboardPage.savings_card_title')} accent="text-[#01C38D]">
                     <Savings selectedRange="all_time" />
                 </CardWrapper>
             </div>
             
             <div>
-                <CardWrapper title={t('dashboard.balance_per_month_title')} accent="text-[#01C38D]">
+                <CardWrapper title={t('dashboardPage.balance_per_month_title')} accent="text-[#01C38D]">
                     <BalanceChart selectedRange="all_time" />
                 </CardWrapper>
             </div>
             
             <div>
-                <CardWrapper title={t('dashboard.expensive_purchases_title')} accent="text-[#01C38D]">
+                <CardWrapper title={t('dashboardPage.expensive_purchases_title')} accent="text-[#01C38D]">
                     <ExpensivePurchase selectedRange="all_time" />
                 </CardWrapper>
             </div>
@@ -77,13 +77,13 @@ function Dashboard() {
                     >
                         <div className="bg-[#23263a] rounded-lg shadow-lg border border-[#31344d] overflow-hidden">
                             <Link to="/add-income" className="block px-4 py-3 text-[#01C38D] hover:bg-[#31344d] whitespace-nowrap transition-colors">
-                                {t('dashboard.fab_add_income')}
+                                {t('dashboardPage.fab_add_income')}
                             </Link>
                             <Link to="/add-expense" className="block px-4 py-3 text-[#FF6384] hover:bg-[#31344d] whitespace-nowrap transition-colors">
-                                {t('dashboard.fab_add_expense')}
+                                {t('dashboardPage.fab_add_expense')}
                             </Link>
                             <Link to="/categories" className="block px-4 py-3 text-white hover:bg-[#31344d] whitespace-nowrap transition-colors">
-                                {t('dashboard.fab_manage_categories')}
+                                {t('dashboardPage.fab_manage_categories')}
                             </Link>
                         </div>
                     </div>
