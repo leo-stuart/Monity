@@ -18,6 +18,7 @@ import Spinner from './components/Spinner'
 import { useEffect, useState } from 'react'
 import TopBar from './components/TopBar';
 import { isPremium } from './utils/premium'
+import SavingsGoals from './components/SavingsGoals';
 
 // Protected route component
 const ProtectedRoute = ({ children }) => {
@@ -83,6 +84,7 @@ function App() {
       <Route path="/settings" element={<ProtectedRoute><MainLayout isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen}><Settings /></MainLayout></ProtectedRoute>} />
       <Route path="/budgets" element={<ProtectedRoute><MainLayout isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen}><BudgetsAndRecurring /></MainLayout></ProtectedRoute>} />
       <Route path="/subscription" element={<ProtectedRoute><MainLayout isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen}><Subscription /></MainLayout></ProtectedRoute>} />
+      <Route path="/savings-goals" element={<ProtectedRoute><MainLayout isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen}><SavingsGoals /></MainLayout></ProtectedRoute>} />
 
       {/* Premium route */}
       <Route path="/premium" element={<PremiumRoute><MainLayout isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen}><PremiumPage /></MainLayout></PremiumRoute>} />

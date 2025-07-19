@@ -9,6 +9,7 @@ const Papa = require('papaparse');
 const { getDeepSpendingAnalysis, detectRecurringSubscriptions, detectDuplicateTransactions } = require('./deep-spending-analysis');
 const { getExpenseForecast } = require('./predictive-analytics');
 const netWorth = require('./net-worth');
+const savingsGoals = require('./savings-goals');
 const { getFinancialHealthScore } = require('./financial-health');
 
 // Load environment variables
@@ -230,6 +231,51 @@ app.delete('/net-worth/liabilities/:id', authMiddleware, async (req, res) => {
     try {
         const { id } = req.params;
         const result = await netWorth.deleteLiability(req.supabase, id);
+        res.json(result);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Savings Goals Routes
+app.get('/savings-goals', authMiddleware, async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const goals = await savingsGoals.getGoals(req.supabase, userId);
+        res.json(goals);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.post('/savings-goals', authMiddleware, async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const { goal_name, target_amount, target_date, current_amount } = req.body;
+        const result = await savingsGoals.addGoal(req.supabase, userId, goal_name, target_amount, target_date, current_amount);
+        res.json(result);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.post('/savings-goals/:id/allocate', authMiddleware, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { amount } = req.body;
+        const userId = req.user.id;
+        const result = await savingsGoals.allocateToGoal(req.supabase, id, amount, userId);
+        res.json(result);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.delete('/savings-goals/:id', authMiddleware, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const userId = req.user.id;
+        const result = await savingsGoals.deleteGoal(req.supabase, id, userId);
         res.json(result);
     } catch (error) {
         res.status(500).json({ error: error.message });
