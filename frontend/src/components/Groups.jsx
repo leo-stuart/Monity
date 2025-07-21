@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { supabase } from '../utils/supabase';
 import GroupInvitations from './GroupInvitations';
 import GroupSpendingCard from './GroupSpendingCard';
+import { EmptyGroups, LoadingState } from './EmptyStates';
 
 const Groups = () => {
     const { t } = useTranslation();
@@ -82,17 +83,9 @@ const Groups = () => {
 
             <div className="bg-[#24293A] rounded-lg border border-[#31344d] overflow-hidden">
                 {loading ? (
-                    <div className="text-center text-gray-400 py-8">{t('groups.loading')}</div>
+                    <LoadingState message={t('groups.loading')} />
                 ) : groups.length === 0 ? (
-                    <div className="text-center text-gray-400 py-12">
-                        <p className="text-lg mb-4">{t('groups.no_groups')}</p>
-                        <Link
-                            to="/groups/create"
-                            className="inline-block bg-[#01C38D] text-[#191E29] font-bold px-6 py-3 rounded-lg hover:bg-[#00b37e] transition-colors"
-                        >
-                            {t('groups.create')}
-                        </Link>
-                    </div>
+                    <EmptyGroups />
                 ) : (
                     <div className="divide-y divide-[#31344d]">
                         {groups.map(group => (

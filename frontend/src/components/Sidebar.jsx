@@ -133,7 +133,7 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                 <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v.01" />
                 </svg>
-                <span>Savings Goals</span>
+                <span>{t('sidebar.savings_goals')}</span>
               </NavLink>
 
               {!premiumUser && (
@@ -212,21 +212,7 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                 </svg>
                 <span>{t('sidebar.settings')}</span>
               </NavLink>
-              <NavLink
-                to="/subscription"
-                className={({ isActive }) =>
-                  `flex items-center gap-2 px-3 py-2 rounded transition-colors ${isActive
-                    ? 'bg-[#01C38D] text-[#191E29] font-semibold'
-                    : 'text-white hover:bg-[#31344d]'
-                  }`
-                }
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                </svg>
-                <span>{t('sidebar.subscription')}</span>
-              </NavLink>
+              {/* Subscription management moved to settings page */}
             </nav>
           </div>
 

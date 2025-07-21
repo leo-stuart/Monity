@@ -1,19 +1,24 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 
 // A simple modal component
-const Modal = ({ children, onClose }) => (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center px-4">
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl relative w-full max-w-md">
-            <button onClick={onClose} className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-2xl font-bold">&times;</button>
-            {children}
+const Modal = ({ children, onClose }) => {
+    const { t } = useTranslation();
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center px-4">
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl relative w-full max-w-md">
+                <button onClick={onClose} className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-2xl font-bold">&times;</button>
+                {children}
+            </div>
         </div>
-    </div>
-);
+    );
+};
 
 
 const SavingsGoals = () => {
+    const { t } = useTranslation();
     const { user } = useAuth();
     const [goals, setGoals] = useState([]);
     const [newGoal, setNewGoal] = useState({
@@ -104,35 +109,35 @@ const SavingsGoals = () => {
     return (
         <div className="p-4 md:p-6">
             <div className="flex justify-between items-center mb-6">
-                <h2 className="text-3xl font-bold text-gray-800 dark:text-white">Savings Goals</h2>
+                <h2 className="text-3xl font-bold text-gray-800 dark:text-white">{t('savings_goals.title')}</h2>
                 <button onClick={() => setIsModalOpen(true)} className="bg-[#01C38D] text-white font-bold py-2 px-4 rounded-lg hover:bg-[#01a87a] transition-colors">
-                    Add New Goal
+                    {t('savings_goals.add_new_goal')}
                 </button>
             </div>
 
             {isModalOpen && (
                 <Modal onClose={() => setIsModalOpen(false)}>
-                    <h3 className="text-xl font-semibold mb-6 text-gray-900 dark:text-white">Add a New Savings Goal</h3>
+                    <h3 className="text-xl font-semibold mb-6 text-gray-900 dark:text-white">{t('savings_goals.add_new_goal_modal_title')}</h3>
                     <form onSubmit={handleAddGoal}>
                         <div className="mb-4">
-                            <label htmlFor="goal_name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Goal Name</label>
-                            <input type="text" id="goal_name" name="goal_name" value={newGoal.goal_name} onChange={handleInputChange} placeholder="e.g., Vacation to Japan" className="w-full p-2 border rounded bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white" required />
+                            <label htmlFor="goal_name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('savings_goals.goal_name')}</label>
+                            <input type="text" id="goal_name" name="goal_name" value={newGoal.goal_name} onChange={handleInputChange} placeholder={t('savings_goals.goal_name_placeholder')} className="w-full p-2 border rounded bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white" required />
                         </div>
                         <div className="mb-4">
-                            <label htmlFor="target_amount" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Target Amount</label>
-                            <input type="number" id="target_amount" name="target_amount" value={newGoal.target_amount} onChange={handleInputChange} placeholder="e.g., 5000" className="w-full p-2 border rounded bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white" required />
+                            <label htmlFor="target_amount" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('savings_goals.target_amount')}</label>
+                            <input type="number" id="target_amount" name="target_amount" value={newGoal.target_amount} onChange={handleInputChange} placeholder={t('savings_goals.target_amount_placeholder')} className="w-full p-2 border rounded bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white" required />
                         </div>
                         <div className="mb-4">
-                            <label htmlFor="target_date" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Target Date</label>
+                            <label htmlFor="target_date" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('savings_goals.target_date')}</label>
                             <input type="date" id="target_date" name="target_date" value={newGoal.target_date} onChange={handleInputChange} className="w-full p-2 border rounded bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
                         </div>
                         <div className="mb-4">
-                            <label htmlFor="current_amount" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Initial Saved Amount (Optional)</label>
-                            <input type="number" id="current_amount" name="current_amount" value={newGoal.current_amount} onChange={handleInputChange} placeholder="e.g., 500" className="w-full p-2 border rounded bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+                            <label htmlFor="current_amount" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('savings_goals.initial_saved_amount')}</label>
+                            <input type="number" id="current_amount" name="current_amount" value={newGoal.current_amount} onChange={handleInputChange} placeholder={t('savings_goals.initial_saved_amount_placeholder')} className="w-full p-2 border rounded bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
                         </div>
                         <div className="flex justify-end gap-4 mt-6">
-                            <button type="button" onClick={() => setIsModalOpen(false)} className="py-2 px-4 rounded-lg bg-gray-200 hover:bg-gray-300 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white font-semibold">Cancel</button>
-                            <button type="submit" className="py-2 px-4 rounded-lg bg-[#01C38D] hover:bg-[#01a87a] text-white font-bold">Create Goal</button>
+                            <button type="button" onClick={() => setIsModalOpen(false)} className="py-2 px-4 rounded-lg bg-gray-200 hover:bg-gray-300 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white font-semibold">{t('common.cancel')}</button>
+                            <button type="submit" className="py-2 px-4 rounded-lg bg-[#01C38D] hover:bg-[#01a87a] text-white font-bold">{t('savings_goals.create_goal')}</button>
                         </div>
                     </form>
                 </Modal>
@@ -142,8 +147,8 @@ const SavingsGoals = () => {
 
             {goals.length === 0 ? (
                 <div className="text-center py-10 px-4 border-2 border-dashed rounded-lg">
-                    <p className="text-gray-500 dark:text-gray-400">You don't have any savings goals yet.</p>
-                    <p className="text-gray-500 dark:text-gray-400">Click "Add New Goal" to get started!</p>
+                    <p className="text-gray-500 dark:text-gray-400">{t('savings_goals.no_goals_yet')}</p>
+                    <p className="text-gray-500 dark:text-gray-400">{t('savings_goals.no_goals_yet_description')}</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -155,7 +160,7 @@ const SavingsGoals = () => {
                                     <h4 className="text-xl font-bold text-gray-900 dark:text-white">{goal.goal_name}</h4>
                                     <button onClick={() => handleDeleteGoal(goal.id)} className="text-red-500 hover:text-red-700 font-bold">✕</button>
                                 </div>
-                                <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Target Date: {goal.target_date ? new Date(goal.target_date).toLocaleDateString() : 'Not set'}</p>
+                                <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">{t('savings_goals.target_date_label')} {goal.target_date ? new Date(goal.target_date).toLocaleDateString() : t('common.not_set')}</p>
                                 
                                 <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4 mb-2">
                                     <div className="bg-[#01C38D] h-4 rounded-full" style={{ width: `${progress > 100 ? 100 : progress}%` }}></div>
@@ -166,7 +171,7 @@ const SavingsGoals = () => {
                                 </div>
                                 <div className="mt-4">
                                     <button onClick={() => handleAddMoneyClick(goal.id)} className="text-[#01C38D] hover:underline font-semibold">
-                                        {addingMoney[goal.id]?.isAdding ? 'Cancel' : 'Allocate Funds'}
+                                        {addingMoney[goal.id]?.isAdding ? t('common.cancel') : t('savings_goals.allocate_funds')}
                                     </button>
                                 </div>
                                 {addingMoney[goal.id]?.isAdding && (
@@ -175,14 +180,14 @@ const SavingsGoals = () => {
                                             type="number"
                                             value={addingMoney[goal.id].amount}
                                             onChange={(e) => handleAmountChange(e, goal.id)}
-                                            placeholder="Amount"
+                                            placeholder={t('savings_goals.amount_placeholder')}
                                             className="p-2 border rounded w-full"
                                         />
                                         <button
                                             onClick={() => {
                                                 const amountToAdd = parseFloat(addingMoney[goal.id].amount);
                                                 if (amountToAdd > balance) {
-                                                    setError("You cannot allocate more than your current balance.");
+                                                    setError(t('savings_goals.insufficient_balance_error'));
                                                     return;
                                                 }
                                                 setError(null);
@@ -191,7 +196,7 @@ const SavingsGoals = () => {
                                             className="bg-blue-500 text-white p-2 rounded ml-2"
                                             disabled={parseFloat(addingMoney[goal.id]?.amount || 0) > balance || !addingMoney[goal.id]?.amount}
                                         >
-                                            Save
+                                            {t('common.save')}
                                         </button>
                                     </div>
                                 )}

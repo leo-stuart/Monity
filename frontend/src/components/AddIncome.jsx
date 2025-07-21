@@ -1,16 +1,17 @@
 import { useState, useEffect } from 'react';
 import { get, post } from '../utils/api';
 import { useTranslation } from 'react-i18next';
+import { useNotifications } from './NotificationSystem';
 
 function AddIncome({ onAdd }) {
     const { t } = useTranslation();
+    const { success, error: notifyError } = useNotifications();
     const [categories, setCategories] = useState([]);
     const [category, setCategory] = useState('');
     const [amount, setAmount] = useState('');
     const [date, setDate] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [success, setSuccess] = useState(null);
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -32,17 +33,17 @@ function AddIncome({ onAdd }) {
         e.preventDefault();
         setLoading(true);
         setError(null);
-        setSuccess(null);
+        success('');
         try {
             await post('/add-income', { category, amount, date });
             
-            setSuccess(t('addIncome.success'));
+            success(t('addIncome.success'));
             setCategory('');
             setAmount('');
             setDate('');
             if (onAdd) onAdd();
         } catch (err) {
-            setError(err.response?.data?.message || t('addIncome.failed'));
+            notifyError(err.response?.data?.message || t('addIncome.failed'));
         } finally {
             setLoading(false);
         }
@@ -86,7 +87,6 @@ function AddIncome({ onAdd }) {
                     {loading ? t('addIncome.adding') : t('addIncome.add_income')}
                 </button>
                 {error && <div className="text-red-400 text-center text-sm mt-2">{error}</div>}
-                {success && <div className="text-green-400 text-center text-sm mt-2">{success}</div>}
             </form>
         </div>
     );

@@ -2,9 +2,11 @@ import { useState, useEffect, useCallback } from 'react';
 import { get, post } from '../utils/api';
 import { useTranslation } from 'react-i18next';
 import { useSmartCategorization } from '../hooks/useSmartCategorization';
+import { useNotifications } from './NotificationSystem';
 
 function AddExpense({ onAdd }) {
     const { t } = useTranslation();
+    const { success, error: notifyError } = useNotifications();
     const [categories, setCategories] = useState([]);
     const [description, setDescription] = useState('');
     const [amount, setAmount] = useState('');
@@ -12,7 +14,6 @@ function AddExpense({ onAdd }) {
     const [date, setDate] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [success, setSuccess] = useState(null);
     
     // Smart Categorization
     const { 
@@ -115,7 +116,7 @@ function AddExpense({ onAdd }) {
         e.preventDefault();
         setLoading(true);
         setError(null);
-        setSuccess(null);
+        success('');
         
         try {
             // Prepare data with AI feedback information
@@ -129,9 +130,15 @@ function AddExpense({ onAdd }) {
                 suggestedCategory: selectedAISuggestion?.category || null
             };
 
-            await post('/add-expense', transactionData);
+                        await post('/add-expense', transactionData);
+
+            // Use notification system instead of local state
+            if (selectedAISuggestion && selectedAISuggestion.category === category) {
+                success(t('addExpense.success_with_ai_category', { category }));
+            } else {
+                success(t('addExpense.success'));
+            }
             
-            setSuccess(t('addExpense.success'));
             setDescription('');
             setAmount('');
             setCategory('');
@@ -139,10 +146,10 @@ function AddExpense({ onAdd }) {
             setShowAISuggestions(false);
             setSelectedAISuggestion(null);
             clearSuggestions();
-            
+
             if (onAdd) onAdd();
         } catch (err) {
-            setError(err.response?.data?.message || t('addExpense.failed'));
+            notifyError(err.response?.data?.message || t('addExpense.failed'));
         } finally {
             setLoading(false);
         }
@@ -249,7 +256,6 @@ function AddExpense({ onAdd }) {
                     {loading ? t('addExpense.adding') : t('addExpense.add_expense')}
                 </button>
                 {error && <div className="text-red-400 text-center text-sm mt-2">{error}</div>}
-                {success && <div className="text-green-400 text-center text-sm mt-2">{success}</div>}
             </form>
         </div>
     );

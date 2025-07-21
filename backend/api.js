@@ -31,6 +31,9 @@ app.use(express.json())
 const smartCategorization = new SmartCategorizationEngine(supabase)
 const aiScheduler = new AIScheduler(supabase)
 
+// Initialize AI system on startup
+smartCategorization.initialize().catch(console.error)
+
 app.get('/', (req, res) => {
     res.status(200).send('Monity API is running.');
 });
@@ -1603,6 +1606,112 @@ app.get('/ai/patterns', authMiddleware, async (req, res) => {
     } catch (error) {
         console.error('[SmartCategorization] Error getting patterns:', error);
         res.status(500).json({ error: 'Failed to get merchant patterns' });
+    }
+});
+
+// Budget endpoints
+app.get('/budgets', authMiddleware, async (req, res) => {
+    try {
+        const { data, error } = await supabase
+            .from('budgets')
+            .select('*')
+            .eq('userId', req.user.id)
+            .order('createdAt', { ascending: false });
+
+        if (error) throw error;
+        res.json({ data: data || [] });
+    } catch (error) {
+        console.error('Error fetching budgets:', error);
+        res.status(500).json({ error: 'Failed to fetch budgets' });
+    }
+});
+
+app.post('/budgets', authMiddleware, async (req, res) => {
+    try {
+        const { name, amount, categoryId, period, startDate } = req.body;
+        
+        const { data, error } = await supabase
+            .from('budgets')
+            .insert({
+                userId: req.user.id,
+                name,
+                amount: parseFloat(amount),
+                categoryId: categoryId,
+                period,
+                startDate: startDate || new Date().toISOString().split('T')[0],
+                spent: 0
+            })
+            .select()
+            .single();
+
+        if (error) throw error;
+        res.json({ data });
+    } catch (error) {
+        console.error('Error creating budget:', error);
+        res.status(500).json({ error: 'Failed to create budget' });
+    }
+});
+
+app.put('/budgets/:id', authMiddleware, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { name, amount, period } = req.body;
+        
+        const { data, error } = await supabase
+            .from('budgets')
+            .update({
+                name,
+                amount: parseFloat(amount),
+                period,
+                updatedAt: new Date().toISOString()
+            })
+            .eq('id', id)
+            .eq('userId', req.user.id)
+            .select()
+            .single();
+
+        if (error) throw error;
+        res.json({ data });
+    } catch (error) {
+        console.error('Error updating budget:', error);
+        res.status(500).json({ error: 'Failed to update budget' });
+    }
+});
+
+app.delete('/budgets/:id', authMiddleware, async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        const { error } = await supabase
+            .from('budgets')
+            .delete()
+            .eq('id', id)
+            .eq('userId', req.user.id);
+
+        if (error) throw error;
+        res.json({ message: 'Budget deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting budget:', error);
+        res.status(500).json({ error: 'Failed to delete budget' });
+    }
+});
+
+// Categories endpoints (for enhanced categories component)
+app.delete('/categories/:id', authMiddleware, async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        const { error } = await supabase
+            .from('categories')
+            .delete()
+            .eq('id', id)
+            .eq('userId', req.user.id);
+
+        if (error) throw error;
+        res.json({ message: 'Category deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting category:', error);
+        res.status(500).json({ error: 'Failed to delete category' });
     }
 });
 
