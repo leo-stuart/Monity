@@ -94,5 +94,30 @@ export const getTransactionTypes = async () => {
     return data;
 };
 
+export const getLiabilities = () => apiClient.get('/net-worth/liabilities').then(res => res.data);
+export const addLiability = (liability) => apiClient.post('/net-worth/liabilities', liability).then(res => res.data);
+export const updateLiability = (id, liability) => apiClient.put(`/net-worth/liabilities/${id}`, liability).then(res => res.data);
+export const deleteLiability = (id) => apiClient.delete(`/net-worth/liabilities/${id}`).then(res => res.data);
+
+
+// Group and Expense Splitting
+export const createGroup = (group) => apiClient.post('/groups', group).then(res => res.data);
+export const getGroups = () => apiClient.get('/groups').then(res => res.data);
+export const getGroupById = (id) => apiClient.get(`/groups/${id}`).then(res => res.data);
+export const updateGroup = (id, group) => apiClient.put(`/groups/${id}`, group).then(res => res.data);
+export const deleteGroup = (id) => apiClient.delete(`/groups/${id}`);
+export const addGroupMember = (groupId, name) => apiClient.post(`/groups/${groupId}/members`, { name }).then(res => res.data);
+export const removeGroupMember = (groupId, userId) => apiClient.delete(`/groups/${groupId}/members/${userId}`);
+export const addGroupExpense = (groupId, expense) => apiClient.post(`/groups/${groupId}/expenses`, expense).then(res => res.data);
+export const updateGroupExpense = (expenseId, expense) => apiClient.put(`/expenses/${expenseId}`, expense).then(res => res.data);
+export const deleteGroupExpense = (expenseId) => apiClient.delete(`/expenses/${expenseId}`);
+export const settleExpenseShare = (shareId) => apiClient.post(`/shares/${shareId}/settle`).then(res => res.data);
+
+// User search and invitation functions
+export const searchUsers = (query) => apiClient.get(`/users/search?q=${encodeURIComponent(query)}`).then(res => res.data);
+export const sendGroupInvitation = (groupId, email) => apiClient.post(`/groups/${groupId}/invite`, { email }).then(res => res.data);
+export const getPendingInvitations = () => apiClient.get('/invitations/pending').then(res => res.data);
+export const respondToInvitation = (invitationId, response) => apiClient.post(`/invitations/${invitationId}/respond`, { response }).then(res => res.data);
+
 
 export default apiClient; 

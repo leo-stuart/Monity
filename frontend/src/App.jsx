@@ -19,6 +19,15 @@ import { useEffect, useState } from 'react'
 import TopBar from './components/TopBar';
 import { isPremium } from './utils/premium'
 import SavingsGoals from './components/SavingsGoals';
+import TotalExpenses from './components/TotalExpenses';
+import DateRangeFilter from './components/DateRangeFilter';
+import LanguageSwitcher from './components/LanguageSwitcher';
+import Groups from './components/Groups';
+import CreateGroup from './components/CreateGroup';
+import GroupPage from './components/GroupPage';
+import Savings from './components/Savings';
+import NetWorth from './components/NetWorth';
+
 
 // Protected route component
 const ProtectedRoute = ({ children }) => {
@@ -85,6 +94,11 @@ function App() {
       <Route path="/budgets" element={<ProtectedRoute><MainLayout isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen}><BudgetsAndRecurring /></MainLayout></ProtectedRoute>} />
       <Route path="/subscription" element={<ProtectedRoute><MainLayout isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen}><Subscription /></MainLayout></ProtectedRoute>} />
       <Route path="/savings-goals" element={<ProtectedRoute><MainLayout isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen}><SavingsGoals /></MainLayout></ProtectedRoute>} />
+      <Route path="/savings" element={<ProtectedRoute><MainLayout isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen}><Savings /></MainLayout></ProtectedRoute>} />
+      <Route path="/net-worth" element={<ProtectedRoute><MainLayout isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen}><NetWorth /></MainLayout></ProtectedRoute>} />
+      <Route path="/groups" element={<ProtectedRoute><MainLayout isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen}><Groups /></MainLayout></ProtectedRoute>} />
+      <Route path="/groups/create" element={<ProtectedRoute><MainLayout isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen}><CreateGroup /></MainLayout></ProtectedRoute>} />
+      <Route path="/groups/:id" element={<ProtectedRoute><MainLayout isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen}><GroupPage /></MainLayout></ProtectedRoute>} />
 
       {/* Premium route */}
       <Route path="/premium" element={<PremiumRoute><MainLayout isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen}><PremiumPage /></MainLayout></PremiumRoute>} />

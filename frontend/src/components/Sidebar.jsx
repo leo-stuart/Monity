@@ -3,6 +3,8 @@ import { useAuth } from "../context/AuthContext";
 import { isPremium } from "../utils/premium";
 import { useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { GiPayMoney, GiTakeMyMoney } from "react-icons/gi";
+import { FaMoneyBillWave, FaCog, FaChartLine, FaUsers } from "react-icons/fa";
 
 export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
   const { t } = useTranslation();
@@ -71,6 +73,21 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                 </svg>
                 <span>{t('sidebar.transactions')}</span>
+              </NavLink>
+              <NavLink
+                to="/groups"
+                className={({ isActive }) =>
+                  `flex items-center gap-2 px-3 py-2 rounded transition-colors ${isActive
+                    ? 'bg-[#01C38D] text-[#191E29] font-semibold'
+                    : 'text-white hover:bg-[#31344d]'
+                  }`
+                }
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 016-6h2a6 6 0 016 6v1H3a2 2 0 01-2-2V5a2 2 0 012-2h6.5L12 2.697V5a2 2 0 01-2 2H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-1a2 2 0 01-2-2h-6.5L12 18.303V16a2 2 0 012-2h2a2 2 0 012 2v1a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2h-6.5L12 4.354z" />
+                </svg>
+                <span>{t('sidebar.groups')}</span>
               </NavLink>
               <NavLink
                 to="/categories"

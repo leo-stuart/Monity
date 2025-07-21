@@ -11,6 +11,7 @@ const { getExpenseForecast } = require('./predictive-analytics');
 const netWorth = require('./net-worth');
 const savingsGoals = require('./savings-goals');
 const { getFinancialHealthScore } = require('./financial-health');
+const expenseSplitting = require('./expense-splitting');
 
 // Load environment variables
 require('dotenv').config();
@@ -236,6 +237,175 @@ app.delete('/net-worth/liabilities/:id', authMiddleware, async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
+
+// Group and Expense Splitting Routes
+app.post('/groups', authMiddleware, async (req, res) => {
+    try {
+        const { name } = req.body;
+        const group = await expenseSplitting.createGroup(req.supabase, req.user.id, name);
+        res.status(201).json(group);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+console.log('Route registered: POST /groups');
+
+app.get('/groups', authMiddleware, async (req, res) => {
+    try {
+        const groups = await expenseSplitting.getGroups(req.supabase, req.user.id);
+        res.json(groups);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+console.log('Route registered: GET /groups');
+
+app.get('/groups/:id', authMiddleware, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const group = await expenseSplitting.getGroupById(req.supabase, id);
+        res.json(group);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+console.log('Route registered: GET /groups/:id');
+
+app.put('/groups/:id', authMiddleware, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { name } = req.body;
+        const group = await expenseSplitting.updateGroup(req.supabase, id, name);
+        res.json(group);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+console.log('Route registered: PUT /groups/:id');
+
+app.delete('/groups/:id', authMiddleware, async (req, res) => {
+    try {
+        const { id } = req.params;
+        await expenseSplitting.deleteGroup(req.supabase, id);
+        res.status(204).send();
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Search users endpoint
+app.get('/users/search', authMiddleware, async (req, res) => {
+    try {
+        const { q } = req.query;
+        if (!q || q.length < 2) {
+            return res.json([]);
+        }
+        const users = await expenseSplitting.searchUsers(req.supabase, q);
+        res.json(users);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Send group invitation
+app.post('/groups/:id/invite', authMiddleware, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { email } = req.body;
+        const result = await expenseSplitting.sendGroupInvitation(req.supabase, id, req.user.id, email);
+        res.status(201).json(result);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
+
+// Get pending invitations for current user
+app.get('/invitations/pending', authMiddleware, async (req, res) => {
+    try {
+        const invitations = await expenseSplitting.getPendingInvitations(req.supabase, req.user.id);
+        res.json(invitations);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+console.log('Route registered: GET /invitations/pending');
+
+// Respond to invitation
+app.post('/invitations/:id/respond', authMiddleware, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { response } = req.body;
+        const result = await expenseSplitting.respondToInvitation(req.supabase, id, response);
+        res.json(result);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
+console.log('Route registered: POST /invitations/:id/respond');
+
+app.post('/groups/:id/members', authMiddleware, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { name } = req.body;
+        const member = await expenseSplitting.addGroupMember(req.supabase, id, name);
+        res.status(201).json(member);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.delete('/groups/:id/members/:userId', authMiddleware, async (req, res) => {
+    try {
+        const { id, userId } = req.params;
+        await expenseSplitting.removeGroupMember(req.supabase, id, userId);
+        res.status(204).send();
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.post('/groups/:id/expenses', authMiddleware, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { description, amount, shares } = req.body;
+        const expense = await expenseSplitting.addGroupExpense(req.supabase, id, description, amount, req.user.id, shares);
+        res.status(201).json(expense);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.put('/expenses/:id', authMiddleware, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { description, amount, shares } = req.body;
+        const expense = await expenseSplitting.updateGroupExpense(req.supabase, id, description, amount, shares);
+        res.json(expense);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.delete('/expenses/:id', authMiddleware, async (req, res) => {
+    try {
+        const { id } = req.params;
+        await expenseSplitting.deleteGroupExpense(req.supabase, id);
+        res.status(204).send();
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.post('/shares/:id/settle', authMiddleware, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const share = await expenseSplitting.settleExpenseShare(req.supabase, id);
+        res.json(share);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 
 // Savings Goals Routes
 app.get('/savings-goals', authMiddleware, async (req, res) => {
