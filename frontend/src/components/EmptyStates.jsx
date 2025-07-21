@@ -199,19 +199,6 @@ export const EmptyBudgets = () => {
             icon="🎯"
             title={t('emptyStates.budgets.title')}
             description={t('emptyStates.budgets.description')}
-            actions={[
-                {
-                    label: t('emptyStates.budgets.create_first'),
-                    href: '/budgets',
-                    icon: '➕',
-                    primary: true
-                },
-                {
-                    label: t('emptyStates.budgets.use_template'),
-                    onClick: () => {/* Load budget template */},
-                    icon: '📋'
-                }
-            ]}
         />
     );
 };
