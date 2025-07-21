@@ -12,6 +12,8 @@ const netWorth = require('./net-worth');
 const savingsGoals = require('./savings-goals');
 const { getFinancialHealthScore } = require('./financial-health');
 const expenseSplitting = require('./expense-splitting');
+const SmartCategorizationEngine = require('./smart-categorization');
+const AIScheduler = require('./ai-scheduler');
 
 // Load environment variables
 require('dotenv').config();
@@ -24,6 +26,10 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 app.use(cors())
 app.use(express.json())
+
+// Initialize Smart Categorization Engine and AI Scheduler
+const smartCategorization = new SmartCategorizationEngine(supabase)
+const aiScheduler = new AIScheduler(supabase)
 
 app.get('/', (req, res) => {
     res.status(200).send('Monity API is running.');
@@ -955,11 +961,21 @@ app.get('/transactions', authMiddleware, async (req, res) => {
 // Add expense, income, or savings (generic transaction adder)
 const addTransaction = async (req, res, typeId, successMessage, body) => {
     try {
-        const { description, amount, category, date } = body || req.body;
+        const { description, amount, category, date, wasAISuggested, aiConfidence, suggestedCategory } = body || req.body;
         const userId = req.user.id;
         
         if (!description || !amount || !category || !date) {
             return res.status(400).json({ message: 'Description, amount, category, and date are required' });
+        }
+
+        // Auto-create category if it doesn't exist and was AI-suggested
+        if (wasAISuggested && suggestedCategory === category) {
+            try {
+                await ensureCategoryExists(req.supabase, userId, category, typeId);
+            } catch (categoryError) {
+                console.error('[SmartCategorization] Error auto-creating category:', categoryError);
+                // Continue with transaction creation even if category creation fails
+            }
         }
         
         const newTransaction = {
@@ -982,10 +998,76 @@ const addTransaction = async (req, res, typeId, successMessage, body) => {
         if (!createdTransactions || createdTransactions.length === 0) {
              return res.status(500).json({ success: false, message: `${successMessage.replace(" added!", "")} creation failed in Supabase` });
         }
+
+        // Record AI feedback if this was an AI-suggested categorization
+        if (wasAISuggested && suggestedCategory) {
+            try {
+                await smartCategorization.recordFeedback(
+                    userId,
+                    description,
+                    suggestedCategory,
+                    category,
+                    suggestedCategory === category,
+                    aiConfidence || 0.5,
+                    parseFloat(amount)
+                );
+            } catch (feedbackError) {
+                console.error('[SmartCategorization] Error recording feedback for new transaction:', feedbackError);
+                // Don't fail the transaction creation for feedback errors
+            }
+        }
+        
         res.status(201).json({ success: true, message: successMessage, transaction: createdTransactions[0] });
     } catch (error) {
         console.error(`Add transaction (type ${typeId}) error:`, error.response ? error.response.data : error.message);
         res.status(500).json({ success: false, message: `Failed to add ${successMessage.toLowerCase().split(' ')[0]}.` });
+    }
+};
+
+// Helper function to ensure category exists, create if it doesn't
+const ensureCategoryExists = async (supabase, userId, categoryName, typeId) => {
+    try {
+        // Check if category already exists for this user
+        const { data: existingCategories, error: checkError } = await supabase
+            .from('categories')
+            .select('id, name')
+            .eq('userId', userId)
+            .eq('name', categoryName)
+            .eq('typeId', typeId);
+
+        if (checkError) {
+            console.error('[ensureCategoryExists] Error checking existing categories:', checkError);
+            return;
+        }
+
+        // If category doesn't exist, create it
+        if (!existingCategories || existingCategories.length === 0) {
+            const newCategory = {
+                name: categoryName,
+                typeId: typeId,
+                userId: userId
+            };
+
+            const { data: createdCategory, error: createError } = await supabase
+                .from('categories')
+                .insert([newCategory])
+                .select();
+
+            if (createError) {
+                console.error('[ensureCategoryExists] Error creating category:', createError);
+                return;
+            }
+
+            console.log(`[SmartCategorization] Auto-created category: "${categoryName}" for user ${userId}`);
+            return createdCategory[0];
+        } else {
+            console.log(`[SmartCategorization] Category "${categoryName}" already exists for user ${userId}`);
+            return existingCategories[0];
+        }
+
+    } catch (error) {
+        console.error('[ensureCategoryExists] Unexpected error:', error);
+        throw error;
     }
 };
 
@@ -1351,9 +1433,191 @@ app.get('/balance/:month/:year', authMiddleware, async (req, res) => {
 });
 console.log('Route registered: GET /balance/:month/:year');
 
+// Smart Categorization Endpoints
+
+// Get category suggestions for a transaction
+app.post('/ai/suggest-category', authMiddleware, async (req, res) => {
+    try {
+        const { description, amount, transactionType } = req.body;
+        const userId = req.user.id;
+
+        if (!description) {
+            return res.status(400).json({ error: 'Transaction description is required' });
+        }
+
+        console.log(`[SmartCategorization] Getting suggestions for: "${description}"`);
+
+        const suggestions = await smartCategorization.suggestCategory(
+            description, 
+            amount || 0, 
+            transactionType || 1, 
+            userId
+        );
+
+        res.json({
+            success: true,
+            suggestions: suggestions,
+            description: description
+        });
+
+    } catch (error) {
+        console.error('[SmartCategorization] Error in suggest-category:', error);
+        res.status(500).json({ 
+            error: 'Failed to get category suggestions',
+            suggestions: [{
+                category: 'Uncategorized',
+                confidence: 0.3,
+                source: 'fallback'
+            }]
+        });
+    }
+});
+
+// Record user feedback on category suggestions
+app.post('/ai/feedback', authMiddleware, async (req, res) => {
+    try {
+        const { 
+            transactionDescription, 
+            suggestedCategory, 
+            actualCategory, 
+            wasAccepted, 
+            confidence, 
+            amount 
+        } = req.body;
+        const userId = req.user.id;
+
+        if (!transactionDescription || !actualCategory) {
+            return res.status(400).json({ error: 'Transaction description and actual category are required' });
+        }
+
+        await smartCategorization.recordFeedback(
+            userId,
+            transactionDescription,
+            suggestedCategory || 'None',
+            actualCategory,
+            wasAccepted || false,
+            confidence || 0.5,
+            amount
+        );
+
+        res.json({
+            success: true,
+            message: 'Feedback recorded successfully'
+        });
+
+    } catch (error) {
+        console.error('[SmartCategorization] Error recording feedback:', error);
+        res.status(500).json({ error: 'Failed to record feedback' });
+    }
+});
+
+// Get AI categorization statistics (admin only)
+app.get('/ai/stats', authMiddleware, async (req, res) => {
+    if (req.user.role !== 'admin') {
+        return res.status(403).json({ error: 'Admin access required' });
+    }
+
+    try {
+        // Get feedback statistics
+        const { data: feedbackStats, error: feedbackError } = await req.supabase
+            .from('categorization_feedback')
+            .select('was_suggestion_accepted, confidence_score');
+
+        if (feedbackError) throw feedbackError;
+
+        // Calculate accuracy
+        const totalFeedback = feedbackStats.length;
+        const acceptedSuggestions = feedbackStats.filter(f => f.was_suggestion_accepted).length;
+        const accuracy = totalFeedback > 0 ? (acceptedSuggestions / totalFeedback) * 100 : 0;
+
+        // Get model metrics
+        const { data: modelMetrics, error: metricsError } = await req.supabase
+            .from('ml_model_metrics')
+            .select('*')
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .single();
+
+        // Get merchant patterns count
+        const { data: merchantCount, error: merchantError } = await req.supabase
+            .from('merchant_patterns')
+            .select('id', { count: 'exact' });
+
+        res.json({
+            success: true,
+            stats: {
+                totalFeedback,
+                acceptedSuggestions,
+                accuracy: accuracy.toFixed(2),
+                modelMetrics: modelMetrics || null,
+                merchantPatternsCount: merchantCount?.length || 0,
+                avgConfidence: totalFeedback > 0 ? 
+                    (feedbackStats.reduce((sum, f) => sum + (f.confidence_score || 0), 0) / totalFeedback).toFixed(3) : 0
+            }
+        });
+
+    } catch (error) {
+        console.error('[SmartCategorization] Error getting stats:', error);
+        res.status(500).json({ error: 'Failed to get AI statistics' });
+    }
+});
+
+// Retrain the AI model (admin only)
+app.post('/ai/retrain', authMiddleware, async (req, res) => {
+    if (req.user.role !== 'admin') {
+        return res.status(403).json({ error: 'Admin access required' });
+    }
+
+    try {
+        await smartCategorization.retrainModel();
+        res.json({
+            success: true,
+            message: 'Model retraining completed successfully'
+        });
+
+    } catch (error) {
+        console.error('[SmartCategorization] Error retraining model:', error);
+        res.status(500).json({ error: 'Failed to retrain model' });
+    }
+});
+
+// Get merchant patterns (for debugging/admin purposes)
+app.get('/ai/patterns', authMiddleware, async (req, res) => {
+    if (req.user.role !== 'admin') {
+        return res.status(403).json({ error: 'Admin access required' });
+    }
+
+    try {
+        const { data: patterns, error } = await req.supabase
+            .from('merchant_patterns')
+            .select('*')
+            .order('usage_count', { ascending: false });
+
+        if (error) throw error;
+
+        res.json({
+            success: true,
+            patterns: patterns
+        });
+
+    } catch (error) {
+        console.error('[SmartCategorization] Error getting patterns:', error);
+        res.status(500).json({ error: 'Failed to get merchant patterns' });
+    }
+});
+
+// Initialize AI Scheduler after server setup
 const PORT = process.env.PORT || 3000;
-const server = app.listen(PORT, '0.0.0.0', () => {
+const server = app.listen(PORT, '0.0.0.0', async () => {
     console.log(`Server running on http://localhost:${PORT}`);
+    
+    // Initialize AI background tasks
+    try {
+        await aiScheduler.initialize();
+        console.log('AI Scheduler initialized successfully');
+    } catch (error) {
+        console.error('Failed to initialize AI Scheduler:', error);
+    }
 });
 
 module.exports = server;

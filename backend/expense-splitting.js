@@ -17,7 +17,58 @@ const getGroups = async (supabase, userId) => {
         `)
         .eq('group_members.user_id', userId);
     if (error) throw error;
-    return data;
+    
+    // Enhance groups with spending statistics
+    const enhancedGroups = await Promise.all(data.map(async (group) => {
+        try {
+            // Get total expenses for this group
+            const { data: expenses, error: expensesError } = await supabase
+                .from('group_expenses')
+                .select('amount')
+                .eq('group_id', group.id);
+            
+            if (expensesError) {
+                console.error('Error fetching group expenses:', expensesError);
+                return { ...group, totalSpent: 0, expenseCount: 0 };
+            }
+            
+            const totalSpent = expenses.reduce((sum, expense) => sum + parseFloat(expense.amount || 0), 0);
+            const expenseCount = expenses.length;
+            
+            // Get member count
+            const { data: members, error: membersError } = await supabase
+                .from('group_members')
+                .select('user_id')
+                .eq('group_id', group.id);
+            
+            const memberCount = membersError ? 0 : members.length;
+            
+            // Get recent activity (last expense date)
+            const { data: recentExpense, error: recentError } = await supabase
+                .from('group_expenses')
+                .select('created_at')
+                .eq('group_id', group.id)
+                .order('created_at', { ascending: false })
+                .limit(1);
+            
+            const lastActivity = recentError || !recentExpense.length ? null : recentExpense[0].created_at;
+            
+            return {
+                ...group,
+                totalSpent: totalSpent,
+                expenseCount: expenseCount,
+                memberCount: memberCount,
+                lastActivity: lastActivity,
+                avgSpentPerMember: memberCount > 0 ? totalSpent / memberCount : 0
+            };
+            
+        } catch (err) {
+            console.error('Error enhancing group data:', err);
+            return { ...group, totalSpent: 0, expenseCount: 0, memberCount: 0, lastActivity: null };
+        }
+    }));
+    
+    return enhancedGroups;
 };
 
 const getGroupById = async (supabase, groupId) => {

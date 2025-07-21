@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '../utils/supabase';
 import GroupInvitations from './GroupInvitations';
+import GroupSpendingCard from './GroupSpendingCard';
 
 const Groups = () => {
     const { t } = useTranslation();
@@ -95,14 +96,37 @@ const Groups = () => {
                 ) : (
                     <div className="divide-y divide-[#31344d]">
                         {groups.map(group => (
-                            <Link 
-                                key={group.id} 
-                                to={`/groups/${group.id}`} 
-                                className="block p-6 hover:bg-[#31344d] transition-colors duration-200"
-                            >
-                                <h2 className="text-xl font-semibold text-white">{group.name}</h2>
-                                <p className="text-gray-400 text-sm mt-1">Click to view details</p>
-                            </Link>
+                            <div key={group.id} className="p-6 hover:bg-[#31344d] transition-colors duration-200">
+                                <Link 
+                                    to={`/groups/${group.id}`} 
+                                    className="block"
+                                >
+                                    <div className="flex items-start justify-between">
+                                        <div>
+                                            <h2 className="text-xl font-semibold text-white mb-1">{group.name}</h2>
+                                            <p className="text-gray-400 text-sm">{t('groups.click_to_view')}</p>
+                                        </div>
+                                        <div className="flex items-center gap-3">
+                                            {group.totalSpent > 0 && (
+                                                <div className="text-right">
+                                                    <div className="text-[#01C38D] font-bold text-lg">
+                                                        ${group.totalSpent.toFixed(0)}
+                                                    </div>
+                                                    <div className="text-gray-400 text-xs">
+                                                        {group.expenseCount} {t('groups.expenses_count')}
+                                                    </div>
+                                                </div>
+                                            )}
+                                            <div className="w-8 h-8 bg-[#01C38D] rounded-full flex items-center justify-center">
+                                                <span className="text-[#191E29] font-bold text-sm">
+                                                    {group.memberCount || 0}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </Link>
+                                <GroupSpendingCard group={group} />
+                            </div>
                         ))}
                     </div>
                 )}
