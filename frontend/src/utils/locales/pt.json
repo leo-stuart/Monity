@@ -404,6 +404,7 @@
     "expenseOption": "Despesa",
     "incomeOption": "Receita",
     "addButton": "Adicionar Categoria",
+    "cancelButton": "Cancelar",
     "yourCategories": "Suas Categorias",
     "deleteButton": "Excluir"
   },
@@ -676,6 +677,7 @@
     "color": "Cor",
     "name_placeholder": "Digite o nome da categoria",
     "add": "Adicionar Categoria",
+    "cancel": "Cancelar",
     "edit": "Editar",
     "delete": "Excluir",
     "loading": "Carregando categorias...",

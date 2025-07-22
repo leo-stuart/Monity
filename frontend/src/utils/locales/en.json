@@ -323,6 +323,7 @@
     "expenseOption": "Expense",
     "incomeOption": "Income",
     "addButton": "Add Category",
+    "cancelButton": "Cancel",
     "yourCategories": "Your Categories",
     "deleteButton": "Delete"
   },
@@ -677,6 +678,7 @@
     "color": "Color",
     "name_placeholder": "Enter category name",
     "add": "Add Category",
+    "cancel": "Cancel",
     "edit": "Edit",
     "delete": "Delete",
     "loading": "Loading categories...",

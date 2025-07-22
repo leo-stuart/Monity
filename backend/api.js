@@ -394,7 +394,7 @@ console.log('Route registered: GET /categories');
 // Add a new category
 app.post('/categories', authMiddleware, async (req, res) => {
     try {
-        const { name, typeId } = req.body; // typeId refers to transactionTypes.id
+        const { name, typeId, color, icon } = req.body; // typeId refers to transactionTypes.id
         if (!name || !typeId) {
             return res.status(400).json({ message: 'Category name and type are required' });
         }
@@ -404,7 +404,9 @@ app.post('/categories', authMiddleware, async (req, res) => {
         const newCategory = {
             name,
             typeId,
-            userId: userId 
+            userId: userId,
+            color: color || '#01C38D', // Default color if not provided
+            icon: icon || '📦' // Default icon if not provided
         };
         
         const { data: createdCategories, error } = await req.supabase.from('categories').insert([newCategory]).select();
@@ -808,7 +810,9 @@ const ensureCategoryExists = async (supabase, userId, categoryName, typeId) => {
             const newCategory = {
                 name: categoryName,
                 typeId: typeId,
-                userId: userId
+                userId: userId,
+                color: '#01C38D', // Default color for auto-created categories
+                icon: '📦' // Default icon for auto-created categories
             };
 
             const { data: createdCategory, error: createError } = await supabase
