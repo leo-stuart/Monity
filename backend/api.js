@@ -455,93 +455,7 @@ app.delete('/categories/:id', authMiddleware, async (req, res) => {
 });
 console.log('Route registered: DELETE /categories/:id');
 
-// Get budgets for the logged-in user
-app.get('/budgets', authMiddleware, async (req, res) => {
-    try {
-        const userId = req.user.id;
-        const { data, error } = await req.supabase
-            .from('budgets')
-            .select(`
-                *,
-                categories (
-                    name
-                )
-            `)
-            .eq('userId', userId);
-
-        if (error) {
-            console.error('Get budgets error:', error.message);
-            return res.status(500).json({ error: 'Failed to fetch budgets' });
-        }
-        res.json(data || []);
-    } catch (error) {
-        console.error('Get budgets error:', error.message);
-        res.status(500).json({ error: 'Failed to fetch budgets' });
-    }
-});
-console.log('Route registered: GET /budgets');
-
-// Add or update a budget
-app.post('/budgets', authMiddleware, async (req, res) => {
-    try {
-        const { categoryId, amount, month } = req.body;
-        const userId = req.user.id;
-
-        if (!categoryId || !amount || !month) {
-            return res.status(400).json({ message: 'Category, amount, and month are required' });
-        }
-        
-        // Use upsert to either insert a new budget or update an existing one
-        const { data, error } = await req.supabase
-            .from('budgets')
-            .upsert({
-                userId,
-                categoryId,
-                amount,
-                month,
-            }, {
-                onConflict: 'userId,categoryId,month'
-            })
-            .select();
-
-        if (error) {
-            console.error('Upsert budget error:', error.message);
-            return res.status(500).json({ error: 'Failed to save budget' });
-        }
-        
-        res.status(201).json(data[0]);
-    } catch (error) {
-        console.error('Upsert budget error:', error.message);
-        res.status(500).json({ error: 'Failed to save budget' });
-    }
-});
-console.log('Route registered: POST /budgets');
-
-
-// Delete a budget
-app.delete('/budgets/:id', authMiddleware, async (req, res) => {
-    try {
-        const { id } = req.params;
-        const userId = req.user.id;
-
-        const { error } = await req.supabase
-            .from('budgets')
-            .delete()
-            .eq('id', id)
-            .eq('userId', userId);
-
-        if (error) {
-            console.error('Delete budget error:', error.message);
-            return res.status(500).json({ error: 'Failed to delete budget' });
-        }
-        
-        res.json({ message: 'Budget deleted successfully' });
-    } catch (error) {
-        console.error('Delete budget error:', error.message);
-        res.status(500).json({ error: 'Failed to delete budget' });
-    }
-});
-console.log('Route registered: DELETE /budgets/:id');
+// Duplicate budget endpoints removed - using the enhanced version below
 
 
 // --- Recurring Transactions Endpoints ---
@@ -1372,14 +1286,19 @@ app.get('/ai/patterns', authMiddleware, async (req, res) => {
 // Budget endpoints
 app.get('/budgets', authMiddleware, async (req, res) => {
     try {
-        const { data, error } = await supabase
+        const { data, error } = await req.supabase
             .from('budgets')
-            .select('*')
+            .select(`
+                *,
+                categories (
+                    name
+                )
+            `)
             .eq('userId', req.user.id)
             .order('createdAt', { ascending: false });
 
         if (error) throw error;
-        res.json({ data: data || [] });
+        res.json(data || []);
     } catch (error) {
         console.error('Error fetching budgets:', error);
         res.status(500).json({ error: 'Failed to fetch budgets' });
@@ -1390,22 +1309,38 @@ app.post('/budgets', authMiddleware, async (req, res) => {
     try {
         const { name, amount, categoryId, period, startDate } = req.body;
         
-        const { data, error } = await supabase
+        // Validate required fields
+        if (!name || !amount || !categoryId) {
+            return res.status(400).json({ message: 'Name, amount, and category are required' });
+        }
+
+        // Validate amount is a positive number
+        const parsedAmount = parseFloat(amount);
+        if (isNaN(parsedAmount) || parsedAmount <= 0) {
+            return res.status(400).json({ message: 'Amount must be a positive number' });
+        }
+        
+        const budgetStartDate = startDate || new Date().toISOString().split('T')[0];
+        // Extract month from startDate for the required month column
+        const monthValue = new Date(budgetStartDate).toISOString().slice(0, 7) + '-01'; // YYYY-MM-01 format
+
+        const { data, error } = await req.supabase
             .from('budgets')
             .insert({
                 userId: req.user.id,
                 name,
-                amount: parseFloat(amount),
+                amount: parsedAmount,
                 categoryId: categoryId,
-                period,
-                startDate: startDate || new Date().toISOString().split('T')[0],
+                period: period || 'monthly',
+                startDate: budgetStartDate,
+                month: monthValue, // Required by the original schema
                 spent: 0
             })
             .select()
             .single();
 
         if (error) throw error;
-        res.json({ data });
+        res.json(data);
     } catch (error) {
         console.error('Error creating budget:', error);
         res.status(500).json({ error: 'Failed to create budget' });
@@ -1417,7 +1352,7 @@ app.put('/budgets/:id', authMiddleware, async (req, res) => {
         const { id } = req.params;
         const { name, amount, period } = req.body;
         
-        const { data, error } = await supabase
+        const { data, error } = await req.supabase
             .from('budgets')
             .update({
                 name,
@@ -1442,7 +1377,7 @@ app.delete('/budgets/:id', authMiddleware, async (req, res) => {
     try {
         const { id } = req.params;
         
-        const { error } = await supabase
+        const { error } = await req.supabase
             .from('budgets')
             .delete()
             .eq('id', id)
@@ -1461,7 +1396,7 @@ app.delete('/categories/:id', authMiddleware, async (req, res) => {
     try {
         const { id } = req.params;
         
-        const { error } = await supabase
+        const { error } = await req.supabase
             .from('categories')
             .delete()
             .eq('id', id)
