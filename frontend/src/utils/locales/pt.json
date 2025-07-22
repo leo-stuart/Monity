@@ -87,7 +87,8 @@
     "target_date_label": "Data Alvo:",
     "allocate_funds": "Alocar Fundos",
     "amount_placeholder": "Valor",
-    "insufficient_balance_error": "Você não pode alocar mais do que o seu saldo atual."
+    "insufficient_balance_error": "Você não pode alocar mais do que o seu saldo atual.",
+    "upgrade_to_add": "Upgrade para adicionar mais"
   },
   "expenseList": {
     "confirm_delete": "Tem certeza que deseja excluir esta despesa?",
@@ -215,6 +216,8 @@
     "title": "Orçamentos",
     "subtitle": "Defina e acompanhe limites de gastos para um melhor controle financeiro",
     "add_new": "Adicionar Orçamento",
+    "add": "Adicionar Orçamento",
+    "cancel": "Cancelar",
     "weekly": "Semanal",
     "monthly": "Mensal",
     "quarterly": "Trimestral",
@@ -243,7 +246,8 @@
     "update_error": "Falha ao atualizar orçamento",
     "delete_success": "Orçamento excluído com sucesso",
     "delete_error": "Falha ao excluir orçamento",
-    "delete_confirm": "Tem certeza que deseja excluir este orçamento?"
+    "delete_confirm": "Tem certeza que deseja excluir este orçamento?",
+    "upgrade_to_add": "Upgrade para adicionar mais"
   },
   "recurring": {
     "fetch_error": "Falha ao buscar dados.",

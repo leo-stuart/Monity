@@ -13,7 +13,7 @@ const Groups = () => {
     const { t } = useTranslation();
     const [groups, setGroups] = useState([]);
     const [loading, setLoading] = useState(true);
-    const { user } = useAuth();
+    const { user, subscriptionTier } = useAuth();
 
     const fetchGroups = async () => {
         try {
@@ -66,16 +66,29 @@ const Groups = () => {
         }
     }, [user]);
 
+    const isLimited = subscriptionTier === 'free' && groups.length >= 2;
+
     return (
         <div className="flex-1 p-6">
             <div className="flex justify-between items-center mb-8">
                 <h1 className="text-3xl font-bold text-white">{t('groups.title')}</h1>
-                <Link
-                    to="/groups/create"
-                    className="bg-[#01C38D] text-[#191E29] font-bold px-6 py-3 rounded-lg hover:bg-[#00b37e] transition-colors"
-                >
-                    {t('groups.create')}
-                </Link>
+                <div className="flex items-center gap-4">
+                    {isLimited && (
+                        <Link
+                            to="/subscription"
+                            className="bg-yellow-400 text-black font-bold px-6 py-3 rounded-lg hover:bg-yellow-500 transition-colors"
+                        >
+                            {t('groups.upgrade_to_add')}
+                        </Link>
+                    )}
+                    <Link
+                        to="/groups/create"
+                        className={`bg-[#01C38D] text-[#191E29] font-bold px-6 py-3 rounded-lg hover:bg-[#00b37e] transition-colors ${isLimited ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        onClick={(e) => isLimited && e.preventDefault()}
+                    >
+                        {t('groups.create')}
+                    </Link>
+                </div>
             </div>
 
             {/* Group Invitations */}

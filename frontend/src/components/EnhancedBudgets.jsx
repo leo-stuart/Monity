@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { useNotifications } from './NotificationSystem';
 import { get, post, put, del } from '../utils/api';
 import { EmptyBudgets, LoadingState } from './EmptyStates';
+import { useAuth } from '../context/AuthContext';
+import { Link } from 'react-router-dom';
 
 /**
  * Enhanced Budgets Component with modern UI and improved functionality
@@ -10,6 +12,7 @@ import { EmptyBudgets, LoadingState } from './EmptyStates';
 const EnhancedBudgets = () => {
     const { t } = useTranslation();
     const { success, error: notifyError } = useNotifications();
+    const { subscriptionTier } = useAuth();
     
     const [budgets, setBudgets] = useState([]);
     const [categories, setCategories] = useState([]);
@@ -105,6 +108,8 @@ const EnhancedBudgets = () => {
         return category ? category.name : t('budgets.unknown_category');
     };
 
+    const isLimited = subscriptionTier === 'free' && budgets.length >= 2;
+
     if (loading) {
         return <LoadingState message={t('budgets.loading')} />;
     }
@@ -116,13 +121,24 @@ const EnhancedBudgets = () => {
                     <h1 className="text-3xl font-bold text-white mb-2">{t('budgets.title')}</h1>
                     <p className="text-gray-400">{t('budgets.subtitle')}</p>
                 </div>
-                <button
-                    onClick={() => setShowAddForm(true)}
-                    className="mt-4 sm:mt-0 bg-[#01C38D] text-white px-6 py-3 rounded-lg hover:bg-[#00b37e] transition-colors flex items-center gap-2 font-medium"
-                >
-                    <span className="text-lg">+</span>
-                    {t('budgets.add_new')}
-                </button>
+                <div className="flex items-center gap-4">
+                    {isLimited && (
+                        <Link
+                            to="/subscription"
+                            className="bg-yellow-400 text-black font-bold px-6 py-3 rounded-lg hover:bg-yellow-500 transition-colors"
+                        >
+                            {t('budgets.upgrade_to_add')}
+                        </Link>
+                    )}
+                    <button
+                        onClick={() => setShowAddForm(true)}
+                        className={`mt-4 sm:mt-0 bg-[#01C38D] text-white px-6 py-3 rounded-lg hover:bg-[#00b37e] transition-colors flex items-center gap-2 font-medium ${isLimited ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        disabled={isLimited}
+                    >
+                        <span className="text-lg">+</span>
+                        {t('budgets.add_new')}
+                    </button>
+                </div>
             </div>
 
             {/* Budgets Summary Cards */}
@@ -264,7 +280,7 @@ const EnhancedBudgets = () => {
             )}
 
             {/* Add Budget Modal */}
-            {showAddForm && (
+            {showAddForm && !isLimited && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
                     <div className="bg-[#24293A] rounded-lg border border-[#31344d] w-full max-w-md p-6">
                         <div className="flex items-center justify-between mb-6">

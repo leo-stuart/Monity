@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
+import { Link } from 'react-router-dom';
 
 // A simple modal component
 const Modal = ({ children, onClose }) => {
@@ -19,7 +20,7 @@ const Modal = ({ children, onClose }) => {
 
 const SavingsGoals = () => {
     const { t } = useTranslation();
-    const { user } = useAuth();
+    const { user, subscriptionTier } = useAuth();
     const [goals, setGoals] = useState([]);
     const [newGoal, setNewGoal] = useState({
         goal_name: '',
@@ -31,6 +32,8 @@ const SavingsGoals = () => {
     const [balance, setBalance] = useState(0);
     const [error, setError] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const isLimited = subscriptionTier === 'free' && goals.length >= 2;
 
     const fetchGoalsAndBalance = async () => {
         try {
@@ -110,12 +113,26 @@ const SavingsGoals = () => {
         <div className="p-4 md:p-6">
             <div className="flex justify-between items-center mb-6">
                 <h2 className="text-3xl font-bold text-gray-800 dark:text-white">{t('savings_goals.title')}</h2>
-                <button onClick={() => setIsModalOpen(true)} className="bg-[#01C38D] text-white font-bold py-2 px-4 rounded-lg hover:bg-[#01a87a] transition-colors">
-                    {t('savings_goals.add_new_goal')}
-                </button>
+                <div className="flex items-center gap-4">
+                    {isLimited && (
+                        <Link
+                            to="/subscription"
+                            className="bg-yellow-400 text-black font-bold px-4 py-2 rounded-lg hover:bg-yellow-500 transition-colors"
+                        >
+                            {t('savings_goals.upgrade_to_add')}
+                        </Link>
+                    )}
+                    <button 
+                        onClick={() => setIsModalOpen(true)} 
+                        className={`bg-[#01C38D] text-white font-bold py-2 px-4 rounded-lg hover:bg-[#01a87a] transition-colors ${isLimited ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        disabled={isLimited}
+                    >
+                        {t('savings_goals.add_new_goal')}
+                    </button>
+                </div>
             </div>
 
-            {isModalOpen && (
+            {isModalOpen && !isLimited && (
                 <Modal onClose={() => setIsModalOpen(false)}>
                     <h3 className="text-xl font-semibold mb-6 text-gray-900 dark:text-white">{t('savings_goals.add_new_goal_modal_title')}</h3>
                     <form onSubmit={handleAddGoal}>

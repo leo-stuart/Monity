@@ -1,10 +1,19 @@
 
 const createGroup = async (supabase, userId, name) => {
+    const insertData = { name, created_by: userId };
+    console.log('Inserting group data:', insertData);
+    
     const { data, error } = await supabase
         .from('groups')
-        .insert([{ name, created_by: userId }])
+        .insert([insertData])
         .select();
-    if (error) throw error;
+    
+    if (error) {
+        console.error('Supabase insert error:', error);
+        throw error;
+    }
+    
+    console.log('Group created successfully:', data[0]);
     return data[0];
 };
 

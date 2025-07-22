@@ -27,7 +27,6 @@ import Groups from './components/Groups';
 import CreateGroup from './components/CreateGroup';
 import GroupPage from './components/GroupPage';
 import Savings from './components/Savings';
-import NetWorth from './components/NetWorth';
 
 
 // Protected route component
@@ -97,7 +96,6 @@ function App() {
       <Route path="/subscription" element={<ProtectedRoute><MainLayout isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen}><Subscription /></MainLayout></ProtectedRoute>} />
       <Route path="/savings-goals" element={<ProtectedRoute><MainLayout isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen}><SavingsGoals /></MainLayout></ProtectedRoute>} />
       <Route path="/savings" element={<ProtectedRoute><MainLayout isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen}><Savings /></MainLayout></ProtectedRoute>} />
-      <Route path="/net-worth" element={<ProtectedRoute><MainLayout isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen}><NetWorth /></MainLayout></ProtectedRoute>} />
       <Route path="/groups" element={<ProtectedRoute><MainLayout isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen}><Groups /></MainLayout></ProtectedRoute>} />
       <Route path="/groups/create" element={<ProtectedRoute><MainLayout isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen}><CreateGroup /></MainLayout></ProtectedRoute>} />
       <Route path="/groups/:id" element={<ProtectedRoute><MainLayout isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen}><GroupPage /></MainLayout></ProtectedRoute>} />

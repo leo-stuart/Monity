@@ -87,7 +87,8 @@
     "target_date_label": "Target Date:",
     "allocate_funds": "Allocate Funds",
     "amount_placeholder": "Amount",
-    "insufficient_balance_error": "You cannot allocate more than your current balance."
+    "insufficient_balance_error": "You cannot allocate more than your current balance.",
+    "upgrade_to_add": "Upgrade to add more"
   },
   "expenseList": {
     "confirm_delete": "Are you sure you want to delete this expense?",
@@ -202,6 +203,8 @@
     "title": "Budgets",
     "subtitle": "Set and track spending limits for better financial control",
     "add_new": "Add Budget",
+    "add": "Add Budget",
+    "cancel": "Cancel",
     "weekly": "Weekly",
     "monthly": "Monthly",
     "quarterly": "Quarterly",
@@ -230,7 +233,8 @@
     "update_error": "Failed to update budget",
     "delete_success": "Budget deleted successfully",
     "delete_error": "Failed to delete budget",
-    "delete_confirm": "Are you sure you want to delete this budget?"
+    "delete_confirm": "Are you sure you want to delete this budget?",
+    "upgrade_to_add": "Upgrade to add more"
   },
   "recurring": {
     "fetch_error": "Failed to fetch data.",
@@ -338,7 +342,8 @@
     "error": "Error: {{error}}",
     "allTimeMessage": "Select \"All Time\" to view monthly balance chart.",
     "monthlyBalance": "Monthly Balance",
-    "title": "Monthly Balance Overview"
+    "title": "Monthly Balance Overview",
+    "balance": "Balance"
   },
   "dateRangeFilter": {
     "label": "Filter by date range",
