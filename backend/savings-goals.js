@@ -1,14 +1,29 @@
 // Savings Goal functions
+const EncryptionMiddleware = require('./security/encryptionMiddleware');
+
 async function addGoal(supabase, userId, goal_name, target_amount, target_date, current_amount) {
-  const { data, error } = await supabase.from('savings_goals').insert([{ user_id: userId, goal_name, target_amount, target_date, current_amount }]).select();
+  const goalData = { user_id: userId, goal_name, target_amount, target_date, current_amount };
+  
+  // Encrypt sensitive data before inserting
+  const encryptedGoalData = EncryptionMiddleware.encryptForInsert('savings_goals', goalData);
+  
+  const { data, error } = await supabase.from('savings_goals').insert([encryptedGoalData]).select();
   if (error) throw new Error(error.message);
-  return data[0];
+  
+  // Decrypt the created goal for response
+  const decryptedGoal = EncryptionMiddleware.decryptFromSelect('savings_goals', data[0]);
+  
+  return decryptedGoal;
 }
 
 async function getGoals(supabase, userId) {
     const { data, error } = await supabase.from('savings_goals').select('*').eq('user_id', userId);
     if (error) throw new Error(error.message);
-    return data;
+    
+    // Decrypt sensitive data before returning
+    const decryptedGoals = EncryptionMiddleware.decryptFromSelect('savings_goals', data || []);
+    
+    return decryptedGoals;
 }
 
 async function allocateToGoal(supabase, goalId, amount, userId) {

@@ -3,6 +3,7 @@ const compromise = require('compromise');
 const { removeStopwords } = require('stopword');
 const { Matrix } = require('ml-matrix');
 const NaiveBayes = require('ml-naivebayes');
+const EncryptionMiddleware = require('./security/encryptionMiddleware');
 
 /**
  * Smart Categorization Engine
@@ -61,15 +62,20 @@ class SmartCategorizationEngine {
         }
 
         this.merchantPatterns.clear();
-        patterns.forEach(pattern => {
-            this.merchantPatterns.set(pattern.pattern.toLowerCase(), {
-                category: pattern.suggested_category,
-                confidence: pattern.confidence_score,
-                usage: pattern.usage_count
+        
+        if (patterns && patterns.length > 0) {
+            patterns.forEach(pattern => {
+                this.merchantPatterns.set(pattern.pattern.toLowerCase(), {
+                    category: pattern.suggested_category,
+                    confidence: pattern.confidence_score,
+                    usage: pattern.usage_count
+                });
             });
-        });
 
-        console.log(`[SmartCategorization] Loaded ${patterns.length} merchant patterns`);
+            console.log(`[SmartCategorization] Loaded ${patterns.length} merchant patterns`);
+        } else {
+            console.log('[SmartCategorization] No merchant patterns found in database');
+        }
     }
 
     /**
@@ -88,16 +94,21 @@ class SmartCategorizationEngine {
         }
 
         this.defaultRules.clear();
-        rules.forEach(rule => {
-            const key = `${rule.rule_type}:${rule.rule_value.toLowerCase()}`;
-            this.defaultRules.set(key, {
-                category: rule.suggested_category,
-                confidence: rule.confidence_score,
-                transactionType: rule.transaction_type_id
+        
+        if (rules && rules.length > 0) {
+            rules.forEach(rule => {
+                const key = `${rule.rule_type}:${rule.rule_value.toLowerCase()}`;
+                this.defaultRules.set(key, {
+                    category: rule.suggested_category,
+                    confidence: rule.confidence_score,
+                    transactionType: rule.transaction_type_id
+                });
             });
-        });
 
-        console.log(`[SmartCategorization] Loaded ${rules.length} default rules`);
+            console.log(`[SmartCategorization] Loaded ${rules.length} default rules`);
+        } else {
+            console.log('[SmartCategorization] No default rules found in database');
+        }
     }
 
     /**
@@ -116,14 +127,17 @@ class SmartCategorizationEngine {
                 console.error('[SmartCategorization] Error loading training data:', error);
                 return;
             }
+            
+            // Decrypt training data
+            const decryptedTrainingData = EncryptionMiddleware.decryptFromSelect('transactions', trainingData || []);
 
-            if (trainingData.length < 10) {
+            if (decryptedTrainingData.length < 10) {
                 console.log('[SmartCategorization] Insufficient training data, using rule-based approach only');
                 return;
             }
 
             // Train Naive Bayes classifier
-            await this.trainNaiveBayesModel(trainingData);
+            await this.trainNaiveBayesModel(decryptedTrainingData);
             
         } catch (error) {
             console.error('[SmartCategorization] Error training ML model:', error);
@@ -444,12 +458,15 @@ class SmartCategorizationEngine {
                 .limit(100);
 
             if (error || !userTransactions.length) return null;
+            
+            // Decrypt user transactions
+            const decryptedUserTransactions = EncryptionMiddleware.decryptFromSelect('transactions', userTransactions);
 
             // Find best match using simple string similarity
             let bestMatch = null;
             let bestSimilarity = 0;
 
-            for (const transaction of userTransactions) {
+            for (const transaction of decryptedUserTransactions) {
                 const similarity = this.calculateStringSimilarity(
                     description.toLowerCase(), 
                     transaction.description.toLowerCase()
@@ -531,9 +548,12 @@ class SmartCategorizationEngine {
                 merchant_pattern: merchantPattern
             };
 
+            // Encrypt sensitive data before inserting
+            const encryptedFeedback = EncryptionMiddleware.encryptForInsert('categorization_feedback', feedbackData);
+
             const { error } = await this.supabase
                 .from('categorization_feedback')
-                .insert([feedbackData]);
+                .insert([encryptedFeedback]);
 
             if (error) {
                 console.error('[SmartCategorization] Error recording feedback:', error);
@@ -626,9 +646,12 @@ class SmartCategorizationEngine {
                 is_verified: true
             };
 
+            // Encrypt sensitive data before inserting
+            const encryptedEntry = EncryptionMiddleware.encryptForInsert('ml_training_data', trainingDataEntry);
+
             const { error } = await this.supabase
                 .from('ml_training_data')
-                .insert([trainingDataEntry]);
+                .insert([encryptedEntry]);
 
             if (error) {
                 console.error('[SmartCategorization] Error adding training data:', error);

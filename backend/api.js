@@ -10,6 +10,7 @@ const savingsGoals = require('./savings-goals');
 const expenseSplitting = require('./expense-splitting');
 const SmartCategorizationEngine = require('./smart-categorization');
 const AIScheduler = require('./ai-scheduler');
+const EncryptionMiddleware = require('./security/encryptionMiddleware');
 
 // Load environment variables
 require('dotenv').config();
@@ -383,7 +384,11 @@ app.get('/categories', authMiddleware, async (req, res) => {
             console.error('Get categories error:', error.message);
             return res.status(500).json({ error: 'Failed to fetch categories' });
         }
-        res.json(categories || []);
+        
+        // Decrypt sensitive data before sending response
+        const decryptedCategories = EncryptionMiddleware.decryptFromSelect('categories', categories || []);
+        
+        res.json(decryptedCategories);
     } catch (error) {
         console.error('Get categories error:', error.response ? error.response.data : error.message);
         res.status(500).json({ error: 'Failed to fetch categories' });
@@ -409,7 +414,10 @@ app.post('/categories', authMiddleware, async (req, res) => {
             icon: icon || '📦' // Default icon if not provided
         };
         
-        const { data: createdCategories, error } = await req.supabase.from('categories').insert([newCategory]).select();
+        // Encrypt sensitive data before inserting
+        const encryptedCategory = EncryptionMiddleware.encryptForInsert('categories', newCategory);
+        
+        const { data: createdCategories, error } = await req.supabase.from('categories').insert([encryptedCategory]).select();
         
         if (error) {
             console.error('Add category error:', error.message);
@@ -419,7 +427,11 @@ app.post('/categories', authMiddleware, async (req, res) => {
         if (!createdCategories || createdCategories.length === 0) {
             return res.status(500).json({ error: "Category creation failed in Supabase" });
         }
-        res.status(201).json(createdCategories[0]);
+        
+        // Decrypt the created category for response
+        const decryptedCategory = EncryptionMiddleware.decryptFromSelect('categories', createdCategories[0]);
+        
+        res.status(201).json(decryptedCategory);
     } catch (error) {
         console.error('Add category error:', error.response ? error.response.data : error.message);
         res.status(500).json({ error: 'Failed to create category' });
@@ -753,7 +765,10 @@ const addTransaction = async (req, res, typeId, successMessage, body) => {
             createdAt: new Date().toISOString()
         };
         
-        const { data: createdTransactions, error } = await req.supabase.from('transactions').insert([newTransaction]).select();
+        // Encrypt sensitive data before inserting
+        const encryptedTransaction = EncryptionMiddleware.encryptForInsert('transactions', newTransaction);
+        
+        const { data: createdTransactions, error } = await req.supabase.from('transactions').insert([encryptedTransaction]).select();
         
         if (error) {
             console.error(`Add transaction (type ${typeId}) error:`, error.message);
@@ -782,7 +797,10 @@ const addTransaction = async (req, res, typeId, successMessage, body) => {
             }
         }
         
-        res.status(201).json({ success: true, message: successMessage, transaction: createdTransactions[0] });
+        // Decrypt the created transaction for response
+        const decryptedTransaction = EncryptionMiddleware.decryptFromSelect('transactions', createdTransactions[0]);
+        
+        res.status(201).json({ success: true, message: successMessage, transaction: decryptedTransaction });
     } catch (error) {
         console.error(`Add transaction (type ${typeId}) error:`, error.response ? error.response.data : error.message);
         res.status(500).json({ success: false, message: `Failed to add ${successMessage.toLowerCase().split(' ')[0]}.` });
@@ -855,7 +873,11 @@ app.get('/transactions', authMiddleware, async (req, res) => {
     try {
         const userId = req.user.id;
         const { data: transactions } = await req.supabase.from('transactions').select('*').eq('userId', userId).order('date', { ascending: false }).order('createdAt', { ascending: false });
-        res.json(transactions || []);
+        
+        // Decrypt sensitive data before sending response
+        const decryptedTransactions = EncryptionMiddleware.decryptFromSelect('transactions', transactions || []);
+        
+        res.json(decryptedTransactions);
     } catch (error) {
         console.error('Get transactions error:', error.response ? error.response.data : error.message);
         res.status(500).json({ error: 'Failed to fetch transactions' });
@@ -872,7 +894,11 @@ app.get('/transactions/all', authMiddleware, async (req, res) => {
     try {
         // The authMiddleware already provides an admin-level Supabase client for admin users.
         const { data: transactions } = await req.supabase.from('transactions').select('*').order('date', { ascending: false });
-        res.json(transactions || []);
+        
+        // Decrypt sensitive data before sending response
+        const decryptedTransactions = EncryptionMiddleware.decryptFromSelect('transactions', transactions || []);
+        
+        res.json(decryptedTransactions);
     } catch (error) {
         console.error('Get all transactions error:', error.response ? error.response.data : error.message);
         res.status(500).json({ error: 'Failed to fetch all transactions' });
@@ -1019,7 +1045,11 @@ app.get('/transactions/month/:month/:year', authMiddleware, async (req, res) => 
         const endDate = `${year}-${month.padStart(2, '0')}-${String(tempDate.getDate()).padStart(2, '0')}`;
 
         const { data: transactions } = await req.supabase.from('transactions').select('*').eq('userId', userId).gte('date', startDate).lte('date', endDate).order('date', { ascending: true });
-        res.json(transactions || []);
+        
+        // Decrypt sensitive data before sending response
+        const decryptedTransactions = EncryptionMiddleware.decryptFromSelect('transactions', transactions || []);
+        
+        res.json(decryptedTransactions);
     } catch (error) {
         console.error('Get transactions by month error:', error.response ? error.response.data : error.message);
         res.status(500).json({ error: 'Failed to fetch transactions for the month' });
@@ -1033,7 +1063,11 @@ app.get('/transactions/category/:category', authMiddleware, async (req, res) => 
         const userId = req.user.id;
         const category = req.params.category;
         const { data: transactions } = await req.supabase.from('transactions').select('*').eq('userId', userId).eq('category', category).order('date', { ascending: false });
-        res.json(transactions || []);
+        
+        // Decrypt sensitive data before sending response
+        const decryptedTransactions = EncryptionMiddleware.decryptFromSelect('transactions', transactions || []);
+        
+        res.json(decryptedTransactions);
     } catch (error) {
         console.error('Get transactions by category error:', error.response ? error.response.data : error.message);
         res.status(500).json({ error: 'Failed to fetch transactions for the category' });

@@ -1,11 +1,16 @@
 
+const EncryptionMiddleware = require('./security/encryptionMiddleware');
+
 const createGroup = async (supabase, userId, name) => {
     const insertData = { name, created_by: userId };
     console.log('Inserting group data:', insertData);
     
+    // Encrypt sensitive data before inserting
+    const encryptedData = EncryptionMiddleware.encryptForInsert('groups', insertData);
+    
     const { data, error } = await supabase
         .from('groups')
-        .insert([insertData])
+        .insert([encryptedData])
         .select();
     
     if (error) {
@@ -14,7 +19,11 @@ const createGroup = async (supabase, userId, name) => {
     }
     
     console.log('Group created successfully:', data[0]);
-    return data[0];
+    
+    // Decrypt the created group for response
+    const decryptedGroup = EncryptionMiddleware.decryptFromSelect('groups', data[0]);
+    
+    return decryptedGroup;
 };
 
 const getGroups = async (supabase, userId) => {
@@ -62,8 +71,11 @@ const getGroups = async (supabase, userId) => {
             
             const lastActivity = recentError || !recentExpense.length ? null : recentExpense[0].created_at;
             
+            // Decrypt group data
+            const decryptedGroup = EncryptionMiddleware.decryptFromSelect('groups', group);
+            
             return {
-                ...group,
+                ...decryptedGroup,
                 totalSpent: totalSpent,
                 expenseCount: expenseCount,
                 memberCount: memberCount,
@@ -183,16 +195,21 @@ const getGroupById = async (supabase, groupId) => {
                 continue;
             }
 
+            // Decrypt expense data
+            const decryptedExpense = EncryptionMiddleware.decryptFromSelect('group_expenses', expense);
+            
             expensesWithDetails.push({
-                ...expense,
+                ...decryptedExpense,
                 expense_shares: shares,
                 profiles: payer
             });
         }
 
-        // Combine everything
+        // Decrypt group data and combine everything
+        const decryptedGroup = EncryptionMiddleware.decryptFromSelect('groups', group);
+        
         const result = {
-            ...group,
+            ...decryptedGroup,
             group_members: members,
             group_expenses: expensesWithDetails
         };
@@ -409,10 +426,16 @@ const removeGroupMember = async (supabase, groupId, userId) => {
 };
 
 const addGroupExpense = async (supabase, groupId, description, amount, paidById, shares) => {
+    // Prepare expense data
+    const expenseData = { group_id: groupId, description, amount, paid_by: paidById };
+    
+    // Encrypt sensitive data before inserting
+    const encryptedExpenseData = EncryptionMiddleware.encryptForInsert('group_expenses', expenseData);
+    
     // Insert the expense
     const { data: expense, error: expenseError } = await supabase
         .from('group_expenses')
-        .insert([{ group_id: groupId, description, amount, paid_by: paidById }])
+        .insert([encryptedExpenseData])
         .select()
         .single();
     if (expenseError) throw expenseError;
