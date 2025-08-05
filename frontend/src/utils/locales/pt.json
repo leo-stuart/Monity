@@ -41,6 +41,11 @@
     "creating": "Criando Conta...",
     "signup": "Cadastrar",
     "passwords_no_match": "As senhas não correspondem",
+    "password_too_weak": "A senha é muito fraca. Escolha uma senha mais forte.",
+    "password_min_length": "Pelo menos 8 caracteres",
+    "password_mixed_case": "Mistura de maiúsculas e minúsculas",
+    "password_number": "Pelo menos um número",
+    "password_special": "Pelo menos um caractere especial",
     "failed": "Falha ao criar conta",
     "already_account": "Já tem uma conta?",
     "login": "Entrar"

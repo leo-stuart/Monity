@@ -41,6 +41,11 @@
     "creating": "Creating Account...",
     "signup": "Sign Up",
     "passwords_no_match": "Passwords do not match",
+    "password_too_weak": "Password is too weak. Please choose a stronger password.",
+    "password_min_length": "At least 8 characters",
+    "password_mixed_case": "Mix of uppercase and lowercase",
+    "password_number": "At least one number",
+    "password_special": "At least one special character",
     "failed": "Failed to create account",
     "already_account": "Already have an account?",
     "login": "Login"
