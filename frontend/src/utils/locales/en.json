@@ -309,7 +309,26 @@
     "title": "Admin Dashboard",
     "total_users": "Total Users",
     "total_transactions": "Total Transactions",
-    "total_volume": "Total Volume"
+    "total_volume": "Total Volume",
+    "premium_users": "Premium Users",
+    "free_users": "Free Users",
+    "recent_signups": "New Users (30 Days)",
+    "expense_volume": "Total Expenses",
+    "income_volume": "Total Income",
+    "savings_volume": "Total Savings",
+    "total_categories": "Total Categories",
+    "monthly_growth": "Monthly Growth",
+    "transaction_trends": "Transaction Trends",
+    "active_users": "Active Users",
+    "top_categories": "Most Used Categories",
+    "user_activity": "User Activity",
+    "ai_accuracy": "AI Categorization Accuracy",
+    "growth_metrics": "Growth Metrics",
+    "engagement_metrics": "Engagement Metrics",
+    "system_health": "System Health",
+    "avg_daily_transactions": "Avg Daily Transactions",
+    "avg_daily_volume": "Avg Daily Volume",
+    "conversion_rate": "Premium Conversion Rate"
   },
   "addCategory": {
     "fetchError": "Failed to fetch categories",
@@ -448,6 +467,7 @@
     "no_recent_transactions": "No recent transactions",
     "add_first_transaction": "Add your first transaction",
     "balance_chart_desc": "Track your balance over time",
+    "quick_actions_desc": "Common tasks at your fingertips",
     "ai_insights": "AI Insights",
     "ai_insights_desc": "Smart recommendations powered by AI",
     "smart_categorization_active": "Smart Categorization Active",
@@ -717,4 +737,4 @@
     "pets": "Pets",
     "other": "Other"
   }
-} 
+}

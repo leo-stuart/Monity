@@ -70,7 +70,17 @@ function Budget() {
         try {
             // Format month to be just YYYY-MM-01 for consistency
             const budgetDate = new Date(month + '-01').toISOString().split('T')[0];
-            await upsertBudget({ categoryId: selectedCategory, amount: parseFloat(amount), month: budgetDate });
+            
+            // Find the category name for display purposes
+            const selectedCategoryObj = categories.find(cat => cat.id === selectedCategory);
+            const categoryName = selectedCategoryObj?.name || 'Unknown Category';
+            
+            await upsertBudget({ 
+                categoryId: selectedCategory, 
+                amount: parseFloat(amount), 
+                month: budgetDate,
+                name: `${categoryName} Budget - ${month}`
+            });
             setAmount('');
             setSelectedCategory('');
             fetchBudgetsAndCategories(); // Refresh list

@@ -47,7 +47,15 @@ export const getBudgets = async () => {
 };
 
 export const upsertBudget = async (budget) => {
-    const { data } = await apiClient.post('/budgets', budget);
+    // Transform the old budget format to match the new API structure
+    const transformedBudget = {
+        name: budget.name || `Budget for category ${budget.categoryId}`,
+        amount: budget.amount,
+        categoryId: budget.categoryId,
+        period: 'monthly', // Default to monthly for legacy budgets
+        startDate: budget.month || new Date().toISOString().split('T')[0]
+    };
+    const { data } = await apiClient.post('/budgets', transformedBudget);
     return data;
 };
 

@@ -385,10 +385,34 @@ app.get('/categories', authMiddleware, async (req, res) => {
             return res.status(500).json({ error: 'Failed to fetch categories' });
         }
         
-        // Decrypt sensitive data before sending response
+        // Decrypt sensitive data before calculating transaction counts
         const decryptedCategories = EncryptionMiddleware.decryptFromSelect('categories', categories || []);
         
-        res.json(decryptedCategories);
+        // Get transaction counts for each category
+        const categoriesWithCounts = await Promise.all(
+            decryptedCategories.map(async (category) => {
+                try {
+                    // Count transactions that match this category name
+                    const { data: transactions, error: transactionError } = await req.supabase
+                        .from('transactions')
+                        .select('id')
+                        .eq('userId', userId)
+                        .eq('category', category.name);
+                    
+                    if (transactionError) {
+                        console.error('Error counting transactions for category:', category.name, transactionError.message);
+                        return { ...category, transactionCount: 0 };
+                    }
+                    
+                    return { ...category, transactionCount: transactions ? transactions.length : 0 };
+                } catch (countError) {
+                    console.error('Error counting transactions for category:', category.name, countError);
+                    return { ...category, transactionCount: 0 };
+                }
+            })
+        );
+        
+        res.json(categoriesWithCounts);
     } catch (error) {
         console.error('Get categories error:', error.response ? error.response.data : error.message);
         res.status(500).json({ error: 'Failed to fetch categories' });
@@ -988,6 +1012,193 @@ app.get('/balance/all', authMiddleware, async (req, res) => {
 });
 console.log('Route registered: GET /balance/all');
 
+// Get comprehensive admin analytics (admin only)
+app.get('/admin/analytics', authMiddleware, async (req, res) => {
+    if (req.user.role !== 'admin') {
+        return res.status(403).json({ error: 'Forbidden: Admins only' });
+    }
+
+    try {
+        // Get basic counts
+        const [usersResult, transactionsResult, categoriesResult] = await Promise.all([
+            req.supabase.from('profiles').select('*', { count: 'exact', head: true }),
+            req.supabase.from('transactions').select('*', { count: 'exact', head: true }),
+            req.supabase.from('categories').select('*', { count: 'exact', head: true })
+        ]);
+
+        // Get premium users count
+        const { count: premiumUsers } = await req.supabase
+            .from('profiles')
+            .select('*', { count: 'exact', head: true })
+            .eq('subscription_tier', 'premium');
+
+        // Get recent user registrations (last 30 days)
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        
+        const { data: recentUsers } = await req.supabase
+            .from('profiles')
+            .select('id, created_at')
+            .gte('created_at', thirtyDaysAgo.toISOString());
+
+        // Get transactions by type
+        const { data: transactionsByType } = await req.supabase
+            .from('transactions')
+            .select('typeId, amount')
+            .order('date', { ascending: false });
+
+        // Calculate transaction volume by type
+        const expenseTotal = transactionsByType?.filter(t => t.typeId === 1).reduce((sum, t) => sum + Math.abs(parseFloat(t.amount)), 0) || 0;
+        const incomeTotal = transactionsByType?.filter(t => t.typeId === 2).reduce((sum, t) => sum + Math.abs(parseFloat(t.amount)), 0) || 0;
+        const savingsTotal = transactionsByType?.filter(t => t.typeId === 3).reduce((sum, t) => sum + Math.abs(parseFloat(t.amount)), 0) || 0;
+
+        // Get monthly growth data (last 12 months)
+        const twelveMonthsAgo = new Date();
+        twelveMonthsAgo.setMonth(twelveMonthsAgo.getMonth() - 12);
+        
+        const { data: monthlyTransactions } = await req.supabase
+            .from('transactions')
+            .select('date, amount')
+            .gte('date', twelveMonthsAgo.toISOString().split('T')[0]);
+
+        // Group transactions by month
+        const monthlyData = {};
+        monthlyTransactions?.forEach(transaction => {
+            const month = transaction.date.substring(0, 7); // YYYY-MM
+            if (!monthlyData[month]) {
+                monthlyData[month] = { count: 0, volume: 0 };
+            }
+            monthlyData[month].count++;
+            monthlyData[month].volume += Math.abs(parseFloat(transaction.amount));
+        });
+
+        // Get most active users (top 10 by transaction count)
+        const { data: userActivity } = await req.supabase
+            .from('transactions')
+            .select('userId')
+            .order('createdAt', { ascending: false });
+
+        const userTransactionCount = {};
+        userActivity?.forEach(t => {
+            userTransactionCount[t.userId] = (userTransactionCount[t.userId] || 0) + 1;
+        });
+
+        const topUsers = Object.entries(userTransactionCount)
+            .sort(([,a], [,b]) => b - a)
+            .slice(0, 10)
+            .map(([userId, count]) => ({ userId, transactionCount: count }));
+
+        // Get category usage stats
+        const { data: categoryUsage } = await req.supabase
+            .from('transactions')
+            .select('category')
+            .not('category', 'is', null);
+
+        const categoryStats = {};
+        categoryUsage?.forEach(t => {
+            categoryStats[t.category] = (categoryStats[t.category] || 0) + 1;
+        });
+
+        const topCategories = Object.entries(categoryStats)
+            .sort(([,a], [,b]) => b - a)
+            .slice(0, 10)
+            .map(([category, count]) => ({ category, usage: count }));
+
+        res.json({
+            users: {
+                total: usersResult.count || 0,
+                premium: premiumUsers || 0,
+                free: (usersResult.count || 0) - (premiumUsers || 0),
+                recentSignups: recentUsers?.length || 0
+            },
+            transactions: {
+                total: transactionsResult.count || 0,
+                byType: {
+                    expenses: expenseTotal,
+                    income: incomeTotal,
+                    savings: savingsTotal
+                }
+            },
+            categories: {
+                total: categoriesResult.count || 0,
+                topUsed: topCategories
+            },
+            growth: {
+                monthlyData: Object.entries(monthlyData)
+                    .sort(([a], [b]) => a.localeCompare(b))
+                    .map(([month, data]) => ({ month, ...data }))
+            },
+            activity: {
+                topUsers
+            }
+        });
+    } catch (error) {
+        console.error('Admin analytics error:', error.message);
+        res.status(500).json({ error: 'Failed to fetch admin analytics' });
+    }
+});
+console.log('Route registered: GET /admin/analytics');
+
+// Get daily active users and transaction trends (admin only)
+app.get('/admin/trends', authMiddleware, async (req, res) => {
+    if (req.user.role !== 'admin') {
+        return res.status(403).json({ error: 'Forbidden: Admins only' });
+    }
+
+    try {
+        const { days = 30 } = req.query;
+        const daysAgo = new Date();
+        daysAgo.setDate(daysAgo.getDate() - parseInt(days));
+
+        // Get daily transaction activity
+        const { data: dailyTransactions } = await req.supabase
+            .from('transactions')
+            .select('date, userId, amount')
+            .gte('date', daysAgo.toISOString().split('T')[0])
+            .order('date', { ascending: true });
+
+        // Group by date
+        const dailyData = {};
+        const activeUsers = new Set();
+
+        dailyTransactions?.forEach(transaction => {
+            const date = transaction.date;
+            if (!dailyData[date]) {
+                dailyData[date] = { 
+                    transactions: 0, 
+                    volume: 0, 
+                    uniqueUsers: new Set() 
+                };
+            }
+            dailyData[date].transactions++;
+            dailyData[date].volume += Math.abs(parseFloat(transaction.amount));
+            dailyData[date].uniqueUsers.add(transaction.userId);
+            activeUsers.add(transaction.userId);
+        });
+
+        // Convert to array format
+        const trends = Object.entries(dailyData).map(([date, data]) => ({
+            date,
+            transactions: data.transactions,
+            volume: data.volume,
+            activeUsers: data.uniqueUsers.size
+        }));
+
+        res.json({
+            trends,
+            summary: {
+                totalActiveUsers: activeUsers.size,
+                avgDailyTransactions: trends.reduce((sum, day) => sum + day.transactions, 0) / trends.length,
+                avgDailyVolume: trends.reduce((sum, day) => sum + day.volume, 0) / trends.length
+            }
+        });
+    } catch (error) {
+        console.error('Admin trends error:', error.message);
+        res.status(500).json({ error: 'Failed to fetch admin trends' });
+    }
+});
+console.log('Route registered: GET /admin/trends');
+
 app.get('/subscription-tier', authMiddleware, async (req, res) => {
     try {
         const userId = req.user.id;
@@ -1336,7 +1547,71 @@ app.get('/budgets', authMiddleware, async (req, res) => {
             .order('createdAt', { ascending: false });
 
         if (error) throw error;
-        res.json(data || []);
+        
+        // Calculate actual spent amounts for each budget based on transactions
+        const budgetsWithSpent = await Promise.all(
+            (data || []).map(async (budget) => {
+                try {
+                    // Get the category name
+                    const categoryName = budget.categories?.name;
+                    if (!categoryName) {
+                        return { ...budget, spent: 0 };
+                    }
+                    
+                    // Calculate date range for this budget period
+                    let startDate, endDate;
+                    const budgetStartDate = new Date(budget.startDate || budget.month);
+                    
+                    if (budget.period === 'weekly') {
+                        startDate = new Date(budgetStartDate);
+                        endDate = new Date(budgetStartDate);
+                        endDate.setDate(endDate.getDate() + 7);
+                    } else if (budget.period === 'monthly') {
+                        startDate = new Date(budgetStartDate.getFullYear(), budgetStartDate.getMonth(), 1);
+                        endDate = new Date(budgetStartDate.getFullYear(), budgetStartDate.getMonth() + 1, 0);
+                    } else if (budget.period === 'quarterly') {
+                        const quarter = Math.floor(budgetStartDate.getMonth() / 3);
+                        startDate = new Date(budgetStartDate.getFullYear(), quarter * 3, 1);
+                        endDate = new Date(budgetStartDate.getFullYear(), (quarter + 1) * 3, 0);
+                    } else if (budget.period === 'yearly') {
+                        startDate = new Date(budgetStartDate.getFullYear(), 0, 1);
+                        endDate = new Date(budgetStartDate.getFullYear(), 11, 31);
+                    } else {
+                        // Default to monthly if period is unknown
+                        startDate = new Date(budgetStartDate.getFullYear(), budgetStartDate.getMonth(), 1);
+                        endDate = new Date(budgetStartDate.getFullYear(), budgetStartDate.getMonth() + 1, 0);
+                    }
+                    
+                    // Query transactions for this category in the budget period
+                    const { data: transactions, error: transactionError } = await req.supabase
+                        .from('transactions')
+                        .select('amount')
+                        .eq('userId', req.user.id)
+                        .eq('category', categoryName)
+                        .eq('typeId', 1) // Only expenses
+                        .gte('date', startDate.toISOString().split('T')[0])
+                        .lte('date', endDate.toISOString().split('T')[0]);
+                    
+                    if (transactionError) {
+                        console.error('Error calculating spent for budget:', budget.id, transactionError.message);
+                        return { ...budget, spent: budget.spent || 0 };
+                    }
+                    
+                    // Calculate total spent
+                    const spent = (transactions || []).reduce((sum, transaction) => {
+                        return sum + parseFloat(transaction.amount || 0);
+                    }, 0);
+                    
+                    return { ...budget, spent };
+                    
+                } catch (spentError) {
+                    console.error('Error calculating spent for budget:', budget.id, spentError);
+                    return { ...budget, spent: budget.spent || 0 };
+                }
+            })
+        );
+        
+        res.json(budgetsWithSpent);
     } catch (error) {
         console.error('Error fetching budgets:', error);
         res.status(500).json({ error: 'Failed to fetch budgets' });
