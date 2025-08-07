@@ -1,0 +1,5 @@
+# SPA fallback for client-side routing
+/*    /index.html   200
+
+# API routes should go to backend
+/api/*  https://your-backend-url.com/api/:splat  200 
